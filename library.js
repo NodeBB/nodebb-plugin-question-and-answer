@@ -1,6 +1,7 @@
 "use strict";
 
-var plugin = {};
+var plugin = {},
+	async = module.parent.require('async');
 
 plugin.init = function(params, callback) {
 	var app = params.router,
@@ -21,6 +22,17 @@ plugin.addAdminNavigation = function(header, callback) {
 	});
 
 	callback(null, header);
+};
+
+plugin.getCategory = function(data, callback) {
+	var topics = data.category.topics;
+
+	async.map(topics, function(topic, next) {
+		topic.title = '<span class="badge answered"><i class="fa fa-question-circle"></i> Answered</span> ' + topic.title;
+		return next(null, topic);
+	}, function(err, topics) {
+		return callback(err, data);
+	});
 };
 
 
