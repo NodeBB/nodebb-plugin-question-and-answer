@@ -1,0 +1,25 @@
+{
+	"id": "nodebb-plugin-q&a",
+	"name": "Question and Answer Plugin for NodeBB",
+	"description": "A Q&A plugin for NodeBB which allows users to post topics as questions and select a post as the answe",
+	"url": "https://github.com/NodeBB/nodebb-plugin-q&a",
+	"library": "./library.js",
+	"hooks": [
+		{
+			"hook": "static:app.load", "method": "init"
+		},
+		{
+			"hook": "filter:admin.header.build", "method": "addAdminNavigation"
+		}
+	],
+	"staticDirs": {
+		"static": "./static"
+	},
+	"less": [
+		"static/style.less"
+	],
+	"scripts": [
+		"static/lib/main.js"
+	],
+	"templates": "static/templates"
+}
