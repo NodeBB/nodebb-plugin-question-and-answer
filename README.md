@@ -4,7 +4,7 @@ A Q&A plugin for NodeBB Forums which allows users to post topics as questions an
 
 ## Installation
 
-    npm install nodebb-plugin-q&a
+    npm install nodebb-plugin-question-and-answer
 
 ## Screenshots
 

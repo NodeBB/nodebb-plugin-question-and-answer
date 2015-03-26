@@ -1,11 +1,11 @@
 {
-  "name": "nodebb-plugin-q&a",
+  "name": "nodebb-plugin-question-and-answer",
   "version": "0.0.1",
-  "description": "A Q&A plugin for NodeBB which allows users to post topics as questions and select a post as the answer",
+  "description": "A nodebb-plugin-question-and-answer plugin for NodeBB which allows users to post topics as questions and select a post as the answer",
   "main": "library.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/psychobunny/nodebb-plugin-q&a"
+    "url": "https://github.com/psychobunny/nodebb-plugin-question-and-answer"
   },
   "keywords": [
     "nodebb",
@@ -20,7 +20,7 @@
   },
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/psychobunny/nodebb-plugin-q&a/issues"
+    "url": "https://github.com/psychobunny/nodebb-plugin-question-and-answer/issues"
   },
   "readmeFilename": "README.md"
 }

@@ -3,7 +3,7 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">Sample Admin Page</div>
 			<div class="panel-body">
-				<form role="form" class="quickstart-settings">
+				<form role="form" class="q&a-settings">
 					<p>
 						Adjust these settings. You can then retrieve these settings in code via:
 						<code>meta.config['sample:setting1']</code> and <code>meta.config['sample:setting2']</code>
@@ -32,13 +32,13 @@
 
 <script>
 	require(['settings'], function(Settings) {
-		Settings.load('quickstart', $('.quickstart-settings'));
+		Settings.load('q&a', $('.q&a-settings'));
 
 		$('#save').on('click', function() {
-			Settings.save('quickstart', $('.quickstart-settings'), function() {
+			Settings.save('q&a', $('.q&a-settings'), function() {
 				app.alert({
 					type: 'success',
-					alert_id: 'quickstart-saved',
+					alert_id: 'q&a-saved',
 					title: 'Settings Saved',
 					message: 'Please reload your NodeBB to apply these settings',
 					clickfn: function() {

@@ -7,15 +7,15 @@ plugin.init = function(params, callback) {
 		middleware = params.middleware,
 		controllers = params.controllers;
 
-	app.get('/admin/plugins/q&a', middleware.admin.buildHeader, renderAdmin);
-	app.get('/api/admin/plugins/q&a', renderAdmin);
+	app.get('/admin/plugins/question-and-answer', middleware.admin.buildHeader, renderAdmin);
+	app.get('/api/admin/plugins/question-and-answer', renderAdmin);
 
 	callback();
 };
 
 plugin.addAdminNavigation = function(header, callback) {
 	header.plugins.push({
-		route: '/plugins/q&a',
+		route: '/plugins/question-and-answer',
 		icon: 'fa-question-circle',
 		name: 'Q&A'
 	});
@@ -25,7 +25,7 @@ plugin.addAdminNavigation = function(header, callback) {
 
 
 function renderAdmin(req, res, next) {
-	res.render('admin/plugins/q&a', {});
+	res.render('admin/plugins/question-and-answer', {});
 }
 
 module.exports = plugin;
