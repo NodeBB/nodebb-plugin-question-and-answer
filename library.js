@@ -24,11 +24,11 @@ plugin.addAdminNavigation = function(header, callback) {
 	callback(null, header);
 };
 
-plugin.getCategory = function(data, callback) {
-	var topics = data.category.topics;
+plugin.getTopics = function(data, callback) {
+	var topics = data.topics;
 
 	async.map(topics, function(topic, next) {
-		topic.title = '<span class="badge answered"><i class="fa fa-question-circle"></i> Answered</span> ' + topic.title;
+		topic.title = '<span class="answered"><i class="fa fa-question-circle"></i> Answered</span> ' + topic.title;
 		return next(null, topic);
 	}, function(err, topics) {
 		return callback(err, data);
