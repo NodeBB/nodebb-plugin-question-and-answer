@@ -13,6 +13,9 @@
 		},
 		{
 			"hook": "filter:topics.get", "method": "getTopics"
+		},
+		{
+			"hook": "filter:topic.thread_tools", "method": "addThreadTool"
 		}
 	],
 	"staticDirs": {
