@@ -16,6 +16,9 @@
 		},
 		{
 			"hook": "filter:topic.thread_tools", "method": "addThreadTool"
+		},
+		{
+			"hook": "filter:navigation.available", "method": "addNavigation"
 		}
 	],
 	"staticDirs": {

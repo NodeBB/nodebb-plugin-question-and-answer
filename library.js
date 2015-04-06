@@ -3,6 +3,8 @@
 var plugin = {},
 	async = module.parent.require('async'),
 	topics = module.parent.require('./topics'),
+	meta = module.parent.require('./meta'),
+	helpers = module.parent.require('./controllers/helpers'),
 	db = module.parent.require('./database'),
 	SocketPlugins = module.parent.require('./socket.io/plugins');
 
@@ -11,12 +13,26 @@ plugin.init = function(params, callback) {
 		middleware = params.middleware,
 		controllers = params.controllers;
 
+console.log('derp');
 	app.get('/admin/plugins/question-and-answer', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/plugins/question-and-answer', renderAdmin);
+	app.get('/unsolved', middleware.buildHeader, renderUnsolved);
+	app.get('/api/unsolved', renderUnsolved)
 
 	handleSocketIO();
 
 	callback();
+};
+
+plugin.addNavigation = function(menu, callback) {
+	menu.push({
+		"route": "/unsolved",
+		"title": "Unsolved",
+		"iconClass": "fa-question-circle",
+		"text": "Unsolved"
+	});
+
+	callback (null, menu);
 };
 
 plugin.addAdminNavigation = function(header, callback) {
@@ -125,20 +141,19 @@ function handleSocketIO() {
 	};
 }
 
-/*
-categoriesController.recent = function(req, res, next) {
+function renderUnsolved(req, res, next) {
+	console.log(1);
 	var stop = (parseInt(meta.config.topicsPerList, 10) || 20) - 1;
-	topics.getTopicsFromSet('topics:recent', req.uid, 0, stop, function(err, data) {
+	topics.getTopicsFromSet('topics:unsolved', req.uid, 0, stop, function(err, data) {
+		console.log(data);
 		if (err) {
 			return next(err);
 		}
 
-		data['feeds:disableRSS'] = parseInt(meta.config['feeds:disableRSS'], 10) === 1;
-		data.rssFeedUrl = nconf.get('relative_path') + '/recent.rss';
-		data.breadcrumbs = helpers.buildBreadcrumbs([{text: '[[recent:title]]'}]);
+		data['feeds:disableRSS'] = true;
+		data.breadcrumbs = helpers.buildBreadcrumbs([{text: 'Unsolved'}]);
 		res.render('recent', data);
 	});
-};
-*/
+}
 
 module.exports = plugin;
