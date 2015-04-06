@@ -63,6 +63,18 @@ plugin.getTopics = function(data, callback) {
 	});
 };
 
+plugin.getThread = function(topic, callback) {
+	if (parseInt(topic.isQuestion, 10)) {
+		if (parseInt(topic.isSolved, 10)) {
+			topic.title = topic.title + '<span class="answered"><i class="fa fa-question-circle"></i> Solved</span> ';
+		} else {
+			topic.title = topic.title + '<span class="unanswered"><i class="fa fa-question-circle"></i> Unsolved</span> ';
+		}
+	}
+
+	callback(false, topic);
+};
+
 plugin.addThreadTool = function(data, callback) {
 	var isSolved = parseInt(data.topic.isSolved, 10);
 
