@@ -16,17 +16,17 @@ $('document').ready(function() {
 
 	function toggleQuestionStatus() {
 		var tid = ajaxify.variables.get('topic_id');
-		socket.emit('plugins.QandA.toggleQuestionStatus', {tid: tid}, function(data) {
-			ajaxify.refresh();
+		socket.emit('plugins.QandA.toggleQuestionStatus', {tid: tid}, function(err, data) {
 			app.alertSuccess(data.isQuestion ? 'Topic has been marked as a question' : 'Topic is now a regular thread');
+			ajaxify.refresh();
 		});
 	}
 
 	function toggleSolved() {
 		var tid = ajaxify.variables.get('topic_id');
-		socket.emit('plugins.QandA.toggleSolved', {tid: tid}, function(data) {
-			ajaxify.refresh();
+		socket.emit('plugins.QandA.toggleSolved', {tid: tid}, function(err, data) {
 			app.alertSuccess(data.isSolved ? 'Topic has been marked as solved' : 'Topic has been marked as unsolved');
+			ajaxify.refresh();
 		});
 	}
 });
