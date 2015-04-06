@@ -4,6 +4,7 @@ var plugin = {},
 	async = module.parent.require('async'),
 	topics = module.parent.require('./topics'),
 	meta = module.parent.require('./meta'),
+	privileges = module.parent.require('./privileges'),
 	helpers = module.parent.require('./controllers/helpers'),
 	db = module.parent.require('./database'),
 	SocketPlugins = module.parent.require('./socket.io/plugins');
@@ -13,11 +14,10 @@ plugin.init = function(params, callback) {
 		middleware = params.middleware,
 		controllers = params.controllers;
 
-console.log('derp');
 	app.get('/admin/plugins/question-and-answer', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/plugins/question-and-answer', renderAdmin);
 	app.get('/unsolved', middleware.buildHeader, renderUnsolved);
-	app.get('/api/unsolved', renderUnsolved)
+	app.get('/api/unsolved', renderUnsolved);
 
 	handleSocketIO();
 
@@ -98,54 +98,71 @@ function handleSocketIO() {
 	SocketPlugins.QandA = {};
 
 	SocketPlugins.QandA.toggleSolved = function(socket, data, callback) {
-		topics.getTopicField(data.tid, 'isSolved', function(err, isSolved) {
-			isSolved = parseInt(isSolved, 10) === 1;
-			console.log(isSolved);
+		privileges.topics.canEdit(data.tid, socket.uid, function(err, canEdit) {
+			if (!canEdit) {
+				return callback(new Error('[[error:no-privileges]]'));
+			}
 
-			async.parallel([
-				function(next) {
-					topics.setTopicField(data.tid, 'isSolved', isSolved ? 0 : 1, next);
-				},
-				function(next) {
-					if (!isSolved) {
-						db.sortedSetRemove('topics:unsolved', data.tid, next);
-					} else {
-						db.sortedSetAdd('topics:unsolved', Date.now(), data.tid, next);
-					}
-				}
-			], function(err) {
-				callback(err, {isSolved: !isSolved});
-			});
+			toggleSolved(data.tid, callback);
 		});
 	};
 
 	SocketPlugins.QandA.toggleQuestionStatus = function(socket, data, callback) {
-		topics.getTopicField(data.tid, 'isQuestion', function(err, isQuestion) {
-			isQuestion = parseInt(isQuestion, 10) === 1;
+		privileges.topics.canEdit(data.tid, socket.uid, function(err, canEdit) {
+			if (!canEdit) {
+				return callback(new Error('[[error:no-privileges]]'));
+			}
 
-			async.parallel([
-				function(next) {
-					topics.setTopicField(data.tid, 'isQuestion', isQuestion ? 0 : 1, next);
-				},
-				function(next) {
-					if (!isQuestion) {
-						db.sortedSetAdd('topics:unsolved', Date.now(), data.tid, next);
-					} else {
-						db.sortedSetRemove('topics:unsolved', data.tid, next);
-					}
-				}
-			], function(err) {
-				callback(err, {isQuestion: !isQuestion});
-			});
-		});	
+			toggleQuestionStatus(data.tid, callback);
+		});
 	};
 }
 
+function toggleSolved(tid, callback) {
+	topics.getTopicField(tid, 'isSolved', function(err, isSolved) {
+		isSolved = parseInt(isSolved, 10) === 1;
+
+		async.parallel([
+			function(next) {
+				topics.setTopicField(tid, 'isSolved', isSolved ? 0 : 1, next);
+			},
+			function(next) {
+				if (!isSolved) {
+					db.sortedSetRemove('topics:unsolved', tid, next);
+				} else {
+					db.sortedSetAdd('topics:unsolved', Date.now(), tid, next);
+				}
+			}
+		], function(err) {
+			callback(err, {isSolved: !isSolved});
+		});
+	});
+}
+
+function toggleQuestionStatus(tid, callback) {
+	topics.getTopicField(tid, 'isQuestion', function(err, isQuestion) {
+		isQuestion = parseInt(isQuestion, 10) === 1;
+
+		async.parallel([
+			function(next) {
+				topics.setTopicField(tid, 'isQuestion', isQuestion ? 0 : 1, next);
+			},
+			function(next) {
+				if (!isQuestion) {
+					db.sortedSetAdd('topics:unsolved', Date.now(), tid, next);
+				} else {
+					db.sortedSetRemove('topics:unsolved', tid, next);
+				}
+			}
+		], function(err) {
+			callback(err, {isQuestion: !isQuestion});
+		});
+	});	
+}
+
 function renderUnsolved(req, res, next) {
-	console.log(1);
 	var stop = (parseInt(meta.config.topicsPerList, 10) || 20) - 1;
 	topics.getTopicsFromSet('topics:unsolved', req.uid, 0, stop, function(err, data) {
-		console.log(data);
 		if (err) {
 			return next(err);
 		}
