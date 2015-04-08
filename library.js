@@ -64,7 +64,6 @@ plugin.getTopics = function(data, callback) {
 };
 
 plugin.getThread = function(topic, callback) {
-	console.log(topic);
 	if (parseInt(topic.isQuestion, 10)) {
 		if (parseInt(topic.isSolved, 10)) {
 			topic.title = '<span class="answered"><i class="fa fa-question-circle"></i> Solved</span> ' + topic.title;
