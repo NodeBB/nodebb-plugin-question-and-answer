@@ -19,9 +19,6 @@
 		},
 		{
 			"hook": "filter:navigation.available", "method": "addNavigation"
-		},
-		{
-			"hook": "filter:controllers.topic.get", "method": "getThread"
 		}
 	],
 	"staticDirs": {

@@ -6,6 +6,7 @@ $('document').ready(function() {
 	$(window).on('action:ajaxify.end', function(err, data) {
 		if (data.url.match(/^topic\//)) {
 			addHandlers();
+			addLabel();
 		}
 	});
 
@@ -23,6 +24,16 @@ $('document').ready(function() {
 	function addHandlers() {
 		$('.toggleQuestionStatus').on('click', toggleQuestionStatus);
 		$('.toggleSolved').on('click', toggleSolved);
+	}
+
+	function addLabel() {
+		require(['components'], function(components) {
+			if ($('.topic-unsolved').length) {
+				components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> Unsolved</span>');
+			} else if ($('.topic-solved').length) {
+				components.get('post/header').prepend('<span class="answered"><i class="fa fa-question-circle"></i> Solved</span>');
+			}
+		});
 	}
 
 	function toggleQuestionStatus() {

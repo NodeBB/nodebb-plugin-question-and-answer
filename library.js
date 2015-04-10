@@ -63,25 +63,13 @@ plugin.getTopics = function(data, callback) {
 	});
 };
 
-plugin.getThread = function(topic, callback) {
-	if (parseInt(topic.isQuestion, 10)) {
-		if (parseInt(topic.isSolved, 10)) {
-			topic.title = '<span class="answered"><i class="fa fa-question-circle"></i> Solved</span> ' + topic.title;
-		} else {
-			topic.title = '<span class="unanswered"><i class="fa fa-question-circle"></i> Unsolved</span> ' + topic.title;
-		}
-	}
-
-	callback(false, topic);
-};
-
 plugin.addThreadTool = function(data, callback) {
 	var isSolved = parseInt(data.topic.isSolved, 10);
 
 	if (parseInt(data.topic.isQuestion, 10)) {
 		data.tools = data.tools.concat([
 			{
-				class: 'toggleSolved ' + (isSolved ? 'alert-warning' : 'alert-success'),
+				class: 'toggleSolved ' + (isSolved ? 'alert-warning topic-solved' : 'alert-success topic-unsolved'),
 				title: isSolved ? 'Mark as Unsolved' : 'Mark as Solved',
 				icon: isSolved ? 'fa-question-circle' : 'fa-check-circle'
 			},
