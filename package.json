@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/psychobunny/nodebb-plugin-question-and-answer/issues"
   },
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "nbbpm": {
+    "compatibility": "^0.7.0"
+  }
 }
