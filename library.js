@@ -24,6 +24,13 @@ plugin.init = function(params, callback) {
 	callback();
 };
 
+plugin.appendConfig = function(config, callback) {
+	meta.settings.get('question-and-answer', function(err, settings) {
+		config['question-and-answer'] = settings;
+		callback(null, config);
+	});
+};
+
 plugin.addNavigation = function(menu, callback) {
 	menu.push({
 		"route": "/unsolved",
