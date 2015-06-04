@@ -12,7 +12,7 @@ $('document').ready(function() {
 
 	$(window).on('action:composer.loaded', function(err, data) {
 		if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
-			// Do nothing, as this is a reply, not a new post 
+			// Do nothing, as this is a reply, not a new post
 			return;
 		}
 
