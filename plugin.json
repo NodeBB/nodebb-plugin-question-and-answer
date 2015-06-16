@@ -9,6 +9,9 @@
 			"hook": "static:app.load", "method": "init"
 		},
 		{
+			"hook": "filter:config.get", "method": "appendConfig"
+		},
+		{
 			"hook": "filter:admin.header.build", "method": "addAdminNavigation"
 		},
 		{

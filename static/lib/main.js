@@ -11,6 +11,11 @@ $('document').ready(function() {
 	});
 
 	$(window).on('action:composer.loaded', function(err, data) {
+		if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
+			// Do nothing, as this is a reply, not a new post
+			return;
+		}
+
 		var item = $('<li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i> Ask as Question</a></li>');
 		$('#cmp-uuid-' + data.post_uuid + ' .action-bar .dropdown-menu').append(item);
 
@@ -19,6 +24,13 @@ $('document').ready(function() {
 				callToggleQuestion(data.data.tid);
 			});
 		});
+
+		if (config['question-and-answer'].makeDefault === 'on') {
+			$('.composer-submit').attr('data-action', 'post').html('<i class="fa fa-fw fa-question-circle"></i> Ask as Question</a>');
+			$(window).one('action:composer.topics.post', function(ev, data) {
+				callToggleQuestion(data.data.tid);
+			});
+		}
 	});
 
 	function addHandlers() {
