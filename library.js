@@ -16,8 +16,12 @@ plugin.init = function(params, callback) {
 
 	app.get('/admin/plugins/question-and-answer', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/plugins/question-and-answer', renderAdmin);
+
 	app.get('/unsolved', middleware.buildHeader, renderUnsolved);
 	app.get('/api/unsolved', renderUnsolved);
+
+	app.get('/solved', middleware.buildHeader, renderSolved);
+	app.get('/api/solved', renderSolved);
 
 	handleSocketIO();
 
@@ -32,12 +36,22 @@ plugin.appendConfig = function(config, callback) {
 };
 
 plugin.addNavigation = function(menu, callback) {
-	menu.push({
-		"route": "/unsolved",
-		"title": "Unsolved",
-		"iconClass": "fa-question-circle",
-		"text": "Unsolved"
-	});
+	menu = menu.concat(
+		[
+			{
+				"route": "/unsolved",
+				"title": "Unsolved",
+				"iconClass": "fa-question-circle",
+				"text": "Unsolved"
+			},
+			{
+				"route": "/solved",
+				"title": "Solved",
+				"iconClass": "fa-check-circle",
+				"text": "Solved"
+			}
+		]
+	);
 
 	callback (null, menu);
 };
@@ -135,9 +149,13 @@ function toggleSolved(tid, callback) {
 			},
 			function(next) {
 				if (!isSolved) {
-					db.sortedSetRemove('topics:unsolved', tid, next);
+					db.sortedSetRemove('topics:unsolved', tid, function() {
+						db.sortedSetAdd('topics:solved', Date.now(), tid, next);
+					});
 				} else {
-					db.sortedSetAdd('topics:unsolved', Date.now(), tid, next);
+					db.sortedSetAdd('topics:unsolved', Date.now(), tid, function() {
+						db.sortedSetRemove('topics:solved', tid, next);
+					});
 				}
 			}
 		], function(err) {
@@ -156,9 +174,21 @@ function toggleQuestionStatus(tid, callback) {
 			},
 			function(next) {
 				if (!isQuestion) {
-					db.sortedSetAdd('topics:unsolved', Date.now(), tid, next);
+					async.parallel([
+						function(next) {
+							topics.setTopicField(tid, 'isSolved', 0, next);
+						},
+						function(next) {
+							db.sortedSetAdd('topics:unsolved', Date.now(), tid, next);
+						},
+						function(next) {
+							db.sortedSetRemove('topics:solved', tid, next);
+						}
+					], next);
 				} else {
-					db.sortedSetRemove('topics:unsolved', tid, next);
+					db.sortedSetRemove('topics:unsolved', tid, function() {
+						db.sortedSetRemove('topics:solved', tid, next);
+					});
 				}
 			}
 		], function(err) {
@@ -176,6 +206,19 @@ function renderUnsolved(req, res, next) {
 
 		data['feeds:disableRSS'] = true;
 		data.breadcrumbs = helpers.buildBreadcrumbs([{text: 'Unsolved'}]);
+		res.render('recent', data);
+	});
+}
+
+function renderSolved(req, res, next) {
+	var stop = (parseInt(meta.config.topicsPerList, 10) || 20) - 1;
+	topics.getTopicsFromSet('topics:solved', req.uid, 0, stop, function(err, data) {
+		if (err) {
+			return next(err);
+		}
+
+		data['feeds:disableRSS'] = true;
+		data.breadcrumbs = helpers.buildBreadcrumbs([{text: 'Solved'}]);
 		res.render('recent', data);
 	});
 }
