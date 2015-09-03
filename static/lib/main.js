@@ -49,7 +49,7 @@ $('document').ready(function() {
 	}
 
 	function toggleQuestionStatus() {
-		var tid = ajaxify.variables.get('topic_id');
+		var tid = ajaxify.data.tid;
 		callToggleQuestion(tid);
 	}
 
@@ -61,7 +61,7 @@ $('document').ready(function() {
 	}
 
 	function toggleSolved() {
-		var tid = ajaxify.variables.get('topic_id');
+		var tid = ajaxify.data.tid;
 		socket.emit('plugins.QandA.toggleSolved', {tid: tid}, function(err, data) {
 			app.alertSuccess(data.isSolved ? 'Topic has been marked as solved' : 'Topic has been marked as unsolved');
 			ajaxify.refresh();
