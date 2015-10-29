@@ -5,11 +5,11 @@
 $('document').ready(function() {
 	$(window).on('action:ajaxify.end', function(err, data) {
 		if (data.url.match(/^topic\//)) {
-			addHandlers();
 			addLabel();
 		}
 	});
 
+	$(window).on('action:topic.tools.load', addHandlers);
 	$(window).on('action:composer.loaded', function(err, data) {
 		if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
 			// Do nothing, as this is a reply, not a new post
