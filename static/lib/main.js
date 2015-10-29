@@ -40,9 +40,9 @@ $('document').ready(function() {
 
 	function addLabel() {
 		require(['components'], function(components) {
-			if ($('.topic-unsolved').length) {
+			if (parseInt(ajaxify.data.isSolved, 10) === 0) {
 				components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> Unsolved</span>');
-			} else if ($('.topic-solved').length) {
+			} else if (parseInt(ajaxify.data.isSolved, 10) === 1) {
 				components.get('post/header').prepend('<span class="answered"><i class="fa fa-question-circle"></i> Solved</span>');
 			}
 		});
