@@ -39,13 +39,15 @@ $('document').ready(function() {
 	}
 
 	function addLabel() {
-		require(['components'], function(components) {
-			if (parseInt(ajaxify.data.isSolved, 10) === 0) {
-				components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> Unsolved</span>');
-			} else if (parseInt(ajaxify.data.isSolved, 10) === 1) {
-				components.get('post/header').prepend('<span class="answered"><i class="fa fa-question-circle"></i> Solved</span>');
-			}
-		});
+		if (ajaxify.data.hasOwnProperty('isQuestion') && parseInt(ajaxify.data.isQuestion, 10) === 1) {
+			require(['components'], function(components) {
+				if (parseInt(ajaxify.data.isSolved, 10) === 0) {
+					components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> Unsolved</span>');
+				} else if (parseInt(ajaxify.data.isSolved, 10) === 1) {
+					components.get('post/header').prepend('<span class="answered"><i class="fa fa-question-circle"></i> Solved</span>');
+				}
+			});
+		}
 	}
 
 	function toggleQuestionStatus() {
