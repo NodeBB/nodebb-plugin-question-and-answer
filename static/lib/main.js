@@ -25,7 +25,7 @@ $('document').ready(function() {
 			});
 		});
 
-		if (config['question-and-answer'].makeDefault === 'on') {
+		if (config['question-and-answer'].makeDefault === 'on' && (config['question-and-answer'].defaultCid === "0" || parseInt(config['question-and-answer'].defaultCid, 10) === data.composerData.cid)) {
 			$('.composer-submit').attr('data-action', 'post').html('<i class="fa fa-fw fa-question-circle"></i> Ask as Question</a>');
 			$(window).one('action:composer.topics.post', function(ev, data) {
 				callToggleQuestion(data.data.tid);
