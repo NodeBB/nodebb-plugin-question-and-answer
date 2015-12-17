@@ -1,28 +1,29 @@
-<div class="row">
-	<div class="col-lg-9">
-		<div class="panel panel-default">
-			<div class="panel-heading">Q&amp;A Settings</div>
-			<div class="panel-body">
-				<form role="form" class="question-and-answer-settings">
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" name="makeDefault">
-							Change the default behaviour for new topics to be a Q&amp;A topic
-						</label>
-					</div>
-				</form>
+<form role="form" class="question-and-answer-settings">
+	<div class="row">
+		<div class="col-sm-2 col-xs-12 settings-header">Q&amp;A</div>
+		<div class="col-sm-10 col-xs-12">
+			<div class="checkbox">
+				<label>
+					<input type="checkbox" name="makeDefault">
+					Change the default behaviour for new topics to be a Q&amp;A topic
+				</label>
+			</div>
+			<div class="form-group">
+				<label for="defaultCid">Limit this to a single category</label>
+				<select class="form-control" id="defaultCid" name="defaultCid">
+					<option value="0">N/A</option>
+					<!-- BEGIN categories -->
+					<option value="{../cid}">{../name}</option>
+					<!-- END categories -->
+				</select>
 			</div>
 		</div>
 	</div>
-	<div class="col-lg-3">
-		<div class="panel panel-default">
-			<div class="panel-heading">Control Panel</div>
-			<div class="panel-body">
-				<button class="btn btn-primary" id="save">Save Settings</button>
-			</div>
-		</div>
-	</div>
-</div>
+</form>
+
+<button id="save" class="floating-button mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+	<i class="material-icons">save</i>
+</button>
 
 <script>
 	require(['settings'], function(Settings) {

@@ -3,6 +3,7 @@
 var plugin = {},
 	async = module.parent.require('async'),
 	topics = module.parent.require('./topics'),
+	categories = module.parent.require('./categories'),
 	meta = module.parent.require('./meta'),
 	privileges = module.parent.require('./privileges'),
 	helpers = module.parent.require('./controllers/helpers'),
@@ -112,7 +113,16 @@ plugin.addThreadTool = function(data, callback) {
 };
 
 function renderAdmin(req, res, next) {
-	res.render('admin/plugins/question-and-answer', {});
+	async.waterfall([
+		async.apply(db.getSortedSetRange, 'categories:cid', 0, -1),
+		function(cids, next) {
+			categories.getCategoriesFields(cids, ['cid', 'name'], next);
+		}
+	], function(err, data) {
+		res.render('admin/plugins/question-and-answer', {
+			categories: data
+		});
+	});
 }
 
 function handleSocketIO() {
