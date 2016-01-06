@@ -4,6 +4,16 @@
 		<div class="col-sm-10 col-xs-12">
 			<div class="checkbox">
 				<label>
+					<input type="checkbox" name="forceQuestions">
+					Only allow questions to be asked (disables regular topic behaviour)
+				</label>
+				<p class="help-block">
+					This option supercedes the one below
+				</p>
+			</div>
+			<hr />
+			<div class="checkbox">
+				<label>
 					<input type="checkbox" name="makeDefault">
 					Change the default behaviour for new topics to be a Q&amp;A topic
 				</label>

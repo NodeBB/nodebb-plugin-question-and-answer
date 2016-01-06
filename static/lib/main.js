@@ -17,17 +17,29 @@ $('document').ready(function() {
 		}
 
 		var item = $('<li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i> Ask as Question</a></li>');
-		$('#cmp-uuid-' + data.post_uuid + ' .action-bar .dropdown-menu').append(item);
+		var dropdownEl = $('#cmp-uuid-' + data.post_uuid + ' .action-bar .dropdown-menu');
+
+		if (config['question-and-answer'].forceQuestions === 'on') {
+			dropdownEl.empty();
+		}
+
+		dropdownEl.append(item);
 
 		item.on('click', function() {
-			$(window).one('action:composer.topics.post', function(ev, data) {
+			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function(ev, data) {
 				callToggleQuestion(data.data.tid);
 			});
 		});
 
-		if (config['question-and-answer'].makeDefault === 'on' && (config['question-and-answer'].defaultCid === "0" || parseInt(config['question-and-answer'].defaultCid, 10) === data.composerData.cid)) {
+		if (
+			config['question-and-answer'].forceQuestions === 'on' ||
+			(
+				config['question-and-answer'].makeDefault === 'on' &&
+				(config['question-and-answer'].defaultCid === "0" || parseInt(config['question-and-answer'].defaultCid, 10) === data.composerData.cid)
+			)
+		) {
 			$('.composer-submit').attr('data-action', 'post').html('<i class="fa fa-fw fa-question-circle"></i> Ask as Question</a>');
-			$(window).one('action:composer.topics.post', function(ev, data) {
+			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function(ev, data) {
 				callToggleQuestion(data.data.tid);
 			});
 		}
