@@ -216,3 +216,6 @@ pip-log.txt
 
 sftp-config.json
 node_modules/
+
+*.sublime-project
+*.sublime-workspace
