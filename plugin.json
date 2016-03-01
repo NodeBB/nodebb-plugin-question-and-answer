@@ -22,6 +22,9 @@
 		},
 		{
 			"hook": "filter:navigation.available", "method": "addNavigation"
+		},
+		{
+			"hook": "filter:post.tools", "method": "addPostTool"
 		}
 	],
 	"staticDirs": {

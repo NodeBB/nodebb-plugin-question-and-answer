@@ -1,15 +1,20 @@
 "use strict";
 
-/*global socket*/
+/*global socket, config, ajaxify, app*/
 
 $('document').ready(function() {
 	$(window).on('action:ajaxify.end', function(err, data) {
 		if (data.url.match(/^topic\//)) {
 			addLabel();
+			markPostAsSolved();
 		}
 	});
 
 	$(window).on('action:topic.tools.load', addHandlers);
+	$(window).on('action:post.tools.load', addPostHandlers);
+
+	$(window).on('action:posts.loaded', markPostAsSolved);
+
 	$(window).on('action:composer.loaded', function(err, data) {
 		if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
 			// Do nothing, as this is a reply, not a new post
@@ -50,6 +55,10 @@ $('document').ready(function() {
 		$('.toggleSolved').on('click', toggleSolved);
 	}
 
+	function addPostHandlers() {
+		$('[component="qanda/post-solved"]').on('click', markPostAsAnswer);
+	}
+
 	function addLabel() {
 		if (ajaxify.data.hasOwnProperty('isQuestion') && parseInt(ajaxify.data.isQuestion, 10) === 1) {
 			require(['components'], function(components) {
@@ -80,5 +89,19 @@ $('document').ready(function() {
 			app.alertSuccess(data.isSolved ? 'Topic has been marked as solved' : 'Topic has been marked as unsolved');
 			ajaxify.refresh();
 		});
+	}
+
+	function markPostAsAnswer() {
+		var tid = ajaxify.data.tid;
+		var pid = $(this).parents('[data-pid]').attr('data-pid');
+
+		socket.emit('plugins.QandA.toggleSolved', {tid: tid, pid: pid}, function(err, data) {
+			app.alertSuccess(data.isSolved ? 'This post has been marked as the correct answer' : 'Topic has been marked as unsolved');
+			ajaxify.refresh();
+		});
+	}
+
+	function markPostAsSolved(err, data) {
+		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
 	}
 });

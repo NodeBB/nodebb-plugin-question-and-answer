@@ -112,6 +112,23 @@ plugin.addThreadTool = function(data, callback) {
 	callback(false, data);
 };
 
+plugin.addPostTool = function(postData, callback) {
+	topics.getTopicDataByPid(postData.pid, function(err, data) {
+		data.isSolved = parseInt(data.isSolved, 10) === 1;
+		data.isQuestion = parseInt(data.isQuestion, 10) === 1;
+
+		if (data.uid && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(postData.pid, 10)) {		
+			postData.tools.push({
+				"action": "qanda/post-solved",
+				"html": "Mark this post as the correct answer",
+				"icon": "fa-check-circle"
+			});
+		}
+
+		callback(false, postData);
+	});
+};
+
 function renderAdmin(req, res, next) {
 	async.waterfall([
 		async.apply(db.getSortedSetRange, 'categories:cid', 0, -1),
@@ -134,7 +151,11 @@ function handleSocketIO() {
 				return callback(new Error('[[error:no-privileges]]'));
 			}
 
-			toggleSolved(data.tid, callback);
+			if (data.pid) {
+				toggleSolved(data.tid, data.pid, callback);
+			} else {
+				toggleSolved(data.tid, callback);
+			}
 		});
 	};
 
@@ -149,13 +170,24 @@ function handleSocketIO() {
 	};
 }
 
-function toggleSolved(tid, callback) {
+function toggleSolved(tid, pid, callback) {
+	if (!callback) {
+		callback = pid;
+	}
+
 	topics.getTopicField(tid, 'isSolved', function(err, isSolved) {
 		isSolved = parseInt(isSolved, 10) === 1;
 
 		async.parallel([
 			function(next) {
 				topics.setTopicField(tid, 'isSolved', isSolved ? 0 : 1, next);
+			},
+			function(next) {
+				if (!isSolved && pid) {
+					topics.setTopicField(tid, 'solvedPid', pid, next);
+				} else {
+					topics.deleteTopicField(tid, 'solvedPid', next);
+				}
 			},
 			function(next) {
 				if (!isSolved) {
@@ -198,6 +230,7 @@ function toggleQuestionStatus(tid, callback) {
 				} else {
 					db.sortedSetRemove('topics:unsolved', tid, function() {
 						db.sortedSetRemove('topics:solved', tid, next);
+						topics.deleteTopicField(tid, 'solvedPid');
 					});
 				}
 			}
