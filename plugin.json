@@ -25,6 +25,9 @@
 		},
 		{
 			"hook": "filter:post.tools", "method": "addPostTool"
+		},
+		{
+			"hook": "filter:rewards.conditions", "method": "getConditions"
 		}
 	],
 	"staticDirs": {

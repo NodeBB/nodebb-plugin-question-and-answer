@@ -3,9 +3,12 @@
 var plugin = {},
 	async = module.parent.require('async'),
 	topics = module.parent.require('./topics'),
+	posts = module.parent.require('./posts'),
 	categories = module.parent.require('./categories'),
 	meta = module.parent.require('./meta'),
 	privileges = module.parent.require('./privileges'),
+	rewards = module.parent.require('./rewards'),
+	user = module.parent.require('./user'),
 	helpers = module.parent.require('./controllers/helpers'),
 	db = module.parent.require('./database'),
 	SocketPlugins = module.parent.require('./socket.io/plugins');
@@ -129,6 +132,15 @@ plugin.addPostTool = function(postData, callback) {
 	});
 };
 
+plugin.getConditions = function(conditions, callback) {
+	conditions.push({
+		"name": "Times questions accepted",
+		"condition": "qanda/question.accepted"
+	});
+
+	callback(false, conditions);
+};
+
 function renderAdmin(req, res, next) {
 	async.waterfall([
 		async.apply(db.getSortedSetRange, 'categories:cid', 0, -1),
@@ -173,6 +185,7 @@ function handleSocketIO() {
 function toggleSolved(tid, pid, callback) {
 	if (!callback) {
 		callback = pid;
+		pid = false;
 	}
 
 	topics.getTopicField(tid, 'isSolved', function(err, isSolved) {
@@ -187,6 +200,19 @@ function toggleSolved(tid, pid, callback) {
 					topics.setTopicField(tid, 'solvedPid', pid, next);
 				} else {
 					topics.deleteTopicField(tid, 'solvedPid', next);
+				}
+			},
+			function(next) {
+				if (!isSolved && pid) {
+					posts.getPostData(pid, function(err, data) {
+						rewards.checkConditionAndRewardUser(data.uid, 'qanda/question.accepted', function(callback) {
+							user.incrementUserFieldBy(data.uid, 'qanda/question.accepted', 1, callback);
+						});
+
+						next();
+					});
+				} else {
+					next();
 				}
 			},
 			function(next) {
