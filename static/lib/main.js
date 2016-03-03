@@ -21,7 +21,7 @@ $('document').ready(function() {
 			return;
 		}
 
-		var item = $('<li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i> Ask as Question</a></li>');
+		var item = $('<li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i> [[qaa:ask.as.question]]</a></li>');
 		var dropdownEl = $('#cmp-uuid-' + data.post_uuid + ' .action-bar .dropdown-menu');
 
 		if (config['question-and-answer'].forceQuestions === 'on') {
@@ -43,7 +43,7 @@ $('document').ready(function() {
 				(config['question-and-answer'].defaultCid === "0" || parseInt(config['question-and-answer'].defaultCid, 10) === data.composerData.cid)
 			)
 		) {
-			$('.composer-submit').attr('data-action', 'post').html('<i class="fa fa-fw fa-question-circle"></i> Ask as Question</a>');
+			$('.composer-submit').attr('data-action', 'post').html('<i class="fa fa-fw fa-question-circle"></i> [[qaa:ask.as.question]]</a>');
 			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function(ev, data) {
 				callToggleQuestion(data.data.tid);
 			});
@@ -63,9 +63,9 @@ $('document').ready(function() {
 		if (ajaxify.data.hasOwnProperty('isQuestion') && parseInt(ajaxify.data.isQuestion, 10) === 1) {
 			require(['components'], function(components) {
 				if (parseInt(ajaxify.data.isSolved, 10) === 0) {
-					components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> Unsolved</span>');
+					components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> [[qaa:unsolved]]</span>');
 				} else if (parseInt(ajaxify.data.isSolved, 10) === 1) {
-					components.get('post/header').prepend('<span class="answered"><i class="fa fa-question-circle"></i> Solved</span>');
+					components.get('post/header').prepend('<span class="answered"><i class="fa fa-question-circle"></i> [[qaa:solved]]</span>');
 				}
 			});
 		}
@@ -78,7 +78,7 @@ $('document').ready(function() {
 
 	function callToggleQuestion(tid) {
 		socket.emit('plugins.QandA.toggleQuestionStatus', {tid: tid}, function(err, data) {
-			app.alertSuccess(data.isQuestion ? 'Topic has been marked as a question' : 'Topic is now a regular thread');
+			app.alertSuccess(data.isQuestion ? '[[qaa:marked.ques]]' : '[[qaa:marked.qaa.regular]]');
 			ajaxify.refresh();
 		});
 	}
@@ -86,7 +86,7 @@ $('document').ready(function() {
 	function toggleSolved() {
 		var tid = ajaxify.data.tid;
 		socket.emit('plugins.QandA.toggleSolved', {tid: tid}, function(err, data) {
-			app.alertSuccess(data.isSolved ? 'Topic has been marked as solved' : 'Topic has been marked as unsolved');
+			app.alertSuccess(data.isSolved ? '[[qaa:marked.sol]]' : '[[qaa:marked.un]]');
 			ajaxify.refresh();
 		});
 	}
@@ -96,7 +96,7 @@ $('document').ready(function() {
 		var pid = $(this).parents('[data-pid]').attr('data-pid');
 
 		socket.emit('plugins.QandA.toggleSolved', {tid: tid, pid: pid}, function(err, data) {
-			app.alertSuccess(data.isSolved ? 'This post has been marked as the correct answer' : 'Topic has been marked as unsolved');
+			app.alertSuccess(data.isSolved ? '[[qaa:marked.answer]]' : '[[qaa:marked.un]]');
 			ajaxify.refresh();
 		});
 	}
