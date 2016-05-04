@@ -1,6 +1,6 @@
 <form role="form" class="question-and-answer-settings">
 	<div class="row">
-		<div class="col-sm-2 col-xs-12 settings-header">Q&amp;A</div>
+		<div class="col-sm-2 col-xs-12 settings-header">General Settings</div>
 		<div class="col-sm-10 col-xs-12">
 			<div class="checkbox">
 				<label>
