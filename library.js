@@ -11,7 +11,8 @@ var plugin = {},
 	user = module.parent.require('./user'),
 	helpers = module.parent.require('./controllers/helpers'),
 	db = module.parent.require('./database'),
-	SocketPlugins = module.parent.require('./socket.io/plugins');
+	SocketPlugins = module.parent.require('./socket.io/plugins'),
+	pagination = module.parent.require('./pagination');
 
 plugin.init = function(params, callback) {
 	var app = params.router,
