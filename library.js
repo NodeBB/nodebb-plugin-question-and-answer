@@ -11,7 +11,8 @@ var plugin = {},
 	user = module.parent.require('./user'),
 	helpers = module.parent.require('./controllers/helpers'),
 	db = module.parent.require('./database'),
-	SocketPlugins = module.parent.require('./socket.io/plugins');
+	SocketPlugins = module.parent.require('./socket.io/plugins'),
+	pagination = module.parent.require('./pagination');
 
 plugin.init = function(params, callback) {
 	var app = params.router,
@@ -267,27 +268,103 @@ function toggleQuestionStatus(tid, callback) {
 }
 
 function renderUnsolved(req, res, next) {
-	var stop = (parseInt(meta.config.topicsPerList, 10) || 20) - 1;
-	topics.getTopicsFromSet('topics:unsolved', req.uid, 0, stop, function(err, data) {
+	var page = parseInt(req.query.page, 10) || 1;
+	var pageCount = 1;
+	var stop = 0;
+	var topicCount = 0;
+	var settings;
+	
+	async.waterfall([
+		function (next) {
+			async.parallel({
+				settings: function(next) {
+					user.getSettings(req.uid, next);
+				},
+				tids: function (next) {
+					db.getSortedSetRevRange('topics:unsolved', 0, 199, next);
+				}
+			}, next);
+		},
+		function (results, next) {
+			settings = results.settings;
+			privileges.topics.filterTids('read', results.tids, req.uid, next);
+		},
+		function (tids, next) {
+			var start = Math.max(0, (page - 1) * settings.topicsPerPage);
+			stop = start + settings.topicsPerPage - 1;
+
+			topicCount = tids.length;
+			pageCount = Math.max(1, Math.ceil(topicCount / settings.topicsPerPage));
+			tids = tids.slice(start, stop + 1);
+
+			topics.getTopicsByTids(tids, req.uid, next);
+		}
+	], function(err, topics) {
 		if (err) {
 			return next(err);
 		}
-
+		
+		var data = {};
+		data.topics = topics;
+		data.nextStart = stop + 1;
+		data.set = 'topics:unsolved';
 		data['feeds:disableRSS'] = true;
-		data.breadcrumbs = helpers.buildBreadcrumbs([{text: 'Unsolved'}]);
+		data.pagination = pagination.create(page, pageCount);
+		if (req.path.startsWith('/api/unsolved') || req.path.startsWith('/unsolved')) {
+			data.breadcrumbs = helpers.buildBreadcrumbs([{text: 'Unsolved'}]);
+		}
+		
 		res.render('recent', data);
 	});
 }
 
 function renderSolved(req, res, next) {
-	var stop = (parseInt(meta.config.topicsPerList, 10) || 20) - 1;
-	topics.getTopicsFromSet('topics:solved', req.uid, 0, stop, function(err, data) {
+	var page = parseInt(req.query.page, 10) || 1;
+	var pageCount = 1;
+	var stop = 0;
+	var topicCount = 0;
+	var settings;
+	
+	async.waterfall([
+		function (next) {
+			async.parallel({
+				settings: function(next) {
+					user.getSettings(req.uid, next);
+				},
+				tids: function (next) {
+					db.getSortedSetRevRange('topics:solved', 0, 199, next);
+				}
+			}, next);
+		},
+		function (results, next) {
+			settings = results.settings;
+			privileges.topics.filterTids('read', results.tids, req.uid, next);
+		},
+		function (tids, next) {
+			var start = Math.max(0, (page - 1) * settings.topicsPerPage);
+			stop = start + settings.topicsPerPage - 1;
+
+			topicCount = tids.length;
+			pageCount = Math.max(1, Math.ceil(topicCount / settings.topicsPerPage));
+			tids = tids.slice(start, stop + 1);
+
+			topics.getTopicsByTids(tids, req.uid, next);
+		}
+	], function(err, topics) {
 		if (err) {
 			return next(err);
 		}
-
+		
+		var data = {};
+		data.topics = topics;
+		data.nextStart = stop + 1;
+		data.set = 'topics:solved';
 		data['feeds:disableRSS'] = true;
-		data.breadcrumbs = helpers.buildBreadcrumbs([{text: 'Solved'}]);
+		data.pagination = pagination.create(page, pageCount);
+		if (req.path.startsWith('/api/solved') || req.path.startsWith('/solved')) {
+			data.breadcrumbs = helpers.buildBreadcrumbs([{text: 'Solved'}]);
+		}
+		
 		res.render('recent', data);
 	});
 }
