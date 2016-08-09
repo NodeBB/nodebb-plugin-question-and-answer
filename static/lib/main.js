@@ -21,18 +21,12 @@ $('document').ready(function() {
 			return;
 		}
 
-		var item = $('<li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i> Ask as Question</a></li>');
-		var dropdownEl = $('#cmp-uuid-' + data.post_uuid + ' .action-bar .dropdown-menu');
+		var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i> Ask as Question</a></li></ul>');
+		var actionBar = $('#cmp-uuid-' + data.post_uuid + ' .action-bar');
 
-		if (config['question-and-answer'].forceQuestions === 'on') {
-			dropdownEl.empty();
-		}
-
-		dropdownEl.append(item);
-
-		item.on('click', function() {
+		item.on('click', 'li', function() {
 			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function(ev, data) {
-				callToggleQuestion(data.data.tid);
+				callToggleQuestion(data.data.tid, false);
 			});
 		});
 
@@ -45,8 +39,10 @@ $('document').ready(function() {
 		) {
 			$('.composer-submit').attr('data-action', 'post').html('<i class="fa fa-fw fa-question-circle"></i> Ask as Question</a>');
 			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function(ev, data) {
-				callToggleQuestion(data.data.tid);
+				callToggleQuestion(data.data.tid, false);
 			});
+		} else {
+			actionBar.append(item);
 		}
 	});
 
@@ -73,13 +69,15 @@ $('document').ready(function() {
 
 	function toggleQuestionStatus() {
 		var tid = ajaxify.data.tid;
-		callToggleQuestion(tid);
+		callToggleQuestion(tid, true);
 	}
 
-	function callToggleQuestion(tid) {
+	function callToggleQuestion(tid, refresh) {
 		socket.emit('plugins.QandA.toggleQuestionStatus', {tid: tid}, function(err, data) {
 			app.alertSuccess(data.isQuestion ? 'Topic has been marked as a question' : 'Topic is now a regular thread');
-			ajaxify.refresh();
+			if (refresh) {
+				ajaxify.refresh();
+			}
 		});
 	}
 
