@@ -1,13 +1,13 @@
 <form role="form" class="question-and-answer-settings">
 	<div class="row">
-		<div class="col-sm-2 col-xs-12 settings-header">General Settings</div>
-		<div class="col-sm-10 col-xs-12">
+		<div class="col-md-2 col-sm-12 settings-header">General Settings</div>
+		<div class="col-md-10 col-sm-12">
 			<div class="checkbox">
 				<label>
 					<input type="checkbox" name="forceQuestions">
 					Only allow questions to be asked (disables regular topic behaviour)
 				</label>
-				<p class="help-block">
+				<p class="form-text">
 					This option supercedes the one below
 				</p>
 			</div>

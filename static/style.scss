@@ -1,11 +1,14 @@
+$brand-success: #5cb85c;
+$brand-warning: #f0ad4e;
+
 .answered {
-	border: 1px solid @brand-success;
-	color: @brand-success;
+	border: 1px solid $brand-success;
+	color: $brand-success;
 }
 
 .unanswered {
-	border: 1px solid @brand-warning;
-	color: @brand-warning;
+	border: 1px solid $brand-warning;
+	color: $brand-warning;
 }
 
 .unanswered, .answered {
@@ -27,11 +30,11 @@
 
 html .topic {
 	.answered {
-		color: @brand-success;
+		color: $brand-success;
 	}
 
 	.unanswered {
-		color: @brand-warning;
+		color: $brand-warning;
 	}
 
 	.answered, .unanswered {
@@ -41,6 +44,6 @@ html .topic {
 }
 
 .posts [component="post"].isSolved {
-	border: 8px solid lighten(@brand-success, 30%);
+	border: 8px solid lighten($brand-success, 30%);
 	padding: 20px;
 }
