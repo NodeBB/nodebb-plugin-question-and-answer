@@ -32,10 +32,7 @@ $('document').ready(function() {
 
 		if (
 			config['question-and-answer'].forceQuestions === 'on' ||
-			(
-				config['question-and-answer'].makeDefault === 'on' &&
-				(config['question-and-answer'].defaultCid === "0" || parseInt(config['question-and-answer'].defaultCid, 10) === parseInt(data.composerData.cid, 10))
-			)
+			(config['question-and-answer']['defaultCid_' + data.composerData.cid] === 'on')
 		) {
 			$('.composer-submit').attr('data-action', 'post').html('<i class="fa fa-fw fa-question-circle"></i> Ask as Question</a>');
 			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function(ev, data) {

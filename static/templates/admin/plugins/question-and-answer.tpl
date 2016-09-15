@@ -5,28 +5,24 @@
 			<div class="checkbox">
 				<label>
 					<input type="checkbox" name="forceQuestions">
-					Only allow questions to be asked (disables regular topic behaviour)
+					Only allow questions to be asked for all categories (disables regular topic behaviour)
 				</label>
 				<p class="help-block">
 					This option supercedes the one below
 				</p>
 			</div>
 			<hr />
+			<label>
+				Only allow questions to be asked for the following categories (disables regular topic behaviour)
+			</label>
+			<!-- BEGIN categories -->
 			<div class="checkbox">
 				<label>
-					<input type="checkbox" name="makeDefault">
-					Change the default behaviour for new topics to be a Q&amp;A topic
+					<input type="checkbox" name="defaultCid_{../cid}">
+					{../name}
 				</label>
 			</div>
-			<div class="form-group">
-				<label for="defaultCid">Limit this to a single category</label>
-				<select class="form-control" id="defaultCid" name="defaultCid">
-					<option value="0">N/A</option>
-					<!-- BEGIN categories -->
-					<option value="{../cid}">{../name}</option>
-					<!-- END categories -->
-				</select>
-			</div>
+			<!-- END categories -->
 		</div>
 	</div>
 </form>
