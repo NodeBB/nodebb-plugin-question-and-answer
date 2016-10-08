@@ -48,17 +48,19 @@ plugin.addNavigation = function (menu, callback) {
 	menu = menu.concat(
 		[
 			{
-				route: '/unsolved',
-				title: 'Unsolved',
-				iconClass: 'fa-question-circle',
-				text: 'Unsolved',
+				"route": "/unsolved",
+				"title": "[[qanda:menu.unsolved]]",
+				"iconClass": "fa-question-circle",
+				"textClass": "visible-xs-inline",
+				"text": "[[qanda:menu.unsolved]]"
 			},
 			{
-				route: '/solved',
-				title: 'Solved',
-				iconClass: 'fa-check-circle',
-				text: 'Solved',
-			},
+				"route": "/solved",
+				"title": "[[qanda:menu.solved]]",
+				"iconClass": "fa-check-circle",
+				"textClass": "visible-xs-inline",
+				"text": "[[qanda:menu.solved]]"
+			}
 		]
 	);
 
@@ -81,9 +83,9 @@ plugin.getTopics = function (data, callback) {
 	async.map(topics, function (topic, next) {
 		if (parseInt(topic.isQuestion, 10)) {
 			if (parseInt(topic.isSolved, 10)) {
-				topic.title = '<span class="answered"><i class="fa fa-question-circle"></i> Solved</span> ' + topic.title;
+				topic.title = '<span class="answered"><i class="fa fa-question-circle"></i> [[qanda:topic_solved]]</span> ' + topic.title;
 			} else {
-				topic.title = '<span class="unanswered"><i class="fa fa-question-circle"></i> Unsolved</span> ' + topic.title;
+				topic.title = '<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span> ' + topic.title;
 			}
 		}
 
@@ -100,20 +102,20 @@ plugin.addThreadTool = function (data, callback) {
 		data.tools = data.tools.concat([
 			{
 				class: 'toggleSolved ' + (isSolved ? 'alert-warning topic-solved' : 'alert-success topic-unsolved'),
-				title: isSolved ? 'Mark as Unsolved' : 'Mark as Solved',
-				icon: isSolved ? 'fa-question-circle' : 'fa-check-circle',
+				title: isSolved ? '[[qanda:thread.tool.mark_unsolved]]' : '[[qanda:thread.tool.mark_solved]]',
+				icon: isSolved ? 'fa-question-circle' : 'fa-check-circle'
 			},
 			{
 				class: 'toggleQuestionStatus',
-				title: 'Make this a normal topic',
-				icon: 'fa-comments',
-			},
-		]);
+				title: '[[qanda:thread.tool.make_normal]]',
+				icon: 'fa-comments'
+			}
+		]);	
 	} else {
 		data.tools.push({
 			class: 'toggleQuestionStatus alert-warning',
-			title: 'Ask as question',
-			icon: 'fa-question-circle',
+			title: '[[qanda:thread.tool.as_question]]',
+			icon: 'fa-question-circle'
 		});
 	}
 
@@ -131,9 +133,9 @@ plugin.addPostTool = function (postData, callback) {
 
 		if (data.uid && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(postData.pid, 10)) {
 			postData.tools.push({
-				action: 'qanda/post-solved',
-				html: 'Mark this post as the correct answer',
-				icon: 'fa-check-circle',
+				"action": "qanda/post-solved",
+				"html": "[[qanda:post.tool.mark_correct]]",
+				"icon": "fa-check-circle"
 			});
 		}
 
