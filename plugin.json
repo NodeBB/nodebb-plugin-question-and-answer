@@ -39,5 +39,7 @@
 	"scripts": [
 		"static/lib/main.js"
 	],
-	"templates": "static/templates"
+	"templates": "static/templates",
+	"languages": "static/languages",
+	"defaultLang": "en_US"
 }

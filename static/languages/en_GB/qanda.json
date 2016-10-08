@@ -1,0 +1,16 @@
+{
+	"topic_solved": "SOLVED",
+	"topic_unsolved": "UNSOLVED",
+	"menu.solved": "Solved",
+	"menu.unsolved": "Unsolved",
+	"thread.tool.mark_solved": "Mark as Solved",
+	"thread.tool.mark_unsolved": "Mark as Unsolved",
+	"thread.tool.make_normal": "Make this a normal topic",
+	"thread.tool.as_question": "Ask as question",
+        "thread.button.as_question": "Ask as question",
+	"post.tool.mark_correct": "Mark this post as the correct answer",
+	"admin.form.general_settings": "General Settings",
+        "admin.form.label.only_allow_all": "Only allow questions to be asked for all categories (disables regular topic behaviour)",
+        "admin.form.label.only_allow_following": "Only allow questions to be asked for the following categories (disables regular topic behaviour)",
+        "admin.form.tips": "This option supercedes the one below"
+}

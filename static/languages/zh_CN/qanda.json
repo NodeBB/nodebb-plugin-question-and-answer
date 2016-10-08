@@ -1,0 +1,16 @@
+{
+	"topic_solved": "已解决",
+	"topic_unsolved": "未解决",
+	"menu.solved": "已解决",
+	"menu.unsolved": "未解决",
+	"thread.tool.mark_solved": "标记为已解决",
+	"thread.tool.mark_unsolved": "标记为未解决",
+	"thread.tool.make_normal": "转为普通主题",
+	"thread.tool.as_question": "转为问题",
+	"thread.button.as_question": "提问",
+	"post.tool.mark_correct": "标记为最佳答案",
+	"admin.form.general_settings": "一般设定",
+	"admin.form.label.only_allow_all": "所有版块都只允许发表问题主题（这将覆盖原始设置）",
+	"admin.form.label.only_allow_following": "以下版块只允许发表问题主题（这将覆盖原始设置）",
+	"admin.form.tips": "这将覆盖下面的设置"
+}

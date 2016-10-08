@@ -2,6 +2,14 @@
 
 /*global socket, config, ajaxify, app*/
 
+var qanda_trans_array = [];
+
+require(['translator'], function(translator) {
+	translator.translate('[[qanda:topic_solved]],[[qanda:topic_unsolved]],[[qanda:thread.button.as_question]],[[qanda:thread.tool.as_question]]', function(translated) {
+		qanda_trans_array = translated.split(',');
+	});
+});
+
 $('document').ready(function() {
 	$(window).on('action:ajaxify.end', function(err, data) {
 		if (data.url.match(/^topic\//)) {
@@ -21,7 +29,7 @@ $('document').ready(function() {
 			return;
 		}
 
-		var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i> Ask as Question</a></li></ul>');
+	    var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-question-circle"></i> ' + qanda_trans_array[3] + '</a></li></ul>');
 		var actionBar = $('#cmp-uuid-' + data.post_uuid + ' .action-bar');
 
 		item.on('click', 'li', function() {
@@ -34,7 +42,11 @@ $('document').ready(function() {
 			config['question-and-answer'].forceQuestions === 'on' ||
 			(config['question-and-answer']['defaultCid_' + data.composerData.cid] === 'on')
 		) {
-			$('.composer-submit').attr('data-action', 'post').html('<i class="fa fa-fw fa-question-circle"></i> Ask as Question</a>');
+			$('.composer-submit')
+			.attr('data-action', 'post')
+			.html('<i class="fa fa-question-circle"></i> ' + qanda_trans_array[2] + '</a>')
+			.filter('.btn-sm')
+			.html('<i class="fa fa-question"></i> </a>');
 			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function(ev, data) {
 				callToggleQuestion(data.data.tid, false);
 			});
@@ -56,9 +68,9 @@ $('document').ready(function() {
 		if (ajaxify.data.hasOwnProperty('isQuestion') && parseInt(ajaxify.data.isQuestion, 10) === 1) {
 			require(['components'], function(components) {
 				if (parseInt(ajaxify.data.isSolved, 10) === 0) {
-					components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> Unsolved</span>');
+					components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> ' + qanda_trans_array[1] + '</span>');
 				} else if (parseInt(ajaxify.data.isSolved, 10) === 1) {
-					components.get('post/header').prepend('<span class="answered"><i class="fa fa-question-circle"></i> Solved</span>');
+					components.get('post/header').prepend('<span class="answered"><i class="fa fa-question-circle"></i> ' + qanda_trans_array[0] + '</span>');
 				}
 			});
 		}

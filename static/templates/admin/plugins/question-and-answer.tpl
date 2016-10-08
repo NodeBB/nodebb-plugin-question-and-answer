@@ -1,19 +1,20 @@
 <form role="form" class="question-and-answer-settings">
 	<div class="row">
-		<div class="col-sm-2 col-xs-12 settings-header">General Settings</div>
+		<div class="col-sm-2 col-xs-12
+                settings-header">[[qanda:admin.form.general_settings]]</div>
 		<div class="col-sm-10 col-xs-12">
 			<div class="checkbox">
 				<label>
 					<input type="checkbox" name="forceQuestions">
-					Only allow questions to be asked for all categories (disables regular topic behaviour)
+					[[qanda:admin.form.label.only_allow_all]]
 				</label>
 				<p class="help-block">
-					This option supercedes the one below
+					[[qanda:admin.form.tips]]
 				</p>
 			</div>
 			<hr />
 			<label>
-				Only allow questions to be asked for the following categories (disables regular topic behaviour)
+				[[qanda:admin.form.label.only_allow_following]]
 			</label>
 			<!-- BEGIN categories -->
 			<div class="checkbox">
