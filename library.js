@@ -1,23 +1,22 @@
-"use strict";
+'use strict';
 
-var plugin = {},
-	async = module.parent.require('async'),
-	topics = module.parent.require('./topics'),
-	posts = module.parent.require('./posts'),
-	categories = module.parent.require('./categories'),
-	meta = module.parent.require('./meta'),
-	privileges = module.parent.require('./privileges'),
-	rewards = module.parent.require('./rewards'),
-	user = module.parent.require('./user'),
-	helpers = module.parent.require('./controllers/helpers'),
-	db = module.parent.require('./database'),
-	SocketPlugins = module.parent.require('./socket.io/plugins'),
-	pagination = module.parent.require('./pagination');
+var plugin = {};
+var async = module.parent.require('async');
+var topics = module.parent.require('./topics');
+var posts = module.parent.require('./posts');
+var categories = module.parent.require('./categories');
+var meta = module.parent.require('./meta');
+var privileges = module.parent.require('./privileges');
+var rewards = module.parent.require('./rewards');
+var user = module.parent.require('./user');
+var helpers = module.parent.require('./controllers/helpers');
+var db = module.parent.require('./database');
+var SocketPlugins = module.parent.require('./socket.io/plugins');
+var pagination = module.parent.require('./pagination');
 
-plugin.init = function(params, callback) {
-	var app = params.router,
-		middleware = params.middleware,
-		controllers = params.controllers;
+plugin.init = function (params, callback) {
+	var app = params.router;
+	var middleware = params.middleware;
 
 	app.get('/admin/plugins/question-and-answer', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/plugins/question-and-answer', renderAdmin);
@@ -33,48 +32,52 @@ plugin.init = function(params, callback) {
 	callback();
 };
 
-plugin.appendConfig = function(config, callback) {
-	meta.settings.get('question-and-answer', function(err, settings) {
+plugin.appendConfig = function (config, callback) {
+	meta.settings.get('question-and-answer', function (err, settings) {
+		if (err) {
+			return callback(err);
+		}
+
 		config['question-and-answer'] = settings;
 		callback(null, config);
 	});
 };
 
-plugin.addNavigation = function(menu, callback) {
+plugin.addNavigation = function (menu, callback) {
 	menu = menu.concat(
 		[
 			{
-				"route": "/unsolved",
-				"title": "Unsolved",
-				"iconClass": "fa-question-circle",
-				"text": "Unsolved"
+				route: '/unsolved',
+				title: 'Unsolved',
+				iconClass: 'fa-question-circle',
+				text: 'Unsolved',
 			},
 			{
-				"route": "/solved",
-				"title": "Solved",
-				"iconClass": "fa-check-circle",
-				"text": "Solved"
-			}
+				route: '/solved',
+				title: 'Solved',
+				iconClass: 'fa-check-circle',
+				text: 'Solved',
+			},
 		]
 	);
 
-	callback (null, menu);
+	callback(null, menu);
 };
 
-plugin.addAdminNavigation = function(header, callback) {
+plugin.addAdminNavigation = function (header, callback) {
 	header.plugins.push({
 		route: '/plugins/question-and-answer',
 		icon: 'fa-question-circle',
-		name: 'Q&A'
+		name: 'Q&A',
 	});
 
 	callback(null, header);
 };
 
-plugin.getTopics = function(data, callback) {
+plugin.getTopics = function (data, callback) {
 	var topics = data.topics;
 
-	async.map(topics, function(topic, next) {
+	async.map(topics, function (topic, next) {
 		if (parseInt(topic.isQuestion, 10)) {
 			if (parseInt(topic.isSolved, 10)) {
 				topic.title = '<span class="answered"><i class="fa fa-question-circle"></i> Solved</span> ' + topic.title;
@@ -82,14 +85,14 @@ plugin.getTopics = function(data, callback) {
 				topic.title = '<span class="unanswered"><i class="fa fa-question-circle"></i> Unsolved</span> ' + topic.title;
 			}
 		}
-		
+
 		return next(null, topic);
-	}, function(err, topics) {
+	}, function (err) {
 		return callback(err, data);
 	});
 };
 
-plugin.addThreadTool = function(data, callback) {
+plugin.addThreadTool = function (data, callback) {
 	var isSolved = parseInt(data.topic.isSolved, 10);
 
 	if (parseInt(data.topic.isQuestion, 10)) {
@@ -97,35 +100,39 @@ plugin.addThreadTool = function(data, callback) {
 			{
 				class: 'toggleSolved ' + (isSolved ? 'alert-warning topic-solved' : 'alert-success topic-unsolved'),
 				title: isSolved ? 'Mark as Unsolved' : 'Mark as Solved',
-				icon: isSolved ? 'fa-question-circle' : 'fa-check-circle'
+				icon: isSolved ? 'fa-question-circle' : 'fa-check-circle',
 			},
 			{
 				class: 'toggleQuestionStatus',
 				title: 'Make this a normal topic',
-				icon: 'fa-comments'
-			}
-		]);	
+				icon: 'fa-comments',
+			},
+		]);
 	} else {
 		data.tools.push({
 			class: 'toggleQuestionStatus alert-warning',
 			title: 'Ask as question',
-			icon: 'fa-question-circle'
+			icon: 'fa-question-circle',
 		});
 	}
-	
+
 	callback(false, data);
 };
 
-plugin.addPostTool = function(postData, callback) {
-	topics.getTopicDataByPid(postData.pid, function(err, data) {
+plugin.addPostTool = function (postData, callback) {
+	topics.getTopicDataByPid(postData.pid, function (err, data) {
+		if (err) {
+			return callback(err);
+		}
+
 		data.isSolved = parseInt(data.isSolved, 10) === 1;
 		data.isQuestion = parseInt(data.isQuestion, 10) === 1;
 
-		if (data.uid && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(postData.pid, 10)) {		
+		if (data.uid && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(postData.pid, 10)) {
 			postData.tools.push({
-				"action": "qanda/post-solved",
-				"html": "Mark this post as the correct answer",
-				"icon": "fa-check-circle"
+				action: 'qanda/post-solved',
+				html: 'Mark this post as the correct answer',
+				icon: 'fa-check-circle',
 			});
 		}
 
@@ -133,10 +140,10 @@ plugin.addPostTool = function(postData, callback) {
 	});
 };
 
-plugin.getConditions = function(conditions, callback) {
+plugin.getConditions = function (conditions, callback) {
 	conditions.push({
-		"name": "Times questions accepted",
-		"condition": "qanda/question.accepted"
+		name: 'Times questions accepted',
+		condition: 'qanda/question.accepted',
 	});
 
 	callback(false, conditions);
@@ -145,12 +152,16 @@ plugin.getConditions = function(conditions, callback) {
 function renderAdmin(req, res, next) {
 	async.waterfall([
 		async.apply(db.getSortedSetRange, 'categories:cid', 0, -1),
-		function(cids, next) {
+		function (cids, next) {
 			categories.getCategoriesFields(cids, ['cid', 'name'], next);
+		},
+	], function (err, data) {
+		if (err) {
+			return next(err);
 		}
-	], function(err, data) {
+
 		res.render('admin/plugins/question-and-answer', {
-			categories: data
+			categories: data,
 		});
 	});
 }
@@ -158,8 +169,12 @@ function renderAdmin(req, res, next) {
 function handleSocketIO() {
 	SocketPlugins.QandA = {};
 
-	SocketPlugins.QandA.toggleSolved = function(socket, data, callback) {
-		privileges.topics.canEdit(data.tid, socket.uid, function(err, canEdit) {
+	SocketPlugins.QandA.toggleSolved = function (socket, data, callback) {
+		privileges.topics.canEdit(data.tid, socket.uid, function (err, canEdit) {
+			if (err) {
+				return callback(err);
+			}
+
 			if (!canEdit) {
 				return callback(new Error('[[error:no-privileges]]'));
 			}
@@ -172,8 +187,12 @@ function handleSocketIO() {
 		});
 	};
 
-	SocketPlugins.QandA.toggleQuestionStatus = function(socket, data, callback) {
-		privileges.topics.canEdit(data.tid, socket.uid, function(err, canEdit) {
+	SocketPlugins.QandA.toggleQuestionStatus = function (socket, data, callback) {
+		privileges.topics.canEdit(data.tid, socket.uid, function (err, canEdit) {
+			if (err) {
+				return callback(err);
+			}
+
 			if (!canEdit) {
 				return callback(new Error('[[error:no-privileges]]'));
 			}
@@ -189,24 +208,32 @@ function toggleSolved(tid, pid, callback) {
 		pid = false;
 	}
 
-	topics.getTopicField(tid, 'isSolved', function(err, isSolved) {
+	topics.getTopicField(tid, 'isSolved', function (err, isSolved) {
+		if (err) {
+			return callback(err);
+		}
+
 		isSolved = parseInt(isSolved, 10) === 1;
 
 		async.parallel([
-			function(next) {
+			function (next) {
 				topics.setTopicField(tid, 'isSolved', isSolved ? 0 : 1, next);
 			},
-			function(next) {
+			function (next) {
 				if (!isSolved && pid) {
 					topics.setTopicField(tid, 'solvedPid', pid, next);
 				} else {
 					topics.deleteTopicField(tid, 'solvedPid', next);
 				}
 			},
-			function(next) {
+			function (next) {
 				if (!isSolved && pid) {
-					posts.getPostData(pid, function(err, data) {
-						rewards.checkConditionAndRewardUser(data.uid, 'qanda/question.accepted', function(callback) {
+					posts.getPostData(pid, function (err, data) {
+						if (err) {
+							return next(err);
+						}
+
+						rewards.checkConditionAndRewardUser(data.uid, 'qanda/question.accepted', function (callback) {
 							user.incrementUserFieldBy(data.uid, 'qanda/question.accepted', 1, callback);
 						});
 
@@ -216,55 +243,59 @@ function toggleSolved(tid, pid, callback) {
 					next();
 				}
 			},
-			function(next) {
+			function (next) {
 				if (!isSolved) {
-					db.sortedSetRemove('topics:unsolved', tid, function() {
+					db.sortedSetRemove('topics:unsolved', tid, function () {
 						db.sortedSetAdd('topics:solved', Date.now(), tid, next);
 					});
 				} else {
-					db.sortedSetAdd('topics:unsolved', Date.now(), tid, function() {
+					db.sortedSetAdd('topics:unsolved', Date.now(), tid, function () {
 						db.sortedSetRemove('topics:solved', tid, next);
 					});
 				}
-			}
-		], function(err) {
-			callback(err, {isSolved: !isSolved});
+			},
+		], function (err) {
+			callback(err, { isSolved: !isSolved });
 		});
 	});
 }
 
 function toggleQuestionStatus(tid, callback) {
-	topics.getTopicField(tid, 'isQuestion', function(err, isQuestion) {
+	topics.getTopicField(tid, 'isQuestion', function (err, isQuestion) {
+		if (err) {
+			return callback(err);
+		}
+
 		isQuestion = parseInt(isQuestion, 10) === 1;
 
 		async.parallel([
-			function(next) {
+			function (next) {
 				topics.setTopicField(tid, 'isQuestion', isQuestion ? 0 : 1, next);
 			},
-			function(next) {
+			function (next) {
 				if (!isQuestion) {
 					async.parallel([
-						function(next) {
+						function (next) {
 							topics.setTopicField(tid, 'isSolved', 0, next);
 						},
-						function(next) {
+						function (next) {
 							db.sortedSetAdd('topics:unsolved', Date.now(), tid, next);
 						},
-						function(next) {
+						function (next) {
 							db.sortedSetRemove('topics:solved', tid, next);
-						}
+						},
 					], next);
 				} else {
-					db.sortedSetRemove('topics:unsolved', tid, function() {
+					db.sortedSetRemove('topics:unsolved', tid, function () {
 						db.sortedSetRemove('topics:solved', tid, next);
 						topics.deleteTopicField(tid, 'solvedPid');
 					});
 				}
-			}
-		], function(err) {
-			callback(err, {isQuestion: !isQuestion});
+			},
+		], function (err) {
+			callback(err, { isQuestion: !isQuestion });
 		});
-	});	
+	});
 }
 
 function renderUnsolved(req, res, next) {
@@ -273,16 +304,16 @@ function renderUnsolved(req, res, next) {
 	var stop = 0;
 	var topicCount = 0;
 	var settings;
-	
+
 	async.waterfall([
 		function (next) {
 			async.parallel({
-				settings: function(next) {
+				settings: function (next) {
 					user.getSettings(req.uid, next);
 				},
 				tids: function (next) {
 					db.getSortedSetRevRange('topics:unsolved', 0, 199, next);
-				}
+				},
 			}, next);
 		},
 		function (results, next) {
@@ -298,12 +329,12 @@ function renderUnsolved(req, res, next) {
 			tids = tids.slice(start, stop + 1);
 
 			topics.getTopicsByTids(tids, req.uid, next);
-		}
-	], function(err, topics) {
+		},
+	], function (err, topics) {
 		if (err) {
 			return next(err);
 		}
-		
+
 		var data = {};
 		data.topics = topics;
 		data.nextStart = stop + 1;
@@ -311,9 +342,9 @@ function renderUnsolved(req, res, next) {
 		data['feeds:disableRSS'] = true;
 		data.pagination = pagination.create(page, pageCount);
 		if (req.path.startsWith('/api/unsolved') || req.path.startsWith('/unsolved')) {
-			data.breadcrumbs = helpers.buildBreadcrumbs([{text: 'Unsolved'}]);
+			data.breadcrumbs = helpers.buildBreadcrumbs([{ text: 'Unsolved' }]);
 		}
-		
+
 		res.render('recent', data);
 	});
 }
@@ -324,16 +355,16 @@ function renderSolved(req, res, next) {
 	var stop = 0;
 	var topicCount = 0;
 	var settings;
-	
+
 	async.waterfall([
 		function (next) {
 			async.parallel({
-				settings: function(next) {
+				settings: function (next) {
 					user.getSettings(req.uid, next);
 				},
 				tids: function (next) {
 					db.getSortedSetRevRange('topics:solved', 0, 199, next);
-				}
+				},
 			}, next);
 		},
 		function (results, next) {
@@ -349,12 +380,12 @@ function renderSolved(req, res, next) {
 			tids = tids.slice(start, stop + 1);
 
 			topics.getTopicsByTids(tids, req.uid, next);
-		}
-	], function(err, topics) {
+		},
+	], function (err, topics) {
 		if (err) {
 			return next(err);
 		}
-		
+
 		var data = {};
 		data.topics = topics;
 		data.nextStart = stop + 1;
@@ -362,9 +393,9 @@ function renderSolved(req, res, next) {
 		data['feeds:disableRSS'] = true;
 		data.pagination = pagination.create(page, pageCount);
 		if (req.path.startsWith('/api/solved') || req.path.startsWith('/solved')) {
-			data.breadcrumbs = helpers.buildBreadcrumbs([{text: 'Solved'}]);
+			data.breadcrumbs = helpers.buildBreadcrumbs([{ text: 'Solved' }]);
 		}
-		
+
 		res.render('recent', data);
 	});
 }

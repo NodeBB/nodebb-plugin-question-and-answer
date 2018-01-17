@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-/*global socket, config, ajaxify, app*/
+/* global $, window, socket, config, ajaxify, app */
 
-$('document').ready(function() {
-	$(window).on('action:ajaxify.end', function(err, data) {
+$('document').ready(function () {
+	$(window).on('action:ajaxify.end', function (ev, data) {
 		if (data.url.match(/^topic\//)) {
 			addLabel();
 			markPostAsSolved();
@@ -15,7 +15,7 @@ $('document').ready(function() {
 
 	$(window).on('action:posts.loaded', markPostAsSolved);
 
-	$(window).on('action:composer.loaded', function(err, data) {
+	$(window).on('action:composer.loaded', function (ev, data) {
 		if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
 			// Do nothing, as this is a reply, not a new post
 			return;
@@ -24,8 +24,8 @@ $('document').ready(function() {
 		var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i> Ask as Question</a></li></ul>');
 		var actionBar = $('#cmp-uuid-' + data.post_uuid + ' .action-bar');
 
-		item.on('click', 'li', function() {
-			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function(ev, data) {
+		item.on('click', 'li', function () {
+			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function (ev, data) {
 				callToggleQuestion(data.data.tid, false);
 			});
 		});
@@ -35,7 +35,7 @@ $('document').ready(function() {
 			(config['question-and-answer']['defaultCid_' + data.composerData.cid] === 'on')
 		) {
 			$('.composer-submit').attr('data-action', 'post').html('<i class="fa fa-fw fa-question-circle"></i> Ask as Question</a>');
-			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function(ev, data) {
+			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function (ev, data) {
 				callToggleQuestion(data.data.tid, false);
 			});
 		} else {
@@ -54,7 +54,7 @@ $('document').ready(function() {
 
 	function addLabel() {
 		if (ajaxify.data.hasOwnProperty('isQuestion') && parseInt(ajaxify.data.isQuestion, 10) === 1) {
-			require(['components'], function(components) {
+			require(['components'], function (components) {
 				if (parseInt(ajaxify.data.isSolved, 10) === 0) {
 					components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> Unsolved</span>');
 				} else if (parseInt(ajaxify.data.isSolved, 10) === 1) {
@@ -70,7 +70,11 @@ $('document').ready(function() {
 	}
 
 	function callToggleQuestion(tid, refresh) {
-		socket.emit('plugins.QandA.toggleQuestionStatus', {tid: tid}, function(err, data) {
+		socket.emit('plugins.QandA.toggleQuestionStatus', { tid: tid }, function (err, data) {
+			if (err) {
+				return app.alertError(err);
+			}
+
 			app.alertSuccess(data.isQuestion ? 'Topic has been marked as a question' : 'Topic is now a regular thread');
 			if (refresh) {
 				ajaxify.refresh();
@@ -80,7 +84,11 @@ $('document').ready(function() {
 
 	function toggleSolved() {
 		var tid = ajaxify.data.tid;
-		socket.emit('plugins.QandA.toggleSolved', {tid: tid}, function(err, data) {
+		socket.emit('plugins.QandA.toggleSolved', { tid: tid }, function (err, data) {
+			if (err) {
+				return app.alertError(err);
+			}
+
 			app.alertSuccess(data.isSolved ? 'Topic has been marked as solved' : 'Topic has been marked as unsolved');
 			ajaxify.refresh();
 		});
@@ -90,13 +98,17 @@ $('document').ready(function() {
 		var tid = ajaxify.data.tid;
 		var pid = $(this).parents('[data-pid]').attr('data-pid');
 
-		socket.emit('plugins.QandA.toggleSolved', {tid: tid, pid: pid}, function(err, data) {
+		socket.emit('plugins.QandA.toggleSolved', { tid: tid, pid: pid }, function (err, data) {
+			if (err) {
+				return app.alertError(err);
+			}
+
 			app.alertSuccess(data.isSolved ? 'This post has been marked as the correct answer' : 'Topic has been marked as unsolved');
 			ajaxify.refresh();
 		});
 	}
 
-	function markPostAsSolved(err, data) {
+	function markPostAsSolved(ev) {
 		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
 	}
 });
