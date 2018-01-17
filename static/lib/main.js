@@ -108,7 +108,7 @@ $('document').ready(function () {
 		});
 	}
 
-	function markPostAsSolved(ev) {
+	function markPostAsSolved() {
 		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
 	}
 });
