@@ -16,8 +16,8 @@ $('document').ready(function () {
 	$(window).on('action:posts.loaded', markPostAsSolved);
 
 	$(window).on('action:composer.loaded', function (ev, data) {
-		if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
-			// Do nothing, as this is a reply, not a new post
+		var isReply = data.hasOwnProperty('composerData') && !data.composerData.isMain;
+		if (isReply) {
 			return;
 		}
 
