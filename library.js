@@ -152,11 +152,11 @@ plugin.getConditions = function (conditions, callback) {
 
 plugin.onTopicCreate = function (payload, callback) {
 	if (payload.data.hasOwnProperty('isQuestion')) {
-		payload.topic.isQuestion = !!payload.data.isQuestion ? 1 : 0;
+		payload.topic.isQuestion = parseInt(payload.data.isQuestion, 10);
 	}
 
 	if (payload.data.hasOwnProperty('isSolved')) {
-		payload.topic.isSolved = !!payload.data.isSolved ? 1 : 0;
+		payload.topic.isSolved = parseInt(payload.data.isSolved, 10);
 	}
 
 	// Overrides from ACP config
