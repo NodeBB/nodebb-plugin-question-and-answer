@@ -29,18 +29,19 @@ plugin.init = function (params, callback) {
 
 	handleSocketIO();
 
-	callback();
-};
-
-plugin.appendConfig = function (config, callback) {
 	meta.settings.get('question-and-answer', function (err, settings) {
 		if (err) {
 			return callback(err);
 		}
 
-		config['question-and-answer'] = settings;
-		callback(null, config);
+		plugin._settings = settings;
+		callback();
 	});
+};
+
+plugin.appendConfig = function (config, callback) {
+	config['question-and-answer'] = plugin._settings;
+	setImmediate(callback, null, config);
 };
 
 plugin.addNavigation = function (menu, callback) {
@@ -147,6 +148,24 @@ plugin.getConditions = function (conditions, callback) {
 	});
 
 	callback(false, conditions);
+};
+
+plugin.onTopicCreate = function (payload, callback) {
+	if (payload.data.hasOwnProperty('isQuestion')) {
+		payload.topic.isQuestion = parseInt(payload.data.isQuestion, 10);
+	}
+
+	if (payload.data.hasOwnProperty('isSolved')) {
+		payload.topic.isSolved = parseInt(payload.data.isSolved, 10);
+	}
+
+	// Overrides from ACP config
+	if (plugin._settings.forceQuestions === 'on' || plugin._settings['defaultCid_' + payload.topic.cid] === 'on') {
+		payload.topic.isQuestion = 1;
+		payload.topic.isSolved = 0;
+	}
+
+	setImmediate(callback, null, payload);
 };
 
 function renderAdmin(req, res, next) {

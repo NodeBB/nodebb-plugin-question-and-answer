@@ -28,6 +28,9 @@
 		},
 		{
 			"hook": "filter:rewards.conditions", "method": "getConditions"
+		},
+		{
+			"hook": "filter:topic.create", "method": "onTopicCreate"
 		}
 	],
 	"staticDirs": {

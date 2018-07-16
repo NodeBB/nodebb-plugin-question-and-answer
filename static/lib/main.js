@@ -16,31 +16,21 @@ $('document').ready(function () {
 	$(window).on('action:posts.loaded', markPostAsSolved);
 
 	$(window).on('action:composer.loaded', function (ev, data) {
-		var isReply = data.hasOwnProperty('composerData') && !data.composerData.isMain;
-		if (isReply) {
+		// Return early if it is a reply and not a new topic
+		if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
 			return;
 		}
 
 		var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i> Ask as Question</a></li></ul>');
-		var actionBar = $('#cmp-uuid-' + data.post_uuid + ' .action-bar');
+		var actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
 
 		item.on('click', 'li', function () {
-			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function (ev, data) {
-				callToggleQuestion(data.data.tid, false);
+			$(window).one('action:composer.submit', function (e, data) {
+				data.composerData.isQuestion = true;
 			});
 		});
 
-		if (
-			config['question-and-answer'].forceQuestions === 'on' ||
-			(config['question-and-answer']['defaultCid_' + data.composerData.cid] === 'on')
-		) {
-			$('.composer-submit').attr('data-action', 'post').html('<i class="fa fa-fw fa-question-circle"></i> Ask as Question</a>');
-			$(window).off('action:composer.topics.post').one('action:composer.topics.post', function (ev, data) {
-				callToggleQuestion(data.data.tid, false);
-			});
-		} else {
-			actionBar.append(item);
-		}
+		actionBar.append(item);
 	});
 
 	function addHandlers() {
