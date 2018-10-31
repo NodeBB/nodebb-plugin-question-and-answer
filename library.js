@@ -1,18 +1,18 @@
 'use strict';
 
 var plugin = {};
-var async = module.parent.require('async');
-var topics = module.parent.require('./topics');
-var posts = module.parent.require('./posts');
-var categories = module.parent.require('./categories');
-var meta = module.parent.require('./meta');
-var privileges = module.parent.require('./privileges');
-var rewards = module.parent.require('./rewards');
-var user = module.parent.require('./user');
-var helpers = module.parent.require('./controllers/helpers');
-var db = module.parent.require('./database');
-var SocketPlugins = module.parent.require('./socket.io/plugins');
-var pagination = module.parent.require('./pagination');
+var async = require.main.require('async');
+var topics = require.main.require('./src/topics');
+var posts = require.main.require('./src/posts');
+var categories = require.main.require('./src/categories');
+var meta = require.main.require('./src/meta');
+var privileges = require.main.require('./src/privileges');
+var rewards = require.main.require('./src/rewards');
+var user = require.main.require('./src/user');
+var helpers = require.main.require('./src/controllers/helpers');
+var db = require.main.require('./src/database');
+var SocketPlugins = require.main.require('./src/socket.io/plugins');
+var pagination = require.main.require('./src/pagination');
 
 plugin.init = function (params, callback) {
 	var app = params.router;
