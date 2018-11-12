@@ -2,11 +2,26 @@
 
 /* global $, window, socket, config, ajaxify, app */
 
-$('document').ready(function () {
-	$(window).on('action:ajaxify.end', function (ev, data) {
+var translations = [];
+
+$('document').ready(function() {
+	$(window).on('action:ajaxify.end', function(err, data) {
 		if (data.url.match(/^topic\//)) {
-			addLabel();
-			markPostAsSolved();
+			if(translations.length == 0)
+			{
+				require(['translator'], function(translator) {
+					translator.translate('[[qanda:topic_solved]],[[qanda:topic_unsolved]],[[qanda:thread.tool.as_question]],[[qanda:thread.alert.as_question]],[[qanda:thread.alert.make_normal]],[[qanda:thread.alert.solved]],[[qanda:thread.alert.unsolved]],[[qanda:post.alert.correct_answer]]', function(translated) {
+						translations = translated.split(',');
+						addLabel();
+						markPostAsSolved();
+					});
+				});
+			}
+			else
+			{
+				addLabel();
+				markPostAsSolved();
+			}
 		}
 	});
 
@@ -21,7 +36,7 @@ $('document').ready(function () {
 			return;
 		}
 
-		var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i> Ask as Question</a></li></ul>');
+		var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i>' + translations[2] + '</a></li></ul>');
 		var actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
 
 		item.on('click', 'li', function () {
@@ -46,9 +61,9 @@ $('document').ready(function () {
 		if (ajaxify.data.hasOwnProperty('isQuestion') && parseInt(ajaxify.data.isQuestion, 10) === 1) {
 			require(['components'], function (components) {
 				if (parseInt(ajaxify.data.isSolved, 10) === 0) {
-					components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> Unsolved</span>');
+					components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> ' + translations[1] + '</span>');
 				} else if (parseInt(ajaxify.data.isSolved, 10) === 1) {
-					components.get('post/header').prepend('<span class="answered"><i class="fa fa-question-circle"></i> Solved</span>');
+					components.get('post/header').prepend('<span class="answered"><i class="fa fa-question-circle"></i> ' + translations[0] + '</span>');
 				}
 			});
 		}
@@ -65,7 +80,7 @@ $('document').ready(function () {
 				return app.alertError(err);
 			}
 
-			app.alertSuccess(data.isQuestion ? 'Topic has been marked as a question' : 'Topic is now a regular thread');
+			app.alertSuccess(translations[data.isQuestion ? 3 : 4]);
 			if (refresh) {
 				ajaxify.refresh();
 			}
@@ -79,7 +94,7 @@ $('document').ready(function () {
 				return app.alertError(err);
 			}
 
-			app.alertSuccess(data.isSolved ? 'Topic has been marked as solved' : 'Topic has been marked as unsolved');
+			app.alertSuccess(translations[data.isSolved ? 5 : 6]);
 			ajaxify.refresh();
 		});
 	}
@@ -93,7 +108,7 @@ $('document').ready(function () {
 				return app.alertError(err);
 			}
 
-			app.alertSuccess(data.isSolved ? 'This post has been marked as the correct answer' : 'Topic has been marked as unsolved');
+			app.alertSuccess(translations[data.isSolved ? 7 : 6]);
 			ajaxify.refresh();
 		});
 	}
