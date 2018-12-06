@@ -11,6 +11,7 @@ var rewards = require.main.require('./src/rewards');
 var user = require.main.require('./src/user');
 var helpers = require.main.require('./src/controllers/helpers');
 var db = require.main.require('./src/database');
+var plugins = require.main.require('./src/plugins);
 var SocketPlugins = require.main.require('./src/socket.io/plugins');
 var pagination = require.main.require('./src/pagination');
 
@@ -201,9 +202,9 @@ function handleSocketIO() {
 			}
 
 			if (data.pid) {
-				toggleSolved(data.tid, data.pid, callback);
+				toggleSolved(socket.uid, data.tid, data.pid, callback);
 			} else {
-				toggleSolved(data.tid, callback);
+				toggleSolved(socket.uid, data.tid, callback);
 			}
 		});
 	};
@@ -223,7 +224,7 @@ function handleSocketIO() {
 	};
 }
 
-function toggleSolved(tid, pid, callback) {
+function toggleSolved(uid, tid, pid, callback) {
 	if (!callback) {
 		callback = pid;
 		pid = false;
@@ -276,7 +277,11 @@ function toggleSolved(tid, pid, callback) {
 				}
 			},
 		], function (err) {
-			callback(err, { isSolved: !isSolved });
+			if (err) {
+				return callback(err);
+			}
+			plugins.fireHook('action:topic.toggleSolved', { uid: uid, tid: tid, pid: pid, isSolved: !isSolved });
+			callback(null, { isSolved: !isSolved });
 		});
 	});
 }
