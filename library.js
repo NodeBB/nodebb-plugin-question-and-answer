@@ -11,7 +11,7 @@ var rewards = require.main.require('./src/rewards');
 var user = require.main.require('./src/user');
 var helpers = require.main.require('./src/controllers/helpers');
 var db = require.main.require('./src/database');
-var plugins = require.main.require('./src/plugins);
+var plugins = require.main.require('./src/plugins');
 var SocketPlugins = require.main.require('./src/socket.io/plugins');
 var pagination = require.main.require('./src/pagination');
 
