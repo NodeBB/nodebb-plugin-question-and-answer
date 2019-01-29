@@ -33,21 +33,23 @@ $('document').ready(function () {
 	$(window).on('action:posts.loaded', markPostAsSolved);
 
 	$(window).on('action:composer.loaded', function (ev, data) {
-		// Return early if it is a reply and not a new topic
-		if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
-			return;
-		}
+		translate(function () {
+			// Return early if it is a reply and not a new topic
+			if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
+				return;
+			}
 
-		var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i>' + translations[2] + '</a></li></ul>');
-		var actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
+			var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i>' + translations[2] + '</a></li></ul>');
+			var actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
 
-		item.on('click', 'li', function () {
-			$(window).one('action:composer.submit', function (ev, data) {
-				data.composerData.isQuestion = true;
+			item.on('click', 'li', function () {
+				$(window).one('action:composer.submit', function (ev, data) {
+					data.composerData.isQuestion = true;
+				});
 			});
-		});
 
-		actionBar.append(item);
+			actionBar.append(item);
+		});
 	});
 
 	function addHandlers() {
