@@ -111,7 +111,7 @@ plugin.addThreadTool = function (data, callback) {
 				title: '[[qanda:thread.tool.make_normal]]',
 				icon: 'fa-comments'
 			}
-		]);	
+		]);
 	} else {
 		data.tools.push({
 			class: 'toggleQuestionStatus alert-warning',
@@ -169,6 +169,12 @@ plugin.onTopicCreate = function (payload, callback) {
 	}
 
 	setImmediate(callback, null, payload);
+};
+
+plugin.actionTopicSave = function (hookData) {
+	if (hookData.topic && hookData.topic.isQuestion) {
+		db.sortedSetAdd(hookData.topic.isSolved === 1 ? 'topics:solved' : 'topics:unsolved', Date.now(), hookData.topic.tid);
+	}
 };
 
 function renderAdmin(req, res, next) {

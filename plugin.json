@@ -31,6 +31,9 @@
 		},
 		{
 			"hook": "filter:topic.create", "method": "onTopicCreate"
+		},
+		{
+			"hook": "action:topic.save", "method": "actionTopicSave"
 		}
 	],
 	"staticDirs": {
