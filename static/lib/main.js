@@ -1,27 +1,29 @@
 'use strict';
 
-/* global $, window, socket, config, ajaxify, app */
+/* global $, window, socket, ajaxify, app */
 
 var translations = [];
 
-$('document').ready(function() {
-	$(window).on('action:ajaxify.end', function(err, data) {
+$('document').ready(function () {
+	function translate(cb) {
+		if (translations.length) {
+			return cb();
+		}
+
+		require(['translator'], function (translator) {
+			translator.translate('[[qanda:topic_solved]],[[qanda:topic_unsolved]],[[qanda:thread.tool.as_question]],[[qanda:thread.alert.as_question]],[[qanda:thread.alert.make_normal]],[[qanda:thread.alert.solved]],[[qanda:thread.alert.unsolved]],[[qanda:post.alert.correct_answer]]', function (translated) {
+				translations = translated.split(',');
+				cb();
+			});
+		});
+	}
+
+	$(window).on('action:ajaxify.end', function (ev, data) {
 		if (data.url.match(/^topic\//)) {
-			if(translations.length == 0)
-			{
-				require(['translator'], function(translator) {
-					translator.translate('[[qanda:topic_solved]],[[qanda:topic_unsolved]],[[qanda:thread.tool.as_question]],[[qanda:thread.alert.as_question]],[[qanda:thread.alert.make_normal]],[[qanda:thread.alert.solved]],[[qanda:thread.alert.unsolved]],[[qanda:post.alert.correct_answer]]', function(translated) {
-						translations = translated.split(',');
-						addLabel();
-						markPostAsSolved();
-					});
-				});
-			}
-			else
-			{
+			translate(function () {
 				addLabel();
 				markPostAsSolved();
-			}
+			});
 		}
 	});
 
@@ -40,7 +42,7 @@ $('document').ready(function() {
 		var actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
 
 		item.on('click', 'li', function () {
-			$(window).one('action:composer.submit', function (e, data) {
+			$(window).one('action:composer.submit', function (ev, data) {
 				data.composerData.isQuestion = true;
 			});
 		});
@@ -114,6 +116,8 @@ $('document').ready(function() {
 	}
 
 	function markPostAsSolved() {
-		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
+		translate(function () {
+			$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
+		});
 	}
 });
