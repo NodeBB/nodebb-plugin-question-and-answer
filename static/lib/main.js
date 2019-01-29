@@ -5,20 +5,25 @@
 var translations = [];
 
 $('document').ready(function () {
+	function translate(cb) {
+		if (translations.length) {
+			return cb();
+		}
+
+		require(['translator'], function (translator) {
+			translator.translate('[[qanda:topic_solved]],[[qanda:topic_unsolved]],[[qanda:thread.tool.as_question]],[[qanda:thread.alert.as_question]],[[qanda:thread.alert.make_normal]],[[qanda:thread.alert.solved]],[[qanda:thread.alert.unsolved]],[[qanda:post.alert.correct_answer]]', function (translated) {
+				translations = translated.split(',');
+				cb();
+			});
+		});
+	}
+
 	$(window).on('action:ajaxify.end', function (ev, data) {
 		if (data.url.match(/^topic\//)) {
-			if (translations.length == 0) {
-				require(['translator'], function (translator) {
-					translator.translate('[[qanda:topic_solved]],[[qanda:topic_unsolved]],[[qanda:thread.tool.as_question]],[[qanda:thread.alert.as_question]],[[qanda:thread.alert.make_normal]],[[qanda:thread.alert.solved]],[[qanda:thread.alert.unsolved]],[[qanda:post.alert.correct_answer]]', function (translated) {
-						translations = translated.split(',');
-						addLabel();
-						markPostAsSolved();
-					});
-				});
-			} else {
+			translate(function () {
 				addLabel();
 				markPostAsSolved();
-			}
+			});
 		}
 	});
 
@@ -111,6 +116,8 @@ $('document').ready(function () {
 	}
 
 	function markPostAsSolved() {
-		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
+		translate(function () {
+			$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
+		});
 	}
 });
