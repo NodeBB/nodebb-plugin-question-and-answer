@@ -395,7 +395,7 @@ function renderUnsolved(req, res, next) {
 		data.canPost = canPost;
 
 		if (req.path.startsWith('/api/unsolved') || req.path.startsWith('/unsolved')) {
-			data.breadcrumbs = helpers.buildBreadcrumbs([{ text: 'Unsolved' }]);
+			data.breadcrumbs = helpers.buildBreadcrumbs([{ text: '[[qanda:menu.unsolved]]' }]);
 		}
 
 		res.render('recent', data);
@@ -453,7 +453,7 @@ function renderSolved(req, res, next) {
 		data.canPost = canPost;
 
 		if (req.path.startsWith('/api/solved') || req.path.startsWith('/solved')) {
-			data.breadcrumbs = helpers.buildBreadcrumbs([{ text: 'Solved' }]);
+			data.breadcrumbs = helpers.buildBreadcrumbs([{ text: '[[qanda:menu.solved]]' }]);
 		}
 
 		res.render('recent', data);
