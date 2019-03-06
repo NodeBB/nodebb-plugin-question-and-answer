@@ -330,12 +330,27 @@ function toggleQuestionStatus(tid, callback) {
 	});
 }
 
+function canPostTopic(uid, callback) {
+	async.waterfall([
+		function (next) {
+			categories.getAllCidsFromSet('categories:cid', next);
+		},
+		function (cids, next) {
+			privileges.categories.filterCids('topics:create', cids, uid, next);
+		},
+		function (cids, next) {
+			next(null, cids.length > 0);
+		},
+	], callback);
+}
+
 function renderUnsolved(req, res, next) {
 	var page = parseInt(req.query.page, 10) || 1;
 	var pageCount = 1;
 	var stop = 0;
 	var topicCount = 0;
 	var settings;
+	var canPost;
 
 	async.waterfall([
 		function (next) {
@@ -346,10 +361,14 @@ function renderUnsolved(req, res, next) {
 				tids: function (next) {
 					db.getSortedSetRevRange('topics:unsolved', 0, 199, next);
 				},
+				canPost: function (next) {
+					canPostTopic(req.uid, next);
+				},
 			}, next);
 		},
 		function (results, next) {
 			settings = results.settings;
+			canPost = results.canPost;
 			privileges.topics.filterTids('read', results.tids, req.uid, next);
 		},
 		function (tids, next) {
@@ -373,6 +392,8 @@ function renderUnsolved(req, res, next) {
 		data.set = 'topics:unsolved';
 		data['feeds:disableRSS'] = true;
 		data.pagination = pagination.create(page, pageCount);
+		data.canPost = canPost;
+
 		if (req.path.startsWith('/api/unsolved') || req.path.startsWith('/unsolved')) {
 			data.breadcrumbs = helpers.buildBreadcrumbs([{ text: 'Unsolved' }]);
 		}
@@ -387,6 +408,7 @@ function renderSolved(req, res, next) {
 	var stop = 0;
 	var topicCount = 0;
 	var settings;
+	var canPost;
 
 	async.waterfall([
 		function (next) {
@@ -397,10 +419,14 @@ function renderSolved(req, res, next) {
 				tids: function (next) {
 					db.getSortedSetRevRange('topics:solved', 0, 199, next);
 				},
+				canPost: function (next) {
+					canPostTopic(req.uid, next);
+				},
 			}, next);
 		},
 		function (results, next) {
 			settings = results.settings;
+			canPost = results.canPost;
 			privileges.topics.filterTids('read', results.tids, req.uid, next);
 		},
 		function (tids, next) {
@@ -424,6 +450,8 @@ function renderSolved(req, res, next) {
 		data.set = 'topics:solved';
 		data['feeds:disableRSS'] = true;
 		data.pagination = pagination.create(page, pageCount);
+		data.canPost = canPost;
+
 		if (req.path.startsWith('/api/solved') || req.path.startsWith('/solved')) {
 			data.breadcrumbs = helpers.buildBreadcrumbs([{ text: 'Solved' }]);
 		}
