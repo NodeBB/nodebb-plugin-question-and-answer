@@ -393,6 +393,7 @@ function renderUnsolved(req, res, next) {
 		data['feeds:disableRSS'] = true;
 		data.pagination = pagination.create(page, pageCount);
 		data.canPost = canPost;
+		data.title = '[[qanda:menu.unsolved]]';
 
 		if (req.path.startsWith('/api/unsolved') || req.path.startsWith('/unsolved')) {
 			data.breadcrumbs = helpers.buildBreadcrumbs([{ text: '[[qanda:menu.unsolved]]' }]);
@@ -451,6 +452,7 @@ function renderSolved(req, res, next) {
 		data['feeds:disableRSS'] = true;
 		data.pagination = pagination.create(page, pageCount);
 		data.canPost = canPost;
+		data.title = '[[qanda:menu.solved]]';
 
 		if (req.path.startsWith('/api/solved') || req.path.startsWith('/solved')) {
 			data.breadcrumbs = helpers.buildBreadcrumbs([{ text: '[[qanda:menu.solved]]' }]);
