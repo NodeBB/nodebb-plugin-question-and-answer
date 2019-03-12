@@ -49,19 +49,19 @@ plugin.addNavigation = function (menu, callback) {
 	menu = menu.concat(
 		[
 			{
-				"route": "/unsolved",
-				"title": "[[qanda:menu.unsolved]]",
-				"iconClass": "fa-question-circle",
-				"textClass": "visible-xs-inline",
-				"text": "[[qanda:menu.unsolved]]"
+				route: '/unsolved',
+				title: '[[qanda:menu.unsolved]]',
+				iconClass: 'fa-question-circle',
+				textClass: 'visible-xs-inline',
+				text: '[[qanda:menu.unsolved]]',
 			},
 			{
-				"route": "/solved",
-				"title": "[[qanda:menu.solved]]",
-				"iconClass": "fa-check-circle",
-				"textClass": "visible-xs-inline",
-				"text": "[[qanda:menu.solved]]"
-			}
+				route: '/solved',
+				title: '[[qanda:menu.solved]]',
+				iconClass: 'fa-check-circle',
+				textClass: 'visible-xs-inline',
+				text: '[[qanda:menu.solved]]',
+			},
 		]
 	);
 
@@ -104,19 +104,19 @@ plugin.addThreadTool = function (data, callback) {
 			{
 				class: 'toggleSolved ' + (isSolved ? 'alert-warning topic-solved' : 'alert-success topic-unsolved'),
 				title: isSolved ? '[[qanda:thread.tool.mark_unsolved]]' : '[[qanda:thread.tool.mark_solved]]',
-				icon: isSolved ? 'fa-question-circle' : 'fa-check-circle'
+				icon: isSolved ? 'fa-question-circle' : 'fa-check-circle',
 			},
 			{
 				class: 'toggleQuestionStatus',
 				title: '[[qanda:thread.tool.make_normal]]',
-				icon: 'fa-comments'
-			}
+				icon: 'fa-comments',
+			},
 		]);
 	} else {
 		data.tools.push({
 			class: 'toggleQuestionStatus alert-warning',
 			title: '[[qanda:thread.tool.as_question]]',
-			icon: 'fa-question-circle'
+			icon: 'fa-question-circle',
 		});
 	}
 
@@ -134,9 +134,9 @@ plugin.addPostTool = function (postData, callback) {
 
 		if (data.uid && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(postData.pid, 10)) {
 			postData.tools.push({
-				"action": "qanda/post-solved",
-				"html": "[[qanda:post.tool.mark_correct]]",
-				"icon": "fa-check-circle"
+				action: 'qanda/post-solved',
+				html: '[[qanda:post.tool.mark_correct]]',
+				icon: 'fa-check-circle',
 			});
 		}
 
