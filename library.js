@@ -120,7 +120,7 @@ plugin.addThreadTool = function (data, callback) {
 		});
 	}
 
-	callback(false, data);
+	callback(null, data);
 };
 
 plugin.addPostTool = function (postData, callback) {
@@ -140,7 +140,7 @@ plugin.addPostTool = function (postData, callback) {
 			});
 		}
 
-		callback(false, postData);
+		callback(null, postData);
 	});
 };
 
@@ -150,7 +150,7 @@ plugin.getConditions = function (conditions, callback) {
 		condition: 'qanda/question.accepted',
 	});
 
-	callback(false, conditions);
+	callback(null, conditions);
 };
 
 plugin.onTopicCreate = function (payload, callback) {
