@@ -3,9 +3,6 @@
 A Q&A plugin for NodeBB Forums which allows users to post topics as questions and label it as solved.
 
 
-Tested on Vanilla, Lavender, and Persona on latest 0.7-dev.
-
-
 ## Installation
 
     npm install nodebb-plugin-question-and-answer
