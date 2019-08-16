@@ -18,6 +18,9 @@
 			"hook": "filter:topics.get", "method": "getTopics"
 		},
 		{
+			"hook": "filter:topic.get", "method": "getTopic"
+		},
+		{
 			"hook": "filter:topic.thread_tools", "method": "addThreadTool"
 		},
 		{

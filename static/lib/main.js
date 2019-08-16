@@ -120,6 +120,7 @@ $('document').ready(function () {
 	function markPostAsSolved() {
 		translate(function () {
 			$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
+			$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"] .post-footer').addClass('hidden');
 		});
 	}
 });

@@ -78,6 +78,33 @@ plugin.addAdminNavigation = function (header, callback) {
 	callback(null, header);
 };
 
+plugin.getTopic = function (data, callback) {
+	const solvedPid = parseInt(data.topic.solvedPid, 10);
+	async.waterfall([
+		function (next) {
+			posts.getPostsByPids([solvedPid], data.uid, next);
+		},
+		function (answers, next) {
+			topics.addPostData(answers, data.uid, next);
+		},
+	], function (err, post) {
+		if (err) {
+			return callback(err);
+		}
+
+		post = post[0];
+		if (post) {
+			post.index = -1;
+
+			var op = data.topic.posts.shift();
+			data.topic.posts.unshift(post);
+			data.topic.posts.unshift(op);
+		}
+
+		callback(null, data);
+	});
+};
+
 plugin.getTopics = function (data, callback) {
 	var topics = data.topics;
 
