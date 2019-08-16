@@ -24,6 +24,14 @@ Mark your question as solved via thread tools:
 
 ![](http://i.imgur.com/0R7edVv.png)
 
+Or if there is a specific post that solved your question, the post tools popup gives you the option to select that answer:
+
+![](https://i.imgur.com/KOHJmBR.png)
+
+The accepted answer will be promoted to the top of the page:
+
+![](https://i.imgur.com/sLmTSTY.png)
+
 And here is how it looks like in the category view, recent, popular, etc:
 
 ![](http://i.imgur.com/eklpclQ.png)
@@ -32,7 +40,3 @@ A navigation route is available, so you can see the most recent unsolved threads
 
 ![](http://i.imgur.com/oCLdSHe.png)
 
-
-## TODO
-
-* Marking a specific post as an answer
