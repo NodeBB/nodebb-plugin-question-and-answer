@@ -2,7 +2,18 @@
 
 /* global $, window, socket, ajaxify, app */
 
-var translations = [];
+var keysToTranslate = [
+	'[[qanda:topic_solved]]',
+	'[[qanda:topic_unsolved]]',
+	'[[qanda:thread.tool.as_question]]',
+	'[[qanda:thread.alert.as_question]]',
+	'[[qanda:thread.alert.make_normal]]',
+	'[[qanda:thread.alert.solved]]',
+	'[[qanda:thread.alert.unsolved]]',
+	'[[qanda:post.alert.correct_answer]]',
+];
+
+var translations = {};
 
 $('document').ready(function () {
 	function translate(cb) {
@@ -11,8 +22,14 @@ $('document').ready(function () {
 		}
 
 		require(['translator'], function (translator) {
-			translator.translate('[[qanda:topic_solved]],[[qanda:topic_unsolved]],[[qanda:thread.tool.as_question]],[[qanda:thread.alert.as_question]],[[qanda:thread.alert.make_normal]],[[qanda:thread.alert.solved]],[[qanda:thread.alert.unsolved]],[[qanda:post.alert.correct_answer]]', function (translated) {
-				translations = translated.split(',');
+			translator.translate(keysToTranslate.join(','), function (translated) {
+				translated = translated.split(',');
+
+				for (var t = 0; t < keysToTranslate.length; t++) {
+					translations[keysToTranslate[t]] = translated[t];
+				}
+
+				console.log(translations, translated, keysToTranslate);
 				cb();
 			});
 		});
@@ -39,7 +56,7 @@ $('document').ready(function () {
 				return;
 			}
 
-			var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i>' + translations[2] + '</a></li></ul>');
+			var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i>' + translations['[[qanda:thread.tool.as_question]]'] + '</a></li></ul>');
 			var actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
 
 			item.on('click', 'li', function () {
@@ -65,9 +82,9 @@ $('document').ready(function () {
 		if (ajaxify.data.hasOwnProperty('isQuestion') && parseInt(ajaxify.data.isQuestion, 10) === 1) {
 			require(['components'], function (components) {
 				if (parseInt(ajaxify.data.isSolved, 10) === 0) {
-					components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> ' + translations[1] + '</span>');
+					components.get('post/header').prepend('<span class="unanswered"><i class="fa fa-question-circle"></i> ' + translations['[[qanda:topic_unsolved]]'] + '</span>');
 				} else if (parseInt(ajaxify.data.isSolved, 10) === 1) {
-					components.get('post/header').prepend('<span class="answered"><i class="fa fa-question-circle"></i> ' + translations[0] + '</span>');
+					components.get('post/header').prepend('<span class="answered"><i class="fa fa-question-circle"></i> ' + translations['[[qanda:topic_solved]]'] + '</span>');
 				}
 			});
 		}
@@ -84,7 +101,7 @@ $('document').ready(function () {
 				return app.alertError(err);
 			}
 
-			app.alertSuccess(translations[data.isQuestion ? 3 : 4]);
+			app.alertSuccess(translations[data.isQuestion ? '[[qanda:thread.alert.as_question]]' : '[[qanda:thread.alert.make_normal]]']);
 			if (refresh) {
 				ajaxify.refresh();
 			}
@@ -98,7 +115,7 @@ $('document').ready(function () {
 				return app.alertError(err);
 			}
 
-			app.alertSuccess(translations[data.isSolved ? 5 : 6]);
+			app.alertSuccess(translations[data.isSolved ? '[[qanda:thread.alert.solved]]' : '[[qanda:thread.alert.unsolved]]']);
 			ajaxify.refresh();
 		});
 	}
@@ -112,7 +129,7 @@ $('document').ready(function () {
 				return app.alertError(err);
 			}
 
-			app.alertSuccess(translations[data.isSolved ? 7 : 6]);
+			app.alertSuccess(translations[data.isSolved ? '[[qanda:post.alert.correct_answer]]' : '[[qanda:thread.alert.unsolved]]']);
 			ajaxify.refresh();
 		});
 	}
