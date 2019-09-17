@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-question-and-answer",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "A nodebb-plugin-question-and-answer plugin for NodeBB which allows users to post topics as questions and select a post as the answer",
   "main": "library.js",
   "repository": {
@@ -24,6 +24,6 @@
   },
   "readmeFilename": "README.md",
   "nbbpm": {
-    "compatibility": "^1.12.0"
+    "compatibility": "^1.13.0"
   }
 }
