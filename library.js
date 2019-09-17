@@ -288,8 +288,12 @@ function toggleSolved(uid, tid, pid, callback) {
 							return next(err);
 						}
 
-						rewards.checkConditionAndRewardUser(data.uid, 'qanda/question.accepted', function (callback) {
-							user.incrementUserFieldBy(data.uid, 'qanda/question.accepted', 1, callback);
+						rewards.checkConditionAndRewardUser({
+							uid: data.uid,
+							condition: 'qanda/question.accepted',
+							method: function (callback) {
+								user.incrementUserFieldBy(data.uid, 'qanda/question.accepted', 1, callback);
+							},
 						});
 
 						next();
