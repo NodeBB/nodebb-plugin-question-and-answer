@@ -1,0 +1,21 @@
+{
+    "topic_solved": "RESOLVIDO",
+    "topic_unsolved": "POR RESOLVER",
+    "menu.solved": "Resolvidos",
+    "menu.unsolved": "Por resolver",
+    "thread.alert.as_question": "Este tópico foi marcado como uma questão",
+    "thread.alert.make_normal": "Este tópico é agora um tópico normal",
+    "thread.alert.solved": "Este tópico foi marcado como Resolvido",
+    "thread.alert.unsolved": "Este tópico foi marcado como Por Resolver",
+    "thread.tool.mark_solved": "Marcar como Resolvido",
+    "thread.tool.mark_unsolved": "Marcar como Por Resolver",
+    "thread.tool.make_normal": "Transformar num tópico normal",
+    "thread.tool.as_question": "Tornar este tópico numa questão",
+    "thread.button.as_question": "Publicar como uma questão",
+    "post.alert.correct_answer": "Esta publicação foi marcada como a melhor resposta",
+    "post.tool.mark_correct": "Marcar esta publicação como a melhor resposta",
+    "admin.form.general_settings": "Configurações Gerais",
+    "admin.form.label.only_allow_all": "Permitir que sejam feitas questões em todas as categorias (o tópico é automaticamente publicado como uma questão em todas as categorias)",
+    "admin.form.label.only_allow_following": "Apenas permitir que sejam feitas questões nas seguintes categorias (o tópico é automaticamente publicado como uma questão nas categorias que selecionares)",
+    "admin.form.tips": "Marcar esta opção irá substituir/sobrepor a opção abaixo"
+}
