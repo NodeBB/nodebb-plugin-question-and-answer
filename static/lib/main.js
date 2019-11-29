@@ -29,7 +29,6 @@ $('document').ready(function () {
 					translations[keysToTranslate[t]] = translated[t];
 				}
 
-				console.log(translations, translated, keysToTranslate);
 				cb();
 			});
 		});
