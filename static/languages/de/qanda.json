@@ -1,0 +1,21 @@
+{
+    "topic_solved": "GELÖST",
+    "topic_unsolved": "UNGELÖST",
+    "menu.solved": "Gelöst",
+    "menu.unsolved": "Ungelöst",
+    "thread.alert.as_question": "Thema wurde als Frage markiert",
+    "thread.alert.make_normal": "Thema wurde in ein normales Thema umgewandelt",
+    "thread.alert.solved": "Thema wurde als Gelöst markiert",
+    "thread.alert.unsolved": "Thema wurde als Ungelöst markiert",
+    "thread.tool.mark_solved": "Als gelöst markieren",
+    "thread.tool.mark_unsolved": "Als ungelöst markieren",
+    "thread.tool.make_normal": "Zu einem normalen Thema machen",
+    "thread.tool.as_question": "Frage stellen",
+    "thread.button.as_question": "Frage stellen",
+    "post.alert.correct_answer": "Dieser Beitrag wurde als die richtige Antwort markiert",
+    "post.tool.mark_correct": "Diesen Beitrag als die richtige Antwort markieren",
+    "admin.form.general_settings": "Allgemeine Einstellungen",
+    "admin.form.label.only_allow_all": "Nur noch das Stellen von Fragen erlauben. Wird auf alle Kategorien angewendet und deaktiviert das normale Themen erstellen.",
+    "admin.form.label.only_allow_following": "Nur noch das Fragen stellen erlauben für folgende Kategorien",
+    "admin.form.tips": "Diese Option überschreibt die unten stehende"
+}
