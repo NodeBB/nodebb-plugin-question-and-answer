@@ -79,6 +79,10 @@ plugin.addAdminNavigation = function (header, callback) {
 };
 
 plugin.getTopic = function (data, callback) {
+	if (!data.topic.solvedPid) {
+		return callback(null, data);
+	}
+
 	const solvedPid = parseInt(data.topic.solvedPid, 10);
 	async.waterfall([
 		function (next) {
