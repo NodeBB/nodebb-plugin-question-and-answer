@@ -15,6 +15,7 @@
 	font-size: 10px;
 	padding: 2px 5px;
 	vertical-align: 12%;
+	font-weight: 700;
 
 	i {
 		vertical-align: 11%;
@@ -68,5 +69,26 @@ html .topic {
 	.bookmarked:before {
 		color: @brand-success;
 		content: "\f00c";
+	}
+}
+
+html .topic [component="topic/labels"] {
+	margin-top: -20px;
+    margin-bottom: 30px;
+	font-weight: 700;
+	
+	> * {
+		margin-right: 5px;
+	}
+
+	.answered, .unanswered {
+		padding: 4px 8px;
+	}
+}
+
+
+@media (max-width: @screen-sm-min) {
+	html .topic [component="topic/labels"] {
+		margin-top: -10px;
 	}
 }
