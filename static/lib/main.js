@@ -55,12 +55,17 @@ $('document').ready(function () {
 				return;
 			}
 
-			var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-question-circle"></i>' + translations['[[qanda:thread.tool.as_question]]'] + '</a></li></ul>');
+			var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-circle-o"></i> ' + translations['[[qanda:thread.tool.as_question]]'] + '</a></li></ul>');
 			var actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
 
-			item.on('click', 'li', function () {
+			item.on('click', 'li [data-switch-action="post"]', function () {
+				var icon = item.find('.fa');
+				icon.toggleClass('fa-circle-o').toggleClass('fa-check-circle-o');
+
 				$(window).one('action:composer.submit', function (ev, data) {
-					data.composerData.isQuestion = true;
+					if (icon.hasClass('fa-check-circle-o')) {
+						data.composerData.isQuestion = true;
+					}
 				});
 			});
 
