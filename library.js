@@ -185,21 +185,33 @@ plugin.getConditions = function (conditions, callback) {
 };
 
 plugin.onTopicCreate = function (payload, callback) {
+	let isQuestion;
 	if (payload.data.hasOwnProperty('isQuestion')) {
-		payload.topic.isQuestion = parseInt(payload.data.isQuestion, 10);
-	}
-
-	if (payload.data.hasOwnProperty('isSolved')) {
-		payload.topic.isSolved = parseInt(payload.data.isSolved, 10);
+		isQuestion = true;
 	}
 
 	// Overrides from ACP config
 	if (plugin._settings.forceQuestions === 'on' || plugin._settings['defaultCid_' + payload.topic.cid] === 'on') {
-		payload.topic.isQuestion = 1;
-		payload.topic.isSolved = 0;
+		isQuestion = false;
 	}
 
-	setImmediate(callback, null, payload);
+	if (!isQuestion) {
+		return setImmediate(callback, null, payload);
+	}
+
+	async.parallel([
+		function (next) {
+			topics.setTopicField(payload.topic.tid, 'isQuestion', 1, next);
+		},
+		function (next) {
+			topics.setTopicField(payload.topic.tid, 'isSolved', 0, next);
+		},
+		function (next) {
+			db.sortedSetAdd('topics:unsolved', Date.now(), payload.topic.tid, next);
+		},
+	], function (err) {
+		return setImmediate(callback, err, payload);
+	});
 };
 
 plugin.actionTopicSave = function (hookData) {
