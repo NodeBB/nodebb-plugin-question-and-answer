@@ -79,11 +79,11 @@ plugin.addAdminNavigation = function (header, callback) {
 };
 
 plugin.getTopic = function (data, callback) {
-	if (!data.topic.solvedPid) {
+	if (!data.templateData.solvedPid || data.templateData.pagination.currentPage > 1) {
 		return callback(null, data);
 	}
 
-	const solvedPid = parseInt(data.topic.solvedPid, 10);
+	const solvedPid = parseInt(data.templateData.solvedPid, 10);
 	async.waterfall([
 		function (next) {
 			posts.getPostsByPids([solvedPid], data.uid, next);
@@ -100,9 +100,9 @@ plugin.getTopic = function (data, callback) {
 		if (post) {
 			post.index = -1;
 
-			var op = data.topic.posts.shift();
-			data.topic.posts.unshift(post);
-			data.topic.posts.unshift(op);
+			var op = data.templateData.posts.shift();
+			data.templateData.posts.unshift(post);
+			data.templateData.posts.unshift(op);
 		}
 
 		callback(null, data);

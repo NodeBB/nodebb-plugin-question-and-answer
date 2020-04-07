@@ -6,37 +6,48 @@
 	"library": "./library.js",
 	"hooks": [
 		{
-			"hook": "static:app.load", "method": "init"
+			"hook": "static:app.load",
+			"method": "init"
 		},
 		{
-			"hook": "filter:config.get", "method": "appendConfig"
+			"hook": "filter:config.get",
+			"method": "appendConfig"
 		},
 		{
-			"hook": "filter:admin.header.build", "method": "addAdminNavigation"
+			"hook": "filter:admin.header.build",
+			"method": "addAdminNavigation"
 		},
 		{
-			"hook": "filter:topics.get", "method": "getTopics"
+			"hook": "filter:topics.get",
+			"method": "getTopics"
 		},
 		{
-			"hook": "filter:topic.get", "method": "getTopic"
+			"hook": "filter:topic.build",
+			"method": "getTopic"
 		},
 		{
-			"hook": "filter:topic.thread_tools", "method": "addThreadTool"
+			"hook": "filter:topic.thread_tools",
+			"method": "addThreadTool"
 		},
 		{
-			"hook": "filter:navigation.available", "method": "addNavigation"
+			"hook": "filter:navigation.available",
+			"method": "addNavigation"
 		},
 		{
-			"hook": "filter:post.tools", "method": "addPostTool"
+			"hook": "filter:post.tools",
+			"method": "addPostTool"
 		},
 		{
-			"hook": "filter:rewards.conditions", "method": "getConditions"
+			"hook": "filter:rewards.conditions",
+			"method": "getConditions"
 		},
 		{
-			"hook": "filter:topic.create", "method": "onTopicCreate"
+			"hook": "filter:topic.create",
+			"method": "onTopicCreate"
 		},
 		{
-			"hook": "action:topic.save", "method": "actionTopicSave"
+			"hook": "action:topic.save",
+			"method": "actionTopicSave"
 		}
 	],
 	"staticDirs": {
