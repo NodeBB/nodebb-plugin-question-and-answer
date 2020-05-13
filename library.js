@@ -79,11 +79,11 @@ plugin.addAdminNavigation = function (header, callback) {
 };
 
 plugin.getTopic = function (data, callback) {
-	if (!data.templateData.solvedPid || data.templateData.pagination.currentPage > 1) {
+	const solvedPid = parseInt(data.templateData.solvedPid, 10);
+	if (!solvedPid || data.templateData.pagination.currentPage > 1) {
 		return callback(null, data);
 	}
 
-	const solvedPid = parseInt(data.templateData.solvedPid, 10);
 	async.waterfall([
 		function (next) {
 			posts.getPostsByPids([solvedPid], data.uid, next);
@@ -258,18 +258,13 @@ function handleSocketIO() {
 		});
 	};
 
-	SocketPlugins.QandA.toggleQuestionStatus = function (socket, data, callback) {
-		privileges.topics.canEdit(data.tid, socket.uid, function (err, canEdit) {
-			if (err) {
-				return callback(err);
-			}
+	SocketPlugins.QandA.toggleQuestionStatus = async function (socket, data) {
+		const canEdit = await privileges.topics.canEdit(data.tid, socket.uid);
+		if (!canEdit) {
+			throw new Error('[[error:no-privileges]]');
+		}
 
-			if (!canEdit) {
-				return callback(new Error('[[error:no-privileges]]'));
-			}
-
-			toggleQuestionStatus(data.tid, callback);
-		});
+		return await toggleQuestionStatus(socket.uid, data.tid);
 	};
 }
 
@@ -339,42 +334,24 @@ function toggleSolved(uid, tid, pid, callback) {
 	});
 }
 
-function toggleQuestionStatus(tid, callback) {
-	topics.getTopicField(tid, 'isQuestion', function (err, isQuestion) {
-		if (err) {
-			return callback(err);
-		}
+async function toggleQuestionStatus(uid, tid) {
+	let isQuestion = await topics.getTopicField(tid, 'isQuestion');
+	isQuestion = parseInt(isQuestion, 10) === 1;
 
-		isQuestion = parseInt(isQuestion, 10) === 1;
-
-		async.parallel([
-			function (next) {
-				topics.setTopicField(tid, 'isQuestion', isQuestion ? 0 : 1, next);
-			},
-			function (next) {
-				if (!isQuestion) {
-					async.parallel([
-						function (next) {
-							topics.setTopicField(tid, 'isSolved', 0, next);
-						},
-						function (next) {
-							db.sortedSetAdd('topics:unsolved', Date.now(), tid, next);
-						},
-						function (next) {
-							db.sortedSetRemove('topics:solved', tid, next);
-						},
-					], next);
-				} else {
-					db.sortedSetRemove('topics:unsolved', tid, function () {
-						db.sortedSetRemove('topics:solved', tid, next);
-						topics.deleteTopicField(tid, 'solvedPid');
-					});
-				}
-			},
-		], function (err) {
-			callback(err, { isQuestion: !isQuestion });
-		});
-	});
+	if (!isQuestion) {
+		await Promise.all([
+			topics.setTopicFields(tid, { isQuestion: 1, isSolved: 0, solvedPid: 0 }),
+			db.sortedSetAdd('topics:unsolved', Date.now(), tid),
+			db.sortedSetRemove('topics:solved', tid),
+		]);
+	} else {
+		await Promise.all([
+			topics.deleteTopicFields(tid, ['isQuestion', 'isSolved', 'solvedPid']),
+			db.sortedSetsRemove(['topics:solved', 'topics:unsolved'], tid),
+		]);
+	}
+	plugins.fireHook('action:topic.toggleQuestion', { uid: uid, tid: tid, isQuestion: !isQuestion });
+	return { isQuestion: !isQuestion };
 }
 
 function canPostTopic(uid, callback) {
