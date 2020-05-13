@@ -48,6 +48,10 @@
 		{
 			"hook": "action:topic.save",
 			"method": "actionTopicSave"
+		},
+		{
+			"hook": "action:topic.purge",
+			"method": "actionTopicPurge"
 		}
 	],
 	"staticDirs": {

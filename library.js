@@ -220,6 +220,12 @@ plugin.actionTopicSave = function (hookData) {
 	}
 };
 
+plugin.actionTopicPurge = async function (hookData) {
+	if (hookData.topic) {
+		db.sortedSetsRemove(['topics:solved', 'topics:unsolved'], hookData.topic.tid);
+	}
+};
+
 function renderAdmin(req, res, next) {
 	async.waterfall([
 		async.apply(db.getSortedSetRange, 'categories:cid', 0, -1),
