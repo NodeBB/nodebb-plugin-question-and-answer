@@ -59,6 +59,7 @@
 		"no-script-url": "off",
 		"default-case": "off",
 		"linebreak-style": "off",
+		"no-return-await": "off"
 
 		// "no-multi-assign": "off",
 		// "one-var": "off",

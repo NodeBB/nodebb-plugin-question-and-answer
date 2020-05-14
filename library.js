@@ -1,23 +1,23 @@
 'use strict';
 
-var plugin = {};
-var async = require.main.require('async');
-var topics = require.main.require('./src/topics');
-var posts = require.main.require('./src/posts');
-var categories = require.main.require('./src/categories');
-var meta = require.main.require('./src/meta');
-var privileges = require.main.require('./src/privileges');
-var rewards = require.main.require('./src/rewards');
-var user = require.main.require('./src/user');
-var helpers = require.main.require('./src/controllers/helpers');
-var db = require.main.require('./src/database');
-var plugins = require.main.require('./src/plugins');
-var SocketPlugins = require.main.require('./src/socket.io/plugins');
-var pagination = require.main.require('./src/pagination');
+const topics = require.main.require('./src/topics');
+const posts = require.main.require('./src/posts');
+const categories = require.main.require('./src/categories');
+const meta = require.main.require('./src/meta');
+const privileges = require.main.require('./src/privileges');
+const rewards = require.main.require('./src/rewards');
+const user = require.main.require('./src/user');
+const helpers = require.main.require('./src/controllers/helpers');
+const db = require.main.require('./src/database');
+const plugins = require.main.require('./src/plugins');
+const SocketPlugins = require.main.require('./src/socket.io/plugins');
+const pagination = require.main.require('./src/pagination');
 
-plugin.init = function (params, callback) {
-	var app = params.router;
-	var middleware = params.middleware;
+const plugin = module.exports;
+
+plugin.init = async function (params) {
+	const app = params.router;
+	const middleware = params.middleware;
 
 	app.get('/admin/plugins/question-and-answer', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/plugins/question-and-answer', renderAdmin);
@@ -30,22 +30,15 @@ plugin.init = function (params, callback) {
 
 	handleSocketIO();
 
-	meta.settings.get('question-and-answer', function (err, settings) {
-		if (err) {
-			return callback(err);
-		}
-
-		plugin._settings = settings;
-		callback();
-	});
+	plugin._settings = await meta.settings.get('question-and-answer');
 };
 
-plugin.appendConfig = function (config, callback) {
+plugin.appendConfig = async function (config) {
 	config['question-and-answer'] = plugin._settings;
-	setImmediate(callback, null, config);
+	return config;
 };
 
-plugin.addNavigation = function (menu, callback) {
+plugin.addNavigation = async function (menu) {
 	menu = menu.concat(
 		[
 			{
@@ -64,74 +57,54 @@ plugin.addNavigation = function (menu, callback) {
 			},
 		]
 	);
-
-	callback(null, menu);
+	return menu;
 };
 
-plugin.addAdminNavigation = function (header, callback) {
+plugin.addAdminNavigation = async function (header) {
 	header.plugins.push({
 		route: '/plugins/question-and-answer',
 		icon: 'fa-question-circle',
 		name: 'Q&A',
 	});
-
-	callback(null, header);
+	return header;
 };
 
-plugin.getTopic = function (data, callback) {
-	const solvedPid = parseInt(data.templateData.solvedPid, 10);
-	if (!solvedPid || data.templateData.pagination.currentPage > 1) {
-		return callback(null, data);
+plugin.getTopic = async function (hookData) {
+	const solvedPid = parseInt(hookData.templateData.solvedPid, 10);
+	if (!solvedPid || hookData.templateData.pagination.currentPage > 1) {
+		return hookData;
 	}
+	const answers = await posts.getPostsByPids([solvedPid], hookData.uid);
+	const postsData = await topics.addPostData(answers, hookData.uid);
+	const post = postsData[0];
+	if (post) {
+		post.index = -1;
 
-	async.waterfall([
-		function (next) {
-			posts.getPostsByPids([solvedPid], data.uid, next);
-		},
-		function (answers, next) {
-			topics.addPostData(answers, data.uid, next);
-		},
-	], function (err, post) {
-		if (err) {
-			return callback(err);
-		}
-
-		post = post[0];
-		if (post) {
-			post.index = -1;
-
-			var op = data.templateData.posts.shift();
-			data.templateData.posts.unshift(post);
-			data.templateData.posts.unshift(op);
-		}
-
-		callback(null, data);
-	});
+		var op = hookData.templateData.posts.shift();
+		hookData.templateData.posts.unshift(post);
+		hookData.templateData.posts.unshift(op);
+	}
+	return hookData;
 };
 
-plugin.getTopics = function (data, callback) {
-	var topics = data.topics;
-
-	async.map(topics, function (topic, next) {
-		if (parseInt(topic.isQuestion, 10)) {
+plugin.getTopics = async function (hookData) {
+	hookData.topics.forEach((topic) => {
+		if (topic && parseInt(topic.isQuestion, 10)) {
 			if (parseInt(topic.isSolved, 10)) {
 				topic.title = '<span class="answered"><i class="fa fa-question-circle"></i> [[qanda:topic_solved]]</span> ' + topic.title;
 			} else {
 				topic.title = '<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span> ' + topic.title;
 			}
 		}
-
-		return next(null, topic);
-	}, function (err) {
-		return callback(err, data);
 	});
+	return hookData;
 };
 
-plugin.addThreadTool = function (data, callback) {
-	var isSolved = parseInt(data.topic.isSolved, 10);
+plugin.addThreadTool = async function (hookData) {
+	var isSolved = parseInt(hookData.topic.isSolved, 10);
 
-	if (parseInt(data.topic.isQuestion, 10)) {
-		data.tools = data.tools.concat([
+	if (parseInt(hookData.topic.isQuestion, 10)) {
+		hookData.tools = hookData.tools.concat([
 			{
 				class: 'toggleSolved ' + (isSolved ? 'alert-warning topic-solved' : 'alert-success topic-unsolved'),
 				title: isSolved ? '[[qanda:thread.tool.mark_unsolved]]' : '[[qanda:thread.tool.mark_solved]]',
@@ -144,47 +117,43 @@ plugin.addThreadTool = function (data, callback) {
 			},
 		]);
 	} else {
-		data.tools.push({
+		hookData.tools.push({
 			class: 'toggleQuestionStatus alert-warning',
 			title: '[[qanda:thread.tool.as_question]]',
 			icon: 'fa-question-circle',
 		});
 	}
-
-	callback(null, data);
+	return hookData;
 };
 
-plugin.addPostTool = function (postData, callback) {
-	topics.getTopicDataByPid(postData.pid, function (err, data) {
-		if (err) {
-			return callback(err);
-		}
+plugin.addPostTool = async function (postData) {
+	const data = await topics.getTopicDataByPid(postData.pid);
+	if (!data) {
+		return postData;
+	}
 
-		data.isSolved = parseInt(data.isSolved, 10) === 1;
-		data.isQuestion = parseInt(data.isQuestion, 10) === 1;
+	data.isSolved = parseInt(data.isSolved, 10) === 1;
+	data.isQuestion = parseInt(data.isQuestion, 10) === 1;
 
-		if (data.uid && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(postData.pid, 10)) {
-			postData.tools.push({
-				action: 'qanda/post-solved',
-				html: '[[qanda:post.tool.mark_correct]]',
-				icon: 'fa-check-circle',
-			});
-		}
-
-		callback(null, postData);
-	});
+	if (data.uid && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(postData.pid, 10)) {
+		postData.tools.push({
+			action: 'qanda/post-solved',
+			html: '[[qanda:post.tool.mark_correct]]',
+			icon: 'fa-check-circle',
+		});
+	}
+	return postData;
 };
 
-plugin.getConditions = function (conditions, callback) {
+plugin.getConditions = async function (conditions) {
 	conditions.push({
 		name: 'Times questions accepted',
 		condition: 'qanda/question.accepted',
 	});
-
-	callback(null, conditions);
+	return conditions;
 };
 
-plugin.onTopicCreate = function (payload, callback) {
+plugin.onTopicCreate = async function (payload) {
 	let isQuestion;
 	if (payload.data.hasOwnProperty('isQuestion')) {
 		isQuestion = true;
@@ -196,72 +165,43 @@ plugin.onTopicCreate = function (payload, callback) {
 	}
 
 	if (!isQuestion) {
-		return setImmediate(callback, null, payload);
+		return payload;
 	}
-
-	async.parallel([
-		function (next) {
-			topics.setTopicField(payload.topic.tid, 'isQuestion', 1, next);
-		},
-		function (next) {
-			topics.setTopicField(payload.topic.tid, 'isSolved', 0, next);
-		},
-		function (next) {
-			db.sortedSetAdd('topics:unsolved', Date.now(), payload.topic.tid, next);
-		},
-	], function (err) {
-		return setImmediate(callback, err, payload);
-	});
+	await topics.setTopicFields(payload.topic.tid, { isQuestion: 1, isSolved: 0 });
+	await db.sortedSetAdd('topics:unsolved', Date.now(), payload.topic.tid);
+	return payload;
 };
 
-plugin.actionTopicSave = function (hookData) {
+plugin.actionTopicSave = async function (hookData) {
 	if (hookData.topic && hookData.topic.isQuestion) {
-		db.sortedSetAdd(hookData.topic.isSolved === 1 ? 'topics:solved' : 'topics:unsolved', Date.now(), hookData.topic.tid);
+		await db.sortedSetAdd(hookData.topic.isSolved === 1 ? 'topics:solved' : 'topics:unsolved', Date.now(), hookData.topic.tid);
 	}
 };
 
 plugin.actionTopicPurge = async function (hookData) {
 	if (hookData.topic) {
-		db.sortedSetsRemove(['topics:solved', 'topics:unsolved'], hookData.topic.tid);
+		await db.sortedSetsRemove(['topics:solved', 'topics:unsolved'], hookData.topic.tid);
 	}
 };
 
-function renderAdmin(req, res, next) {
-	async.waterfall([
-		async.apply(db.getSortedSetRange, 'categories:cid', 0, -1),
-		function (cids, next) {
-			categories.getCategoriesFields(cids, ['cid', 'name'], next);
-		},
-	], function (err, data) {
-		if (err) {
-			return next(err);
-		}
-
-		res.render('admin/plugins/question-and-answer', {
-			categories: data,
-		});
+async function renderAdmin(req, res) {
+	const cids = await db.getSortedSetRange('categories:cid', 0, -1);
+	const data = await categories.getCategoriesFields(cids, ['cid', 'name']);
+	res.render('admin/plugins/question-and-answer', {
+		categories: data,
 	});
 }
 
 function handleSocketIO() {
 	SocketPlugins.QandA = {};
 
-	SocketPlugins.QandA.toggleSolved = function (socket, data, callback) {
-		privileges.topics.canEdit(data.tid, socket.uid, function (err, canEdit) {
-			if (err) {
-				return callback(err);
-			}
+	SocketPlugins.QandA.toggleSolved = async function (socket, data) {
+		const canEdit = await privileges.topics.canEdit(data.tid, socket.uid);
+		if (!canEdit) {
+			throw new Error('[[error:no-privileges]]');
+		}
 
-			if (!canEdit) {
-				return callback(new Error('[[error:no-privileges]]'));
-			}
-
-			if (data.pid) {
-				toggleSolved(socket.uid, data.tid, data.pid, callback);
-			} else {
-				toggleSolved(socket.uid, data.tid, callback);
-			}
-		});
+		return await toggleSolved(socket.uid, data.tid, data.pid);
 	};
 
 	SocketPlugins.QandA.toggleQuestionStatus = async function (socket, data) {
@@ -274,70 +214,31 @@ function handleSocketIO() {
 	};
 }
 
-function toggleSolved(uid, tid, pid, callback) {
-	if (!callback) {
-		callback = pid;
-		pid = false;
-	}
+async function toggleSolved(uid, tid, pid) {
+	let isSolved = await topics.getTopicField(tid, 'isSolved');
+	isSolved = parseInt(isSolved, 10) === 1;
+	if (isSolved) {
+		await topics.setTopicFields(tid, { isSolved: 0, solvedPid: 0 });
+		await db.sortedSetAdd('topics:unsolved', Date.now(), tid);
+		await db.sortedSetRemove('topics:solved', tid);
+	} else {
+		await topics.setTopicFields(tid, { isSolved: 1, solvedPid: pid });
+		await db.sortedSetRemove('topics:unsolved', tid);
+		await db.sortedSetAdd('topics:solved', Date.now(), tid);
 
-	topics.getTopicField(tid, 'isSolved', function (err, isSolved) {
-		if (err) {
-			return callback(err);
+		if (pid) {
+			const data = await posts.getPostData(pid);
+			await rewards.checkConditionAndRewardUser({
+				uid: data.uid,
+				condition: 'qanda/question.accepted',
+				method: async function () {
+					await user.incrementUserFieldBy(data.uid, 'qanda/question.accepted', 1);
+				},
+			});
 		}
-
-		isSolved = parseInt(isSolved, 10) === 1;
-
-		async.parallel([
-			function (next) {
-				topics.setTopicField(tid, 'isSolved', isSolved ? 0 : 1, next);
-			},
-			function (next) {
-				if (!isSolved && pid) {
-					topics.setTopicField(tid, 'solvedPid', pid, next);
-				} else {
-					topics.deleteTopicField(tid, 'solvedPid', next);
-				}
-			},
-			function (next) {
-				if (!isSolved && pid) {
-					posts.getPostData(pid, function (err, data) {
-						if (err) {
-							return next(err);
-						}
-
-						rewards.checkConditionAndRewardUser({
-							uid: data.uid,
-							condition: 'qanda/question.accepted',
-							method: function (callback) {
-								user.incrementUserFieldBy(data.uid, 'qanda/question.accepted', 1, callback);
-							},
-						});
-
-						next();
-					});
-				} else {
-					next();
-				}
-			},
-			function (next) {
-				if (!isSolved) {
-					db.sortedSetRemove('topics:unsolved', tid, function () {
-						db.sortedSetAdd('topics:solved', Date.now(), tid, next);
-					});
-				} else {
-					db.sortedSetAdd('topics:unsolved', Date.now(), tid, function () {
-						db.sortedSetRemove('topics:solved', tid, next);
-					});
-				}
-			},
-		], function (err) {
-			if (err) {
-				return callback(err);
-			}
-			plugins.fireHook('action:topic.toggleSolved', { uid: uid, tid: tid, pid: pid, isSolved: !isSolved });
-			callback(null, { isSolved: !isSolved });
-		});
-	});
+	}
+	plugins.fireHook('action:topic.toggleSolved', { uid: uid, tid: tid, pid: pid, isSolved: !isSolved });
+	return { isSolved: !isSolved };
 }
 
 async function toggleQuestionStatus(uid, tid) {
@@ -360,136 +261,78 @@ async function toggleQuestionStatus(uid, tid) {
 	return { isQuestion: !isQuestion };
 }
 
-function canPostTopic(uid, callback) {
-	async.waterfall([
-		function (next) {
-			categories.getAllCidsFromSet('categories:cid', next);
-		},
-		function (cids, next) {
-			privileges.categories.filterCids('topics:create', cids, uid, next);
-		},
-		function (cids, next) {
-			next(null, cids.length > 0);
-		},
-	], callback);
+async function canPostTopic(uid) {
+	let cids = await categories.getAllCidsFromSet('categories:cid');
+	cids = await privileges.categories.filterCids('topics:create', cids, uid);
+	return cids.length > 0;
 }
 
-function renderUnsolved(req, res, next) {
-	var page = parseInt(req.query.page, 10) || 1;
-	var pageCount = 1;
-	var stop = 0;
-	var topicCount = 0;
-	var settings;
-	var canPost;
+async function renderUnsolved(req, res) {
+	const page = parseInt(req.query.page, 10) || 1;
 
-	async.waterfall([
-		function (next) {
-			async.parallel({
-				settings: function (next) {
-					user.getSettings(req.uid, next);
-				},
-				tids: function (next) {
-					db.getSortedSetRevRange('topics:unsolved', 0, 199, next);
-				},
-				canPost: function (next) {
-					canPostTopic(req.uid, next);
-				},
-			}, next);
-		},
-		function (results, next) {
-			settings = results.settings;
-			canPost = results.canPost;
-			privileges.topics.filterTids('read', results.tids, req.uid, next);
-		},
-		function (tids, next) {
-			var start = Math.max(0, (page - 1) * settings.topicsPerPage);
-			stop = start + settings.topicsPerPage - 1;
+	const [settings, allTids, canPost] = await Promise.all([
+		user.getSettings(req.uid),
+		db.getSortedSetRevRange('topics:unsolved', 0, 199),
+		canPostTopic(req.uid),
+	]);
+	let tids = await privileges.topics.filterTids('read', allTids, req.uid);
 
-			topicCount = tids.length;
-			pageCount = Math.max(1, Math.ceil(topicCount / settings.topicsPerPage));
-			tids = tids.slice(start, stop + 1);
+	const start = Math.max(0, (page - 1) * settings.topicsPerPage);
+	const stop = start + settings.topicsPerPage - 1;
 
-			topics.getTopicsByTids(tids, req.uid, next);
-		},
-	], function (err, topics) {
-		if (err) {
-			return next(err);
-		}
+	const topicCount = tids.length;
+	const pageCount = Math.max(1, Math.ceil(topicCount / settings.topicsPerPage));
+	tids = tids.slice(start, stop + 1);
 
-		var data = {};
-		data.topics = topics;
-		data.nextStart = stop + 1;
-		data.set = 'topics:unsolved';
-		data['feeds:disableRSS'] = true;
-		data.pagination = pagination.create(page, pageCount);
-		data.canPost = canPost;
-		data.title = '[[qanda:menu.unsolved]]';
+	const topicsData = await topics.getTopicsByTids(tids, req.uid);
 
-		if (req.path.startsWith('/api/unsolved') || req.path.startsWith('/unsolved')) {
-			data.breadcrumbs = helpers.buildBreadcrumbs([{ text: '[[qanda:menu.unsolved]]' }]);
-		}
+	const data = {};
+	data.topics = topicsData;
+	data.nextStart = stop + 1;
+	data.set = 'topics:unsolved';
+	data['feeds:disableRSS'] = true;
+	data.pagination = pagination.create(page, pageCount);
+	data.canPost = canPost;
+	data.title = '[[qanda:menu.unsolved]]';
 
-		res.render('recent', data);
-	});
+	if (req.path.startsWith('/api/unsolved') || req.path.startsWith('/unsolved')) {
+		data.breadcrumbs = helpers.buildBreadcrumbs([{ text: '[[qanda:menu.unsolved]]' }]);
+	}
+
+	res.render('recent', data);
 }
 
-function renderSolved(req, res, next) {
-	var page = parseInt(req.query.page, 10) || 1;
-	var pageCount = 1;
-	var stop = 0;
-	var topicCount = 0;
-	var settings;
-	var canPost;
+async function renderSolved(req, res) {
+	const page = parseInt(req.query.page, 10) || 1;
 
-	async.waterfall([
-		function (next) {
-			async.parallel({
-				settings: function (next) {
-					user.getSettings(req.uid, next);
-				},
-				tids: function (next) {
-					db.getSortedSetRevRange('topics:solved', 0, 199, next);
-				},
-				canPost: function (next) {
-					canPostTopic(req.uid, next);
-				},
-			}, next);
-		},
-		function (results, next) {
-			settings = results.settings;
-			canPost = results.canPost;
-			privileges.topics.filterTids('read', results.tids, req.uid, next);
-		},
-		function (tids, next) {
-			var start = Math.max(0, (page - 1) * settings.topicsPerPage);
-			stop = start + settings.topicsPerPage - 1;
+	const [settings, allTids, canPost] = await Promise.all([
+		user.getSettings(req.uid),
+		db.getSortedSetRevRange('topics:solved', 0, 199),
+		canPostTopic(req.uid),
+	]);
+	let tids = await privileges.topics.filterTids('read', allTids, req.uid);
 
-			topicCount = tids.length;
-			pageCount = Math.max(1, Math.ceil(topicCount / settings.topicsPerPage));
-			tids = tids.slice(start, stop + 1);
+	const start = Math.max(0, (page - 1) * settings.topicsPerPage);
+	const stop = start + settings.topicsPerPage - 1;
 
-			topics.getTopicsByTids(tids, req.uid, next);
-		},
-	], function (err, topics) {
-		if (err) {
-			return next(err);
-		}
+	const topicCount = tids.length;
+	const pageCount = Math.max(1, Math.ceil(topicCount / settings.topicsPerPage));
+	tids = tids.slice(start, stop + 1);
 
-		var data = {};
-		data.topics = topics;
-		data.nextStart = stop + 1;
-		data.set = 'topics:solved';
-		data['feeds:disableRSS'] = true;
-		data.pagination = pagination.create(page, pageCount);
-		data.canPost = canPost;
-		data.title = '[[qanda:menu.solved]]';
+	const topicsData = await topics.getTopicsByTids(tids, req.uid);
 
-		if (req.path.startsWith('/api/solved') || req.path.startsWith('/solved')) {
-			data.breadcrumbs = helpers.buildBreadcrumbs([{ text: '[[qanda:menu.solved]]' }]);
-		}
+	const data = {};
+	data.topics = topicsData;
+	data.nextStart = stop + 1;
+	data.set = 'topics:solved';
+	data['feeds:disableRSS'] = true;
+	data.pagination = pagination.create(page, pageCount);
+	data.canPost = canPost;
+	data.title = '[[qanda:menu.solved]]';
 
-		res.render('recent', data);
-	});
+	if (req.path.startsWith('/api/solved') || req.path.startsWith('/solved')) {
+		data.breadcrumbs = helpers.buildBreadcrumbs([{ text: '[[qanda:menu.solved]]' }]);
+	}
+
+	res.render('recent', data);
 }
-
-module.exports = plugin;
