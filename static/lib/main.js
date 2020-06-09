@@ -67,6 +67,9 @@ $('document').ready(function () {
 						data.composerData.isQuestion = true;
 					}
 				});
+
+				// Don't close dropdown on toggle (for better UX)
+				return false;
 			});
 
 			actionBar.append(item);
