@@ -178,11 +178,30 @@ plugin.actionTopicSave = async function (hookData) {
 	}
 };
 
+plugin.filterTopicEdit = async function (hookData) {
+	const isNowQuestion = hookData.data.isQuestion;
+	const wasQuestion = await topics.getTopicField(hookData.topic.tid, 'isQuestion');
+
+	if (isNowQuestion != wasQuestion) {
+		await toggleQuestionStatus(hookData.req.uid, hookData.topic.tid)
+	}
+
+	return hookData;
+}
+
 plugin.actionTopicPurge = async function (hookData) {
 	if (hookData.topic) {
 		await db.sortedSetsRemove(['topics:solved', 'topics:unsolved'], hookData.topic.tid);
 	}
 };
+
+plugin.filterComposerPush = async function (hookData) {
+	const tid = await posts.getPostField(hookData.pid, 'tid');
+	const isQuestion = await topics.getTopicField(tid, 'isQuestion');
+	hookData.isQuestion = isQuestion;
+
+	return hookData;
+}
 
 async function renderAdmin(req, res) {
 	const cids = await db.getSortedSetRange('categories:cid', 0, -1);

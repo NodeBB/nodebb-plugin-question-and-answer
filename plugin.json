@@ -50,8 +50,16 @@
 			"method": "actionTopicSave"
 		},
 		{
+			"hook": "filter:topic.edit",
+			"method": "filterTopicEdit"
+		},
+		{
 			"hook": "action:topic.purge",
 			"method": "actionTopicPurge"
+		},
+		{
+			"hook": "filter:composer.push",
+			"method": "filterComposerPush"
 		}
 	],
 	"staticDirs": {

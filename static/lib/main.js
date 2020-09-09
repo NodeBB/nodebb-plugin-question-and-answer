@@ -49,13 +49,14 @@ $('document').ready(function () {
 	$(window).on('action:posts.loaded', markPostAsSolved);
 
 	$(window).on('action:composer.loaded', function (ev, data) {
+		console.log(data);
 		translate(function () {
 			// Return early if it is a reply and not a new topic
 			if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
 				return;
 			}
 
-			var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-circle-o"></i> ' + translations['[[qanda:thread.tool.as_question]]'] + '</a></li></ul>');
+			var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-' + (data.composerData.isQuestion ? 'check-' : '') + 'circle-o"></i> ' + translations['[[qanda:thread.tool.as_question]]'] + '</a></li></ul>');
 			var actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
 
 			item.on('click', 'li [data-switch-action="post"]', function () {
