@@ -84,6 +84,16 @@ plugin.getTopic = async function (hookData) {
 		hookData.templateData.posts.unshift(post);
 		hookData.templateData.posts.unshift(op);
 	}
+
+	// Also expose an `isAnswer` boolean in the post object itself
+	hookData.templateData.posts.forEach((post) => {
+		if (post.pid === solvedPid) {
+			post.isAnswer = true;
+		} else {
+			post.isAnswer = false;
+		}
+	});
+
 	return hookData;
 };
 
