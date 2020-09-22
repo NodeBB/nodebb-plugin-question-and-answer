@@ -44,16 +44,6 @@ html .topic {
 }
 
 .posts [component="post"][data-index="-1"].isSolved {
-	border-left: 8px solid @brand-success;
-    padding: 20px 20px 0px 20px;
-    margin-bottom: 25px;
-    margin-top: -20px;
-    margin-top: 0;
-	border-top: 1px solid @brand-success;
-	border-bottom: 1px solid @brand-success;
-	margin-left: -28px;
-	padding-bottom: 15px;
-
 	.necro-post {
 		display: none;
 	}
@@ -62,13 +52,38 @@ html .topic {
 		margin-left: -15px;
 	}
 	
-	> hr {
-		display: none;
-	}
-
 	.bookmarked:before {
 		color: @brand-success;
 		content: "\f00c";
+	}
+
+	&:before {
+		content: '\f00c';
+		font-family: "FontAwesome";
+		border: 1px solid #fff;
+		border-radius: 50%;
+		position: absolute;
+		top: -4px;
+		left: -10px;
+		width: 26px;
+		box-shadow: 0 0 0 1px #eee;
+		z-index: 1;
+		height: 25px;
+		text-align: center;
+		padding: 5px;
+		background-color: @brand-success;
+		color: white;
+		font-size: 10px;
+	}
+
+	@media (max-width: @screen-xs-max) {
+		&:before {
+			top: 13px;
+			left: 11px;
+			width: 16px;
+			height: 16px;
+			padding: 1px;
+		}
 	}
 }
 
