@@ -1,0 +1,21 @@
+{
+    "topic_solved": "ÇÖZÜLDÜ",
+    "topic_unsolved": "ÇÖZÜLMEDİ",
+    "menu.solved": "Çözüldü",
+    "menu.unsolved": "Çözülmedi",
+    "thread.alert.as_question": "Konu, soru olarak işaretlendi",
+    "thread.alert.make_normal": "Konu artık sıradan bir alt konu",
+    "thread.alert.solved": "Konu çözüldü olarak işaretlendi",
+    "thread.alert.unsolved": "Konu çözülmedi olarak işaretlendi",
+    "thread.tool.mark_solved": "Çözüldü olarak işaretle",
+    "thread.tool.mark_unsolved": "Çözülmedi olarak işaretle",
+    "thread.tool.make_normal": "Normal bir konuya çevir",
+    "thread.tool.as_question": "Soru olarak sor",
+    "thread.button.as_question": "Soru olarak sor",
+    "post.alert.correct_answer": "Bu gönderi doğru cevap olarak işaretlendi",
+    "post.tool.mark_correct": "Bu gönderiyi doğru cevap olarak işaretle",
+    "admin.form.general_settings": "Genel Ayarlar",
+    "admin.form.label.only_allow_all": "Yalnızca tüm kategoriler için soru sorulmasına izin ver (normal konu davranışını devre dışı bırakır)",
+    "admin.form.label.only_allow_following": "Yalnızca aşağıdaki kategoriler için soru sorulmasına izin verin (normal konu davranışını devre dışı bırakır)",
+    "admin.form.tips": "Bu seçenek aşağıdaki seçeneğin yerini alır"
+    }
