@@ -61,15 +61,15 @@ $('document').ready(function () {
 			item.on('click', 'li [data-switch-action="post"]', function () {
 				var icon = item.find('.fa');
 				icon.toggleClass('fa-circle-o').toggleClass('fa-check-circle-o');
-
-				$(window).one('action:composer.submit', function (ev, data) {
-					if (icon.hasClass('fa-check-circle-o')) {
-						data.composerData.isQuestion = true;
-					}
-				});
-
 				// Don't close dropdown on toggle (for better UX)
 				return false;
+			});
+
+			$(window).one('action:composer.submit', function (ev, data) {
+				var icon = item.find('.fa');
+				if (icon.hasClass('fa-check-circle-o')) {
+					data.composerData.isQuestion = true;
+				}
 			});
 
 			actionBar.append(item);
