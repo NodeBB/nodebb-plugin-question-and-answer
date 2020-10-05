@@ -70,6 +70,14 @@ plugin.addAdminNavigation = async function (header) {
 };
 
 plugin.getTopic = async function (hookData) {
+	if (parseInt(hookData.templateData.isQuestion, 10)) {
+		hookData.templateData.icons.push(
+			parseInt(hookData.templateData.isSolved, 10)
+				? '<span class="answered"><i class="fa fa-check"></i>[[qanda:topic_solved]]</span>'
+				: '<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span>'
+		);
+	}
+
 	const solvedPid = parseInt(hookData.templateData.solvedPid, 10);
 	if (!solvedPid || hookData.templateData.pagination.currentPage > 1) {
 		return hookData;
@@ -101,7 +109,7 @@ plugin.getTopics = async function (hookData) {
 	hookData.topics.forEach((topic) => {
 		if (topic && parseInt(topic.isQuestion, 10)) {
 			if (parseInt(topic.isSolved, 10)) {
-				topic.title = '<span class="answered"><i class="fa fa-question-circle"></i> [[qanda:topic_solved]]</span> ' + topic.title;
+				topic.title = '<span class="answered"><i class="fa fa-check"></i> [[qanda:topic_solved]]</span> ' + topic.title;
 			} else {
 				topic.title = '<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span> ' + topic.title;
 			}

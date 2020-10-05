@@ -34,10 +34,9 @@ $('document').ready(function () {
 		});
 	}
 
-	$(window).on('action:ajaxify.end', function (ev, data) {
-		if (data.url.match(/^topic\//)) {
+	$(window).on('action:ajaxify.end', function () {
+		if (ajaxify.data.template.topic) {
 			translate(function () {
-				addLabel();
 				markPostAsSolved();
 			});
 		}
@@ -83,23 +82,6 @@ $('document').ready(function () {
 
 	function addPostHandlers() {
 		$('[component="qanda/post-solved"]').on('click', markPostAsAnswer);
-	}
-
-	function addLabel() {
-		if (ajaxify.data.hasOwnProperty('isQuestion') && parseInt(ajaxify.data.isQuestion, 10) === 1) {
-			var container = $('[component="topic/labels"]');
-
-			if (!container.length) {
-				container = $('<div component="topic/labels"></div>');
-				$('[component="post/header"]').after(container);
-			}
-
-			if (parseInt(ajaxify.data.isSolved, 10) === 0) {
-				container.append('<span class="unanswered"><i class="fa fa-question-circle"></i> ' + translations['[[qanda:topic_unsolved]]'] + '</span>');
-			} else if (parseInt(ajaxify.data.isSolved, 10) === 1) {
-				container.append('<span class="answered"><i class="fa fa-question-circle"></i> ' + translations['[[qanda:topic_solved]]'] + '</span>');
-			}
-		}
 	}
 
 	function toggleQuestionStatus() {
