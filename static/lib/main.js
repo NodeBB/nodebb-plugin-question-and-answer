@@ -49,7 +49,6 @@ $('document').ready(function () {
 	$(window).on('action:posts.loaded', markPostAsSolved);
 
 	$(window).on('action:composer.loaded', function (ev, data) {
-		console.log(data);
 		translate(function () {
 			// Return early if it is a reply and not a new topic
 			if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
