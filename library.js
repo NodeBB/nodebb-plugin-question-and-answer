@@ -84,11 +84,15 @@ plugin.getTopic = async function (hookData) {
 	}
 	const answers = await posts.getPostsByPids([solvedPid], hookData.uid);
 	const postsData = await topics.addPostData(answers, hookData.uid);
-	const post = postsData[0];
+	let post = postsData[0];
 	if (post) {
+		let bestAnswerTopicData = Object.assign({}, hookData.templateData);
+		bestAnswerTopicData.posts = postsData;
+		await topics.modifyPostsByPrivilege(bestAnswerTopicData, await privileges.topics.get(hookData.templateData.tid, hookData.req.uid));
+		post = bestAnswerTopicData.posts[0];
 		post.index = -1;
 
-		var op = hookData.templateData.posts.shift();
+		const op = hookData.templateData.posts.shift();
 		hookData.templateData.posts.unshift(post);
 		hookData.templateData.posts.unshift(op);
 	}
