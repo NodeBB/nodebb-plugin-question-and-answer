@@ -213,6 +213,13 @@ plugin.filterComposerPush = async function (hookData) {
 	return hookData;
 }
 
+plugin.staticApiRoutes = async function ({ router, middleware, helpers }) {
+	router.get('/qna/:tid', middleware.assert.topic, async (req, res) => {
+		const { isQuestion, isSolved } = await topics.getTopicFields(req.params.tid, ['isQuestion', 'isSolved']);
+		helpers.formatApiResponse(200, res, { isQuestion, isSolved });
+	});
+}
+
 async function renderAdmin(req, res) {
 	const cids = await db.getSortedSetRange('categories:cid', 0, -1);
 	const data = await categories.getCategoriesFields(cids, ['cid', 'name']);

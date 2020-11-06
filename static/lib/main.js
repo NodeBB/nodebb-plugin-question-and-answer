@@ -76,6 +76,23 @@ $('document').ready(function () {
 		});
 	});
 
+	$(window).on('action:posts.edited', function (ev, data) {
+		require(['api'], function (api) {
+			api.get(`/plugins/qna/${data.topic.tid}`, {})
+				.then((res) => {
+					const toggled = !ajaxify.data.hasOwnProperty('isQuestion') || ajaxify.data.isQuestion !== res.isQuestion;
+
+					ajaxify.data.isQuestion = res.isQuestion || '0';
+					ajaxify.data.isSolved = res.isSolved || '0';
+					parseInt(res.isQuestion, 10) ? addLabel() : removeLabel();
+
+					if (toggled) {
+						$(window).trigger('action:topic.toggleQuestion');
+					}
+				});
+		})
+	});
+
 	function addHandlers() {
 		$('.toggleQuestionStatus').on('click', toggleQuestionStatus);
 		$('.toggleSolved').on('click', toggleSolved);
@@ -99,6 +116,13 @@ $('document').ready(function () {
 			} else if (parseInt(ajaxify.data.isSolved, 10) === 1) {
 				container.append('<span class="answered"><i class="fa fa-question-circle"></i> ' + translations['[[qanda:topic_solved]]'] + '</span>');
 			}
+		}
+	}
+
+	function removeLabel() {
+		if (!ajaxify.data.hasOwnProperty('isQuestion') || parseInt(ajaxify.data.isQuestion, 10) === 0) {
+			var container = $('[component="topic/labels"]');
+			container.find('span.answered, span.unanswered').remove();
 		}
 	}
 
