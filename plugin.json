@@ -60,6 +60,10 @@
 		{
 			"hook": "filter:composer.push",
 			"method": "filterComposerPush"
+		},
+		{
+			"hook": "static:api.routes",
+			"method": "staticApiRoutes"
 		}
 	],
 	"staticDirs": {

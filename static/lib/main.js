@@ -75,6 +75,18 @@ $('document').ready(function () {
 		});
 	});
 
+	$(window).on('action:posts.edited', function (ev, data) {
+		require(['api'], function (api) {
+			api.get(`/plugins/qna/${data.topic.tid}`, {})
+				.then((res) => {
+					const toggled = (ajaxify.data.isQuestion || '0') !== res.isQuestion || (ajaxify.data.isSolved || '0') !== res.isSolved;
+					if (toggled) {
+						ajaxify.refresh();
+					}
+				});
+		})
+	});
+
 	function addHandlers() {
 		$('.toggleQuestionStatus').on('click', toggleQuestionStatus);
 		$('.toggleSolved').on('click', toggleSolved);
