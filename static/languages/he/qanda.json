@@ -1,0 +1,21 @@
+{
+    "topic_solved": "נפתח",
+    "topic_unsolved": "לא נפתח",
+    "menu.solved": "נפתח",
+    "menu.unsolved": "לא נפתר",
+    "thread.alert.as_question": "הנושא סומן כשאלה",
+    "thread.alert.make_normal": "Topic is now a regular thread",
+    "thread.alert.solved": "הנושא סומן כנפתר",
+    "thread.alert.unsolved": "הנושא סומן כלא נפתר",
+    "thread.tool.mark_solved": "סמן כנושא שנפתר",
+    "thread.tool.mark_unsolved": "סמן כנושא שלא נפתר",
+    "thread.tool.make_normal": "שנה את הנושא לנושא רגיל",
+    "thread.tool.as_question": "שאל כשאלה",
+    "thread.button.as_question": "שאל כשאלה",
+    "post.alert.correct_answer": "פוסט זה סומן כתשובה הנכונה",
+    "post.tool.mark_correct": "סמן פוסט זה כתשובה הנכונה",
+    "admin.form.general_settings": "General Settings",
+    "admin.form.label.only_allow_all": "Only allow questions to be asked for all categories (disables regular topic behaviour)",
+    "admin.form.label.only_allow_following": "Only allow questions to be asked for the following categories (disables regular topic behaviour)",
+    "admin.form.tips": "This option supercedes the one below"
+}
