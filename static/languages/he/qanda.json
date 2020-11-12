@@ -1,7 +1,7 @@
 {
-    "topic_solved": "נפתח",
-    "topic_unsolved": "לא נפתח",
-    "menu.solved": "נפתח",
+    "topic_solved": "נפתר",
+    "topic_unsolved": "לא נפתר",
+    "menu.solved": "נפתר",
     "menu.unsolved": "לא נפתר",
     "thread.alert.as_question": "הנושא סומן כשאלה",
     "thread.alert.make_normal": "Topic is now a regular thread",
