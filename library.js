@@ -86,7 +86,7 @@ plugin.getTopic = async function (hookData) {
 	const postsData = await topics.addPostData(answers, hookData.uid);
 	let post = postsData[0];
 	if (post) {
-		let bestAnswerTopicData = Object.assign({}, hookData.templateData);
+		const bestAnswerTopicData = { ...hookData.templateData };
 		bestAnswerTopicData.posts = postsData;
 		await topics.modifyPostsByPrivilege(bestAnswerTopicData, await privileges.topics.get(hookData.templateData.tid, hookData.req.uid));
 		post = bestAnswerTopicData.posts[0];
@@ -99,11 +99,7 @@ plugin.getTopic = async function (hookData) {
 
 	// Also expose an `isAnswer` boolean in the post object itself
 	hookData.templateData.posts.forEach((post) => {
-		if (post.pid === solvedPid) {
-			post.isAnswer = true;
-		} else {
-			post.isAnswer = false;
-		}
+		post.isAnswer = post.pid === solvedPid;
 	});
 
 	return hookData;
@@ -205,11 +201,11 @@ plugin.filterTopicEdit = async function (hookData) {
 	const wasQuestion = await topics.getTopicField(hookData.topic.tid, 'isQuestion');
 
 	if (isNowQuestion != wasQuestion) {
-		await toggleQuestionStatus(hookData.req.uid, hookData.topic.tid)
+		await toggleQuestionStatus(hookData.req.uid, hookData.topic.tid);
 	}
 
 	return hookData;
-}
+};
 
 plugin.actionTopicPurge = async function (hookData) {
 	if (hookData.topic) {
@@ -223,7 +219,7 @@ plugin.filterComposerPush = async function (hookData) {
 	hookData.isQuestion = isQuestion;
 
 	return hookData;
-}
+};
 
 plugin.staticApiRoutes = async function ({ router, middleware, helpers }) {
 	router.get('/qna/:tid', middleware.assert.topic, async (req, res) => {
@@ -232,7 +228,7 @@ plugin.staticApiRoutes = async function ({ router, middleware, helpers }) {
 		isSolved = isSolved || '0';
 		helpers.formatApiResponse(200, res, { isQuestion, isSolved });
 	});
-}
+};
 
 async function renderAdmin(req, res) {
 	const cids = await db.getSortedSetRange('categories:cid', 0, -1);
