@@ -234,6 +234,30 @@ plugin.staticApiRoutes = async function ({ router, middleware, helpers }) {
 	});
 }
 
+plugin.registerTopicEvents = async function ({ types }) {
+	types = {
+		...types,
+		'qanda.as_question': {
+			icon: 'fa-question',
+			text: '[[qanda:thread.alert.as_question]]',
+		},
+		'qanda.make_normal': {
+			type: 'qanda.make_normal',
+			text: '[[qanda:thread.alert.make_normal]]',
+		},
+		'qanda.solved': {
+			icon: 'fa-check',
+			text: '[[qanda:thread.alert.solved]]',
+		},
+		'qanda.unsolved': {
+			icon: 'fa-question',
+			text: '[[qanda:thread.alert.unsolved]]',
+		}
+	};
+
+	return { types };
+};
+
 async function renderAdmin(req, res) {
 	const cids = await db.getSortedSetRange('categories:cid', 0, -1);
 	const data = await categories.getCategoriesFields(cids, ['cid', 'name']);
@@ -271,10 +295,12 @@ async function toggleSolved(uid, tid, pid) {
 		await topics.setTopicFields(tid, { isSolved: 0, solvedPid: 0 });
 		await db.sortedSetAdd('topics:unsolved', Date.now(), tid);
 		await db.sortedSetRemove('topics:solved', tid);
+		await topics.events.log(tid, { type: 'qanda.solved', uid });
 	} else {
 		await topics.setTopicFields(tid, { isSolved: 1, solvedPid: pid });
 		await db.sortedSetRemove('topics:unsolved', tid);
 		await db.sortedSetAdd('topics:solved', Date.now(), tid);
+		await topics.events.log(tid, { type: 'qanda.unsolved', uid });
 
 		if (pid) {
 			const data = await posts.getPostData(pid);
@@ -287,7 +313,7 @@ async function toggleSolved(uid, tid, pid) {
 			});
 		}
 	}
-	plugins.fireHook('action:topic.toggleSolved', { uid: uid, tid: tid, pid: pid, isSolved: !isSolved });
+	plugins.hooks.fire('action:topic.toggleSolved', { uid: uid, tid: tid, pid: pid, isSolved: !isSolved });
 	return { isSolved: !isSolved };
 }
 
@@ -300,14 +326,16 @@ async function toggleQuestionStatus(uid, tid) {
 			topics.setTopicFields(tid, { isQuestion: 1, isSolved: 0, solvedPid: 0 }),
 			db.sortedSetAdd('topics:unsolved', Date.now(), tid),
 			db.sortedSetRemove('topics:solved', tid),
+			topics.events.log(tid, { type: 'qanda.as_question', uid }),
 		]);
 	} else {
 		await Promise.all([
 			topics.deleteTopicFields(tid, ['isQuestion', 'isSolved', 'solvedPid']),
 			db.sortedSetsRemove(['topics:solved', 'topics:unsolved'], tid),
+			topics.events.log(tid, { type: 'qanda.make_normal', uid }),
 		]);
 	}
-	plugins.fireHook('action:topic.toggleQuestion', { uid: uid, tid: tid, isQuestion: !isQuestion });
+	plugins.hooks.fire('action:topic.toggleQuestion', { uid: uid, tid: tid, isQuestion: !isQuestion });
 	return { isQuestion: !isQuestion };
 }
 
