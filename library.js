@@ -179,7 +179,7 @@ plugin.onTopicCreate = async function (payload) {
 
 	// Overrides from ACP config
 	if (plugin._settings.forceQuestions === 'on' || plugin._settings['defaultCid_' + payload.topic.cid] === 'on') {
-		isQuestion = false;
+		isQuestion = true;
 	}
 
 	if (!isQuestion) {
