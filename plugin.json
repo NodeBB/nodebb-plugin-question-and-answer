@@ -79,6 +79,9 @@
 	"scripts": [
 		"static/lib/main.js"
 	],
+	"acpScripts": [
+		"static/lib/admin.js"
+	],
 	"templates": "static/templates",
 	"languages": "static/languages",
 	"defaultLang": "en_US"
