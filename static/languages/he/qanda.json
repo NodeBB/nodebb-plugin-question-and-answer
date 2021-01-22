@@ -17,5 +17,6 @@
     "admin.form.general_settings": "הגדרות כלליות",
     "admin.form.label.only_allow_all": "אפשר שאלות בלבד בכל הקטגוריות (בטל נושאים רגילים)",
     "admin.form.label.only_allow_following": "אפשר שאלות בלבד בקטגוריות המסומנות (בטל נושאים רגילים)",
-    "admin.form.tips": "הגדרה זו עוקפת את ההגדרה למטה."
+    "admin.form.tips": "הגדרה זו עוקפת את ההגדרה למטה.",
+    "admin.form.label.toggle_lock": "אוטומטית לסגור נושאים פתורים"
 }

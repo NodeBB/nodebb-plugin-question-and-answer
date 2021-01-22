@@ -17,5 +17,6 @@
     "admin.form.general_settings": "Genel Ayarlar",
     "admin.form.label.only_allow_all": "Yalnızca tüm kategoriler için soru sorulmasına izin ver (normal konu davranışını devre dışı bırakır)",
     "admin.form.label.only_allow_following": "Yalnızca aşağıdaki kategoriler için soru sorulmasına izin verin (normal konu davranışını devre dışı bırakır)",
-    "admin.form.tips": "Bu seçenek aşağıdaki seçeneğin yerini alır"
-    }
+    "admin.form.tips": "Bu seçenek aşağıdaki seçeneğin yerini alır",
+    "admin.form.label.toggle_lock": "Çözülen konuyu otomatik olarak kapat"
+}

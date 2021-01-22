@@ -17,5 +17,6 @@
     "admin.form.general_settings": "Allgemeine Einstellungen",
     "admin.form.label.only_allow_all": "Nur noch das Stellen von Fragen erlauben. Wird auf alle Kategorien angewendet und deaktiviert das normale Themen erstellen.",
     "admin.form.label.only_allow_following": "Nur noch das Fragen stellen erlauben für folgende Kategorien",
-    "admin.form.tips": "Diese Option überschreibt die unten stehende"
+    "admin.form.tips": "Diese Option überschreibt die unten stehende",
+    "admin.form.label.toggle_lock": "Automatisch gelöste Themen schließen"
 }

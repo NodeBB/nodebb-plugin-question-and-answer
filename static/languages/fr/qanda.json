@@ -17,5 +17,6 @@
     "admin.form.general_settings": "Réglages généraux",
     "admin.form.label.only_allow_all": "Autoriser uniquement les questions d'être posées dans toutes les catégories (désactive les discussions normales)",
     "admin.form.label.only_allow_following": "Autoriser uniquement les questions d'être posées dans les catégories suivantes (désactive les discussions normales)",
-    "admin.form.tips": "Cette option remplace celle ci-dessous"
+    "admin.form.tips": "Cette option remplace celle ci-dessous",
+    "admin.form.label.toggle_lock": "Fermer automatiquement les sujets résolus"
 }

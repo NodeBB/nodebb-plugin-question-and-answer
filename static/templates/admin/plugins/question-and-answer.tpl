@@ -5,6 +5,12 @@
 		<div class="col-sm-10 col-xs-12">
 			<div class="checkbox">
 				<label>
+					<input type="checkbox" name="toggleLock">
+					[[qanda:admin.form.label.toggle_lock]]
+				</label>
+			</div>
+			<div class="checkbox">
+				<label>
 					<input type="checkbox" name="forceQuestions">
 					[[qanda:admin.form.label.only_allow_all]]
 				</label>

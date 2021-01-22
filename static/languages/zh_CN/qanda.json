@@ -12,5 +12,6 @@
 	"admin.form.general_settings": "一般设定",
 	"admin.form.label.only_allow_all": "所有版块都只允许发表问题主题（这将覆盖原始设置）",
 	"admin.form.label.only_allow_following": "以下版块只允许发表问题主题（这将覆盖原始设置）",
-	"admin.form.tips": "这将覆盖下面的设置"
+	"admin.form.tips": "这将覆盖下面的设置",
+	"admin.form.label.toggle_lock": "自动关闭已解决的题目"
 }
