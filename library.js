@@ -256,9 +256,9 @@ plugin.registerTopicEvents = async function ({ types }) {
 
 async function renderAdmin(req, res) {
 	const cids = await db.getSortedSetRange('categories:cid', 0, -1);
-	const data = await categories.getCategoriesFields(cids, ['cid', 'name']);
+	const data = await categories.getCategoriesFields(cids, ['cid', 'name', 'parentCid']);
 	res.render('admin/plugins/question-and-answer', {
-		categories: data,
+		categories: categories.getTree(data)
 	});
 }
 
