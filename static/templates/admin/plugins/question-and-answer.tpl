@@ -19,14 +19,8 @@
 			<label>
 				[[qanda:admin.form.label.only_allow_following]]
 			</label>
-			<!-- BEGIN categories -->
-			<div class="checkbox">
-				<label>
-					<input type="checkbox" name="defaultCid_{../cid}">
-					{../name}
-				</label>
+			<div class="all-categories">
 			</div>
-			<!-- END categories -->
 		</div>
 	</div>
 </form>
