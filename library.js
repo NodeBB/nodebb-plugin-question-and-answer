@@ -283,7 +283,7 @@ async function toggleSolved(uid, tid, pid) {
 			});
 		}
 	}
-	plugins.fireHook('action:topic.toggleSolved', { uid: uid, tid: tid, pid: pid, isSolved: !isSolved });
+	plugins.hooks.fire('action:topic.toggleSolved', { uid: uid, tid: tid, pid: pid, isSolved: !isSolved });
 	return { isSolved: !isSolved };
 }
 
@@ -303,7 +303,7 @@ async function toggleQuestionStatus(uid, tid) {
 			db.sortedSetsRemove(['topics:solved', 'topics:unsolved'], tid),
 		]);
 	}
-	plugins.fireHook('action:topic.toggleQuestion', { uid: uid, tid: tid, isQuestion: !isQuestion });
+	plugins.hooks.fire('action:topic.toggleQuestion', { uid: uid, tid: tid, isQuestion: !isQuestion });
 	return { isQuestion: !isQuestion };
 }
 
