@@ -144,23 +144,23 @@ plugin.addThreadTool = async function (hookData) {
 	return hookData;
 };
 
-plugin.addPostTool = async function (postData) {
-	const data = await topics.getTopicDataByPid(postData.pid);
+plugin.addPostTool = async function (hookData) {
+	const data = await topics.getTopicDataByPid(hookData.pid);
 	if (!data) {
-		return postData;
+		return hookData;
 	}
 
 	data.isSolved = parseInt(data.isSolved, 10) === 1;
 	data.isQuestion = parseInt(data.isQuestion, 10) === 1;
-
-	if (data.uid && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(postData.pid, 10)) {
-		postData.tools.push({
+	const canEdit = await privileges.topics.canEdit(data.tid, hookData.uid);
+	if (canEdit && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(hookData.pid, 10)) {
+		hookData.tools.push({
 			action: 'qanda/post-solved',
 			html: '[[qanda:post.tool.mark_correct]]',
 			icon: 'fa-check-circle',
 		});
 	}
-	return postData;
+	return hookData;
 };
 
 plugin.getConditions = async function (conditions) {
