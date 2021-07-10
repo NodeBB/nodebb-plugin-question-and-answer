@@ -17,5 +17,6 @@
     "admin.form.general_settings": "Configurações Gerais",
     "admin.form.label.only_allow_all": "Permitir que sejam feitas questões em todas as categorias (o tópico é automaticamente publicado como uma questão em todas as categorias)",
     "admin.form.label.only_allow_following": "Apenas permitir que sejam feitas questões nas seguintes categorias (o tópico é automaticamente publicado como uma questão nas categorias que selecionares)",
-    "admin.form.tips": "Marcar esta opção irá substituir/sobrepor a opção abaixo"
+    "admin.form.tips": "Marcar esta opção irá substituir/sobrepor a opção abaixo",
+    "admin.form.label.toggle_lock": "Automaticamente fechar tópicos resolvidos"
 }

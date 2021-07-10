@@ -17,5 +17,6 @@
     "admin.form.general_settings": "General Settings",
     "admin.form.label.only_allow_all": "Only allow questions to be asked for all categories (disables regular topic behaviour)",
     "admin.form.label.only_allow_following": "Only allow questions to be asked for the following categories (disables regular topic behaviour)",
-    "admin.form.tips": "This option supercedes the one below"
+    "admin.form.tips": "This option supercedes the one below",
+    "admin.form.label.toggle_lock": "Automatically close solved topics"
 }

@@ -232,9 +232,9 @@ plugin.staticApiRoutes = async function ({ router, middleware, helpers }) {
 
 async function renderAdmin(req, res) {
 	const cids = await db.getSortedSetRange('categories:cid', 0, -1);
-	const data = await categories.getCategoriesFields(cids, ['cid', 'name']);
+	const data = await categories.getCategoriesFields(cids, ['cid', 'name', 'parentCid']);
 	res.render('admin/plugins/question-and-answer', {
-		categories: data,
+		categories: categories.getTree(data)
 	});
 }
 
@@ -263,12 +263,21 @@ function handleSocketIO() {
 async function toggleSolved(uid, tid, pid) {
 	let isSolved = await topics.getTopicField(tid, 'isSolved');
 	isSolved = parseInt(isSolved, 10) === 1;
+
+	const updatedTopicFields = isSolved
+		? { isSolved: 0, solvedPid: 0 }
+		: { isSolved: 1, solvedPid: pid };
+
+	if (plugin._settings.toggleLock === 'on') {
+		updatedTopicFields.locked = isSolved ? 0 : 1;
+	}
+
+	await topics.setTopicFields(tid, updatedTopicFields);
+
 	if (isSolved) {
-		await topics.setTopicFields(tid, { isSolved: 0, solvedPid: 0 });
 		await db.sortedSetAdd('topics:unsolved', Date.now(), tid);
 		await db.sortedSetRemove('topics:solved', tid);
 	} else {
-		await topics.setTopicFields(tid, { isSolved: 1, solvedPid: pid });
 		await db.sortedSetRemove('topics:unsolved', tid);
 		await db.sortedSetAdd('topics:solved', Date.now(), tid);
 
