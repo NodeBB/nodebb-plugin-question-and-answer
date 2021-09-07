@@ -86,7 +86,7 @@ plugin.getTopic = async function (hookData) {
 	const postsData = await topics.addPostData(answers, hookData.uid);
 	let post = postsData[0];
 	if (post) {
-		let bestAnswerTopicData = Object.assign({}, hookData.templateData);
+		const bestAnswerTopicData = { ...hookData.templateData };
 		bestAnswerTopicData.posts = postsData;
 		await topics.modifyPostsByPrivilege(bestAnswerTopicData, await privileges.topics.get(hookData.templateData.tid, hookData.req.uid));
 		post = bestAnswerTopicData.posts[0];
@@ -99,11 +99,7 @@ plugin.getTopic = async function (hookData) {
 
 	// Also expose an `isAnswer` boolean in the post object itself
 	hookData.templateData.posts.forEach((post) => {
-		if (post.pid === solvedPid) {
-			post.isAnswer = true;
-		} else {
-			post.isAnswer = false;
-		}
+		post.isAnswer = post.pid === solvedPid;
 	});
 
 	return hookData;
@@ -113,9 +109,9 @@ plugin.getTopics = async function (hookData) {
 	hookData.topics.forEach((topic) => {
 		if (topic && parseInt(topic.isQuestion, 10)) {
 			if (parseInt(topic.isSolved, 10)) {
-				topic.title = '<span class="answered"><i class="fa fa-check"></i> [[qanda:topic_solved]]</span> ' + topic.title;
+				topic.icons.push('<span class="answered"><i class="fa fa-check"></i> [[qanda:topic_solved]]</span>');
 			} else {
-				topic.title = '<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span> ' + topic.title;
+				topic.icons.push('<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span>');
 			}
 		}
 	});
@@ -148,23 +144,23 @@ plugin.addThreadTool = async function (hookData) {
 	return hookData;
 };
 
-plugin.addPostTool = async function (postData) {
-	const data = await topics.getTopicDataByPid(postData.pid);
+plugin.addPostTool = async function (hookData) {
+	const data = await topics.getTopicDataByPid(hookData.pid);
 	if (!data) {
-		return postData;
+		return hookData;
 	}
 
 	data.isSolved = parseInt(data.isSolved, 10) === 1;
 	data.isQuestion = parseInt(data.isQuestion, 10) === 1;
-
-	if (data.uid && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(postData.pid, 10)) {
-		postData.tools.push({
+	const canEdit = await privileges.topics.canEdit(data.tid, hookData.uid);
+	if (canEdit && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(hookData.pid, 10)) {
+		hookData.tools.push({
 			action: 'qanda/post-solved',
 			html: '[[qanda:post.tool.mark_correct]]',
 			icon: 'fa-check-circle',
 		});
 	}
-	return postData;
+	return hookData;
 };
 
 plugin.getConditions = async function (conditions) {
@@ -183,7 +179,7 @@ plugin.onTopicCreate = async function (payload) {
 
 	// Overrides from ACP config
 	if (plugin._settings.forceQuestions === 'on' || plugin._settings['defaultCid_' + payload.topic.cid] === 'on') {
-		isQuestion = false;
+		isQuestion = true;
 	}
 
 	if (!isQuestion) {
@@ -205,11 +201,11 @@ plugin.filterTopicEdit = async function (hookData) {
 	const wasQuestion = await topics.getTopicField(hookData.topic.tid, 'isQuestion');
 
 	if (isNowQuestion != wasQuestion) {
-		await toggleQuestionStatus(hookData.req.uid, hookData.topic.tid)
+		await toggleQuestionStatus(hookData.req.uid, hookData.topic.tid);
 	}
 
 	return hookData;
-}
+};
 
 plugin.actionTopicPurge = async function (hookData) {
 	if (hookData.topic) {
@@ -223,7 +219,7 @@ plugin.filterComposerPush = async function (hookData) {
 	hookData.isQuestion = isQuestion;
 
 	return hookData;
-}
+};
 
 plugin.staticApiRoutes = async function ({ router, middleware, helpers }) {
 	router.get('/qna/:tid', middleware.assert.topic, async (req, res) => {
@@ -232,7 +228,7 @@ plugin.staticApiRoutes = async function ({ router, middleware, helpers }) {
 		isSolved = isSolved || '0';
 		helpers.formatApiResponse(200, res, { isQuestion, isSolved });
 	});
-}
+};
 
 plugin.registerTopicEvents = async function ({ types }) {
 	types = {

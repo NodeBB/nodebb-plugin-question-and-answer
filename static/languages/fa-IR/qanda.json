@@ -1,0 +1,21 @@
+{
+    "topic_solved": "حل شده",
+    "topic_unsolved": "حل نشده",
+    "menu.solved": "حل شده",
+    "menu.unsolved": "حل نشده",
+    "thread.alert.as_question": "موضوع به عنوان سوال علامت گذاری شد",
+    "thread.alert.make_normal": "تاپیک به عنوان موضوع معمولی علامت گذاری شد",
+    "thread.alert.solved": "به عنوان موضوع حل شده علامت گذاری شد",
+    "thread.alert.unsolved": "به عنوان موضوع حل نشده علامت گذاری شد",
+    "thread.tool.mark_solved": "علامت گذاری به عنوان موضوع حل شده",
+    "thread.tool.mark_unsolved": "علامت گذاری به عنوان موضوع حل نشده",
+    "thread.tool.make_normal": "به موضوع معمولی تبدیل کن",
+    "thread.tool.as_question": "به عنوان سوال بپرس",
+    "thread.button.as_question": "به عنوان سوال بپرس",
+    "post.alert.correct_answer": "این پست به عنوان بهترین جواب درست علامت گذاری شد",
+    "post.tool.mark_correct": "این پست را به عنوان بهترین جواب درست علامت بزن",
+    "admin.form.general_settings": "تنظیمات عمومی",
+    "admin.form.label.only_allow_all": "برای همه دسته بندی ها فقط اجازه پرسیدن سوال را بده (قابلیت ایجاد موضوع معمولی غیرفعال می شود)",
+    "admin.form.label.only_allow_following": "فقط برای دسته بندی های زیر اجازه پرسیدن سوال را بده (قابلیت ایجاد موضوع معمولی غیرفعال می شود)",
+    "admin.form.tips": "این گزینه جایگزین گزینه زیر خواهد بود"
+}

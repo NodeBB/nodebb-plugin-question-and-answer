@@ -1,0 +1,21 @@
+{
+    "topic_solved": "נפתר",
+    "topic_unsolved": "לא נפתר",
+    "menu.solved": "נפתר",
+    "menu.unsolved": "לא נפתר",
+    "thread.alert.as_question": "הנושא סומן כשאלה",
+    "thread.alert.make_normal": "הנושא סומן כנושא רגיל",
+    "thread.alert.solved": "הנושא סומן כנפתר",
+    "thread.alert.unsolved": "הנושא סומן כלא נפתר",
+    "thread.tool.mark_solved": "סמן כנושא שנפתר",
+    "thread.tool.mark_unsolved": "סמן כנושא שלא נפתר",
+    "thread.tool.make_normal": "שנה את הנושא לנושא רגיל",
+    "thread.tool.as_question": "סמן כשאלה",
+    "thread.button.as_question": "סמן כשאלה",
+    "post.alert.correct_answer": "הפוסט סומן כתשובה הנכונה",
+    "post.tool.mark_correct": "סמן פוסט זה כתשובה הנכונה",
+    "admin.form.general_settings": "הגדרות כלליות",
+    "admin.form.label.only_allow_all": "אפשר שאלות בלבד בכל הקטגוריות (בטל נושאים רגילים)",
+    "admin.form.label.only_allow_following": "אפשר שאלות בלבד בקטגוריות המסומנות (בטל נושאים רגילים)",
+    "admin.form.tips": "הגדרה זו עוקפת את ההגדרה למטה."
+}
