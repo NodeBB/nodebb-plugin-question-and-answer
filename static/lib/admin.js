@@ -1,29 +1,28 @@
 'use strict';
-/* globals $, app, socket */
 
-define('admin/plugins/question-and-answer', ['settings', 'translator'], function(Settings, Translator) {
-  Settings.load('question-and-answer', $('.question-and-answer-settings'));
+define('admin/plugins/question-and-answer', ['settings', 'translator'], function (Settings, Translator) {
+	Settings.load('question-and-answer', $('.question-and-answer-settings'));
 
 	render(ajaxify.data.categories, $('.all-categories'));
-	
-  $('#save').on('click', function() {
-    Settings.save('question-and-answer', $('.question-and-answer-settings'), function() {
-      app.alert({
-        type: 'success',
-        alert_id: 'question-and-answer-saved',
-        title: 'Settings Saved',
-        message: 'Please reload your NodeBB to apply these settings',
-        clickfn: function() {
-          socket.emit('admin.reload');
-        }
-      })
-    });
-  });
-  
-  function render(categories, container) {
-    renderList(categories, container, 0);
 
-    function renderList(categories, container, parentId) {
+	$('#save').on('click', function () {
+		Settings.save('question-and-answer', $('.question-and-answer-settings'), function () {
+			app.alert({
+				type: 'success',
+				alert_id: 'question-and-answer-saved',
+				title: 'Settings Saved',
+				message: 'Please reload your NodeBB to apply these settings',
+				clickfn: function () {
+					socket.emit('admin.reload');
+				},
+			});
+		});
+	});
+
+	function render(categories, container) {
+		renderList(categories, container, 0);
+
+		function renderList(categories, container, parentId) {
 			if (!categories || !categories.length) {
 				return;
 			}
@@ -62,5 +61,5 @@ define('admin/plugins/question-and-answer', ['settings', 'translator'], function
 				});
 			}
 		}
-  }
+	}
 });

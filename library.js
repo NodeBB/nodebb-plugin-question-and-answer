@@ -17,7 +17,7 @@ const plugin = module.exports;
 
 plugin.init = async function (params) {
 	const app = params.router;
-	const middleware = params.middleware;
+	const { middleware } = params;
 
 	app.get('/admin/plugins/question-and-answer', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/plugins/question-and-answer', renderAdmin);
@@ -72,9 +72,9 @@ plugin.addAdminNavigation = async function (header) {
 plugin.getTopic = async function (hookData) {
 	if (parseInt(hookData.templateData.isQuestion, 10)) {
 		hookData.templateData.icons.push(
-			parseInt(hookData.templateData.isSolved, 10)
-				? '<span class="answered"><i class="fa fa-check"></i>[[qanda:topic_solved]]</span>'
-				: '<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span>'
+			parseInt(hookData.templateData.isSolved, 10) ?
+				'<span class="answered"><i class="fa fa-check"></i>[[qanda:topic_solved]]</span>' :
+				'<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span>'
 		);
 	}
 
@@ -88,7 +88,10 @@ plugin.getTopic = async function (hookData) {
 	if (post) {
 		const bestAnswerTopicData = { ...hookData.templateData };
 		bestAnswerTopicData.posts = postsData;
-		await topics.modifyPostsByPrivilege(bestAnswerTopicData, await privileges.topics.get(hookData.templateData.tid, hookData.req.uid));
+
+		const topicPrivileges = await privileges.topics.get(hookData.templateData.tid, hookData.req.uid);
+		await topics.modifyPostsByPrivilege(bestAnswerTopicData, topicPrivileges);
+
 		post = bestAnswerTopicData.posts[0];
 		post.index = -1;
 
@@ -119,12 +122,12 @@ plugin.getTopics = async function (hookData) {
 };
 
 plugin.addThreadTool = async function (hookData) {
-	var isSolved = parseInt(hookData.topic.isSolved, 10);
+	const isSolved = parseInt(hookData.topic.isSolved, 10);
 
 	if (parseInt(hookData.topic.isQuestion, 10)) {
 		hookData.tools = hookData.tools.concat([
 			{
-				class: 'toggleSolved ' + (isSolved ? 'alert-warning topic-solved' : 'alert-success topic-unsolved'),
+				class: `toggleSolved ${isSolved ? 'alert-warning topic-solved' : 'alert-success topic-unsolved'}`,
 				title: isSolved ? '[[qanda:thread.tool.mark_unsolved]]' : '[[qanda:thread.tool.mark_solved]]',
 				icon: isSolved ? 'fa-question-circle' : 'fa-check-circle',
 			},
@@ -178,13 +181,14 @@ plugin.onTopicCreate = async function (payload) {
 	}
 
 	// Overrides from ACP config
-	if (plugin._settings.forceQuestions === 'on' || plugin._settings['defaultCid_' + payload.topic.cid] === 'on') {
+	if (plugin._settings.forceQuestions === 'on' || plugin._settings[`defaultCid_${payload.topic.cid}`] === 'on') {
 		isQuestion = true;
 	}
 
 	if (!isQuestion) {
 		return payload;
 	}
+
 	await topics.setTopicFields(payload.topic.tid, { isQuestion: 1, isSolved: 0 });
 	await db.sortedSetAdd('topics:unsolved', Date.now(), payload.topic.tid);
 	return payload;
@@ -200,7 +204,7 @@ plugin.filterTopicEdit = async function (hookData) {
 	const isNowQuestion = hookData.data.isQuestion;
 	const wasQuestion = await topics.getTopicField(hookData.topic.tid, 'isQuestion');
 
-	if (isNowQuestion != wasQuestion) {
+	if (parseInt(isNowQuestion, 10) !== parseInt(wasQuestion, 10)) {
 		await toggleQuestionStatus(hookData.req.uid, hookData.topic.tid);
 	}
 
@@ -248,7 +252,7 @@ plugin.registerTopicEvents = async function ({ types }) {
 		'qanda.unsolved': {
 			icon: 'fa-question',
 			text: '[[qanda:thread.alert.unsolved]]',
-		}
+		},
 	};
 
 	return { types };
@@ -258,7 +262,7 @@ async function renderAdmin(req, res) {
 	const cids = await db.getSortedSetRange('categories:cid', 0, -1);
 	const data = await categories.getCategoriesFields(cids, ['cid', 'name', 'parentCid']);
 	res.render('admin/plugins/question-and-answer', {
-		categories: categories.getTree(data)
+		categories: categories.getTree(data),
 	});
 }
 
@@ -287,16 +291,21 @@ function handleSocketIO() {
 async function toggleSolved(uid, tid, pid) {
 	let isSolved = await topics.getTopicField(tid, 'isSolved');
 	isSolved = parseInt(isSolved, 10) === 1;
+
 	if (isSolved) {
-		await topics.setTopicFields(tid, { isSolved: 0, solvedPid: 0 });
-		await db.sortedSetAdd('topics:unsolved', Date.now(), tid);
-		await db.sortedSetRemove('topics:solved', tid);
-		await topics.events.log(tid, { type: 'qanda.solved', uid });
+		await Promise.all([
+			topics.setTopicFields(tid, { isSolved: 0, solvedPid: 0 }),
+			db.sortedSetAdd('topics:unsolved', Date.now(), tid),
+			db.sortedSetRemove('topics:solved', tid),
+			topics.events.log(tid, { type: 'qanda.solved', uid }),
+		]);
 	} else {
-		await topics.setTopicFields(tid, { isSolved: 1, solvedPid: pid });
-		await db.sortedSetRemove('topics:unsolved', tid);
-		await db.sortedSetAdd('topics:solved', Date.now(), tid);
-		await topics.events.log(tid, { type: 'qanda.unsolved', uid });
+		await Promise.all([
+			topics.setTopicFields(tid, { isSolved: 1, solvedPid: pid }),
+			db.sortedSetRemove('topics:unsolved', tid),
+			db.sortedSetAdd('topics:solved', Date.now(), tid),
+			topics.events.log(tid, { type: 'qanda.unsolved', uid }),
+		]);
 
 		if (pid) {
 			const data = await posts.getPostData(pid);
@@ -309,6 +318,7 @@ async function toggleSolved(uid, tid, pid) {
 			});
 		}
 	}
+
 	plugins.hooks.fire('action:topic.toggleSolved', { uid: uid, tid: tid, pid: pid, isSolved: !isSolved });
 	return { isSolved: !isSolved };
 }
@@ -331,6 +341,7 @@ async function toggleQuestionStatus(uid, tid) {
 			topics.events.log(tid, { type: 'qanda.make_normal', uid }),
 		]);
 	}
+
 	plugins.hooks.fire('action:topic.toggleQuestion', { uid: uid, tid: tid, isQuestion: !isQuestion });
 	return { isQuestion: !isQuestion };
 }
