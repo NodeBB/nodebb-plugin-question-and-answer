@@ -64,6 +64,10 @@
 		{
 			"hook": "static:api.routes",
 			"method": "staticApiRoutes"
+		},
+		{
+			"hook": "filter:topicEvents.init",
+			"method": "registerTopicEvents"
 		}
 	],
 	"staticDirs": {
