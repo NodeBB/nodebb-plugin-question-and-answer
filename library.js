@@ -292,16 +292,24 @@ async function toggleSolved(uid, tid, pid) {
 	let isSolved = await topics.getTopicField(tid, 'isSolved');
 	isSolved = parseInt(isSolved, 10) === 1;
 
+	const updatedTopicFields = isSolved ?
+		{ isSolved: 0, solvedPid: 0 } :
+		{ isSolved: 1, solvedPid: pid };
+
+	if (plugin._settings.toggleLock === 'on') {
+		updatedTopicFields.locked = isSolved ? 0 : 1;
+	}
+
+	await topics.setTopicFields(tid, updatedTopicFields);
+
 	if (isSolved) {
 		await Promise.all([
-			topics.setTopicFields(tid, { isSolved: 0, solvedPid: 0 }),
 			db.sortedSetAdd('topics:unsolved', Date.now(), tid),
 			db.sortedSetRemove('topics:solved', tid),
 			topics.events.log(tid, { type: 'qanda.solved', uid }),
 		]);
 	} else {
 		await Promise.all([
-			topics.setTopicFields(tid, { isSolved: 1, solvedPid: pid }),
 			db.sortedSetRemove('topics:unsolved', tid),
 			db.sortedSetAdd('topics:solved', Date.now(), tid),
 			topics.events.log(tid, { type: 'qanda.unsolved', uid }),
