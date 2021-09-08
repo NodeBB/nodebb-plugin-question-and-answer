@@ -80,8 +80,9 @@ plugin.getTopic = async function (hookData) {
 
 	const solvedPid = parseInt(hookData.templateData.solvedPid, 10);
 	if (!solvedPid || hookData.templateData.pagination.currentPage > 1) {
-		return hookData;
+		return await addMetaData(hookData);
 	}
+	
 	const answers = await posts.getPostsByPids([solvedPid], hookData.uid);
 	const postsData = await topics.addPostData(answers, hookData.uid);
 	let post = postsData[0];
@@ -105,8 +106,33 @@ plugin.getTopic = async function (hookData) {
 		post.isAnswer = post.pid === solvedPid;
 	});
 
-	return hookData;
+	return await addMetaData(hookData);
 };
+
+async function addMetaData(data) {
+	const { tid } = data.templateData;
+	const { uid } = data.req;
+	const pidsToFetch = [data.templateData.mainPid, await posts.getPidsFromSet(`tid:${tid}:posts:votes`, 0, 0, true)];
+	let mainPost, suggestedAnswer, acceptedAnswer;
+
+	if (data.templateData.solvedPid) {
+		pidsToFetch.push(data.templateData.solvedPid);
+	}
+
+	const postsData = [mainPost, suggestedAnswer, acceptedAnswer] = await posts.getPostsByPids(pidsToFetch, uid);
+	await topics.addPostData(postsData, uid);
+
+	postsData.forEach((p) => { p.content = String(p.content || '').replace(/\n/g, '\\n').replace(/"/g, '\\"'); });
+
+	data.templateData.mainPost = mainPost ? mainPost : {};
+	data.templateData.acceptedAnswer = acceptedAnswer ? acceptedAnswer : {};
+	if (!acceptedAnswer && suggestedAnswer.pid !== data.templateData.mainPid) {
+		data.templateData.suggestedAnswer = suggestedAnswer ? suggestedAnswer : {};
+	}
+
+	data.res.locals.postHeader = await data.req.app.renderAsync('partials/question-and-answer/topic-jsonld', data.templateData);
+	return data;
+}
 
 plugin.getTopics = async function (hookData) {
 	hookData.topics.forEach((topic) => {
