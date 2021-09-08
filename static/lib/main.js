@@ -1,7 +1,5 @@
 'use strict';
 
-/* global $, window, socket, ajaxify, app */
-
 $('document').ready(function () {
 	function translate(text, cb) {
 		require(['translator'], function (translator) {
