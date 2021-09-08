@@ -42,7 +42,7 @@
           },
           "upvoteCount": {suggestedAnswer.votes}
         }
-	    {{{ end }}}
+        {{{ end }}}
       ]
     }
   }
