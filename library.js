@@ -69,14 +69,15 @@ plugin.addAdminNavigation = async function (header) {
 	return header;
 };
 
-plugin.getTopic = async function (hookData) {
-	if (parseInt(hookData.templateData.isQuestion, 10)) {
-		hookData.templateData.icons.push(
-			parseInt(hookData.templateData.isSolved, 10) ?
-				'<span class="answered"><i class="fa fa-check"></i>[[qanda:topic_solved]]</span>' :
-				'<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span>'
-		);
+plugin.addAnswerDataToTopic = async function (hookData) {
+	if (!parseInt(hookData.templateData.isQuestion, 10)) {
+		return hookData;
 	}
+
+	hookData.templateData.icons.push(
+		parseInt(hookData.templateData.isSolved, 10) ?
+			'<span class="answered"><i class="fa fa-check"></i>[[qanda:topic_solved]]</span>' :
+			'<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span>');
 
 	const solvedPid = parseInt(hookData.templateData.solvedPid, 10);
 	if (!solvedPid || hookData.templateData.pagination.currentPage > 1) {
@@ -126,7 +127,7 @@ async function addMetaData(data) {
 
 	data.templateData.mainPost = mainPost ? mainPost : {};
 	data.templateData.acceptedAnswer = acceptedAnswer ? acceptedAnswer : {};
-	if (!acceptedAnswer && suggestedAnswer.pid !== data.templateData.mainPid) {
+	if (suggestedAnswer.pid !== data.templateData.mainPid) {
 		data.templateData.suggestedAnswer = suggestedAnswer ? suggestedAnswer : {};
 	}
 

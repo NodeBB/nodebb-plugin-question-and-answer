@@ -23,7 +23,7 @@
 		},
 		{
 			"hook": "filter:topic.build",
-			"method": "getTopic"
+			"method": "addAnswerDataToTopic"
 		},
 		{
 			"hook": "filter:topic.thread_tools",
