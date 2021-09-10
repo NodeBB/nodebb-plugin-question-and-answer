@@ -9,6 +9,10 @@ $('document').ready(function () {
 	$(window).on('action:ajaxify.end', function () {
 		if (ajaxify.data.template.topic) {
 			markPostAsSolved();
+		} else if (ajaxify.data.template.compose && ajaxify.data.isMain && ajaxify.data.topic) {
+			// seperate composer page
+			var actionBar = $('.composer .action-bar');
+			addQnADropdown(actionBar, parseInt(ajaxify.data.topic.isQuestion, 10) === 1);
 		}
 	});
 
@@ -22,9 +26,13 @@ $('document').ready(function () {
 		if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
 			return;
 		}
+		var actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
+		addQnADropdown(actionBar, data.composerData.isQuestion);
+	});
+
+	function addQnADropdown(actionBar, isQuestion) {
 		translate('[[qanda:thread.tool.as_question]]', function (translated) {
-			var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-' + (data.composerData.isQuestion ? 'check-' : '') + 'circle-o"></i> ' + translated + '</a></li></ul>');
-			var actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
+			var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-' + (isQuestion ? 'check-' : '') + 'circle-o"></i> ' + translated + '</a></li></ul>');
 
 			item.on('click', 'li [data-switch-action="post"]', function () {
 				var icon = item.find('.fa');
@@ -42,7 +50,7 @@ $('document').ready(function () {
 
 			actionBar.append(item);
 		});
-	});
+	}
 
 	$(window).on('action:posts.edited', function (ev, data) {
 		require(['api'], function (api) {
