@@ -83,7 +83,7 @@ plugin.addAnswerDataToTopic = async function (hookData) {
 	if (!solvedPid || hookData.templateData.pagination.currentPage > 1) {
 		return await addMetaData(hookData);
 	}
-	
+
 	const answers = await posts.getPostsByPids([solvedPid], hookData.uid);
 	const postsData = await topics.addPostData(answers, hookData.uid);
 	let post = postsData[0];
@@ -127,7 +127,7 @@ async function addMetaData(data) {
 
 	data.templateData.mainPost = mainPost ? mainPost : {};
 	data.templateData.acceptedAnswer = acceptedAnswer ? acceptedAnswer : {};
-	if (suggestedAnswer.pid !== data.templateData.mainPid) {
+	if (suggestedAnswer && suggestedAnswer.pid !== data.templateData.mainPid) {
 		data.templateData.suggestedAnswer = suggestedAnswer ? suggestedAnswer : {};
 	}
 
