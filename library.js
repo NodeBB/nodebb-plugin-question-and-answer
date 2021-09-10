@@ -228,10 +228,9 @@ plugin.actionTopicSave = async function (hookData) {
 };
 
 plugin.filterTopicEdit = async function (hookData) {
-	const isNowQuestion = hookData.data.isQuestion;
-	const wasQuestion = await topics.getTopicField(hookData.topic.tid, 'isQuestion');
-
-	if (parseInt(isNowQuestion, 10) !== parseInt(wasQuestion, 10)) {
+	const isNowQuestion = hookData.data.isQuestion === true || parseInt(hookData.data.isQuestion, 10) === 1;
+	const wasQuestion = parseInt(await topics.getTopicField(hookData.topic.tid, 'isQuestion'), 10) === 1;
+	if (isNowQuestion !== wasQuestion) {
 		await toggleQuestionStatus(hookData.req.uid, hookData.topic.tid);
 	}
 
