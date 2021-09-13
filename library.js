@@ -332,13 +332,13 @@ async function toggleSolved(uid, tid, pid) {
 		await Promise.all([
 			db.sortedSetAdd('topics:unsolved', Date.now(), tid),
 			db.sortedSetRemove('topics:solved', tid),
-			topics.events.log(tid, { type: 'qanda.solved', uid }),
+			topics.events.log(tid, { type: 'qanda.unsolved', uid }),
 		]);
 	} else {
 		await Promise.all([
 			db.sortedSetRemove('topics:unsolved', tid),
 			db.sortedSetAdd('topics:solved', Date.now(), tid),
-			topics.events.log(tid, { type: 'qanda.unsolved', uid }),
+			topics.events.log(tid, { type: 'qanda.solved', uid }),
 		]);
 
 		if (pid) {
