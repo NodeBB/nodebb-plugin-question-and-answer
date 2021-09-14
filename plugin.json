@@ -83,6 +83,5 @@
 		"static/lib/admin.js"
 	],
 	"templates": "static/templates",
-	"languages": "static/languages",
-	"defaultLang": "en_US"
+	"languages": "static/languages"
 }
