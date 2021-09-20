@@ -125,7 +125,7 @@ async function addMetaData(data) {
 
 	postsData.forEach((p) => {
 		p.content = String(p.content || '')
-			.replace(/\//g, '//')
+			.replace(/\\/g, '\\\\')
 			.replace(/\n/g, '\\n')
 			.replace(/"/g, '\\"')
 			.replace(/\t/g, '\\t');
