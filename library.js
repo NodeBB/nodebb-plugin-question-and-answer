@@ -123,7 +123,7 @@ async function addMetaData(data) {
 	const postsData = [mainPost, suggestedAnswer, acceptedAnswer] = await posts.getPostsByPids(pidsToFetch, uid);
 	await topics.addPostData(postsData, uid);
 
-	postsData.forEach((p) => { p.content = String(p.content.toString() || '').replace(/\n/g, '\\n').replace(/"/g, '\\"').replace(/\t/g, '\\t'); });
+	postsData.forEach((p) => { p.content = String(p.content || '').replace(/\n/g, '\\n').replace(/"/g, '\\"').replace(/\t/g, '\\t'); });
 
 	data.templateData.mainPost = mainPost ? mainPost : {};
 	data.templateData.acceptedAnswer = acceptedAnswer ? acceptedAnswer : {};
