@@ -22,10 +22,10 @@ plugin.init = async function (params) {
 	app.get('/admin/plugins/question-and-answer', middleware.admin.buildHeader, renderAdmin);
 	app.get('/api/admin/plugins/question-and-answer', renderAdmin);
 
-	app.get('/unsolved', middleware.buildHeader, renderUnsolved);
+	app.get('/unsolved', middleware.applyCSRF, middleware.buildHeader, renderUnsolved);
 	app.get('/api/unsolved', renderUnsolved);
 
-	app.get('/solved', middleware.buildHeader, renderSolved);
+	app.get('/solved', middleware.applyCSRF, middleware.buildHeader, renderSolved);
 	app.get('/api/solved', renderSolved);
 
 	handleSocketIO();
@@ -393,71 +393,79 @@ async function canPostTopic(uid) {
 }
 
 async function renderUnsolved(req, res) {
+	await renderQnAPage('unsolved', req, res);
+}
+
+async function renderSolved(req, res) {
+	await renderQnAPage('solved', req, res);
+}
+
+async function renderQnAPage(type, req, res) {
 	const page = parseInt(req.query.page, 10) || 1;
-
-	const [settings, allTids, canPost] = await Promise.all([
+	const { cid } = req.query;
+	const [settings, categoryData, canPost, isPrivileged] = await Promise.all([
 		user.getSettings(req.uid),
-		db.getSortedSetRevRange('topics:unsolved', 0, 199),
+		helpers.getSelectedCategory(cid),
 		canPostTopic(req.uid),
+		user.isPrivileged(req.uid),
 	]);
-	let tids = await privileges.topics.filterTids('read', allTids, req.uid);
 
-	const start = Math.max(0, (page - 1) * settings.topicsPerPage);
-	const stop = start + settings.topicsPerPage - 1;
-
-	const topicCount = tids.length;
-	const pageCount = Math.max(1, Math.ceil(topicCount / settings.topicsPerPage));
-	tids = tids.slice(start, stop + 1);
-
-	const topicsData = await topics.getTopicsByTids(tids, req.uid);
+	const topicsData = await getTopics(type, page, cid, req.uid, settings);
 
 	const data = {};
-	data.topics = topicsData;
-	data.nextStart = stop + 1;
-	data.set = 'topics:unsolved';
+	data.topics = topicsData.topics;
+	data.showSelect = isPrivileged;
+	data.showTopicTools = isPrivileged;
+	data.allCategoriesUrl = type + helpers.buildQueryString(req.query, 'cid', '');
+	data.selectedCategory = categoryData.selectedCategory;
+	data.selectedCids = categoryData.selectedCids;
+
 	data['feeds:disableRSS'] = true;
+	const pageCount = Math.max(1, Math.ceil(topicsData.topicCount / settings.topicsPerPage));
 	data.pagination = pagination.create(page, pageCount);
 	data.canPost = canPost;
-	data.title = '[[qanda:menu.unsolved]]';
+	data.title = `[[qanda:menu.${type}]]`;
 
-	if (req.path.startsWith('/api/unsolved') || req.path.startsWith('/unsolved')) {
-		data.breadcrumbs = helpers.buildBreadcrumbs([{ text: '[[qanda:menu.unsolved]]' }]);
+	if (req.path.startsWith(`/api/${type}`) || req.path.startsWith(`/${type}`)) {
+		data.breadcrumbs = helpers.buildBreadcrumbs([{ text: `[[qanda:menu.${type}]]` }]);
 	}
 
 	res.render('recent', data);
 }
 
-async function renderSolved(req, res) {
-	const page = parseInt(req.query.page, 10) || 1;
-
-	const [settings, allTids, canPost] = await Promise.all([
-		user.getSettings(req.uid),
-		db.getSortedSetRevRange('topics:solved', 0, 199),
-		canPostTopic(req.uid),
-	]);
-	let tids = await privileges.topics.filterTids('read', allTids, req.uid);
+async function getTopics(type, page, cids, uid, settings) {
+	cids = cids || [];
+	if (!Array.isArray(cids)) {
+		cids = [cids];
+	}
+	const set = `topics:${type}`;
+	let tids = [];
+	if (cids.length) {
+		cids = await privileges.categories.filterCids('read', cids, uid);
+		const allTids = await Promise.all(cids.map(async (cid) => {
+			return await db.getSortedSetRevIntersect({
+				sets: [set, `cid:${cid}:tids:lastposttime`],
+				start: 0,
+				stop: 199,
+			});
+		}));
+		tids = allTids.flat().sort((tid1, tid2) => tid2 - tid1);
+	} else {
+		tids = await db.getSortedSetRevRange(set, 0, 199);
+		tids = await privileges.topics.filterTids('read', tids, uid);
+	}
 
 	const start = Math.max(0, (page - 1) * settings.topicsPerPage);
 	const stop = start + settings.topicsPerPage - 1;
 
 	const topicCount = tids.length;
-	const pageCount = Math.max(1, Math.ceil(topicCount / settings.topicsPerPage));
+
 	tids = tids.slice(start, stop + 1);
 
-	const topicsData = await topics.getTopicsByTids(tids, req.uid);
-
-	const data = {};
-	data.topics = topicsData;
-	data.nextStart = stop + 1;
-	data.set = 'topics:solved';
-	data['feeds:disableRSS'] = true;
-	data.pagination = pagination.create(page, pageCount);
-	data.canPost = canPost;
-	data.title = '[[qanda:menu.solved]]';
-
-	if (req.path.startsWith('/api/solved') || req.path.startsWith('/solved')) {
-		data.breadcrumbs = helpers.buildBreadcrumbs([{ text: '[[qanda:menu.solved]]' }]);
-	}
-
-	res.render('recent', data);
+	const topicsData = await topics.getTopicsByTids(tids, uid);
+	topics.calculateTopicIndices(topicsData, start);
+	return {
+		topicCount,
+		topics: topicsData,
+	};
 }
