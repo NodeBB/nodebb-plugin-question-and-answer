@@ -16,17 +16,12 @@ const pagination = require.main.require('./src/pagination');
 const plugin = module.exports;
 
 plugin.init = async function (params) {
-	const app = params.router;
-	const { middleware } = params;
+	const { router, middleware } = params;
+	const routeHelpers = require.main.require('./src/routes/helpers');
 
-	app.get('/admin/plugins/question-and-answer', middleware.admin.buildHeader, renderAdmin);
-	app.get('/api/admin/plugins/question-and-answer', renderAdmin);
-
-	app.get('/unsolved', middleware.applyCSRF, middleware.buildHeader, renderUnsolved);
-	app.get('/api/unsolved', renderUnsolved);
-
-	app.get('/solved', middleware.applyCSRF, middleware.buildHeader, renderSolved);
-	app.get('/api/solved', renderSolved);
+	routeHelpers.setupAdminPageRoute(router, '/admin/plugins/question-and-answer', middleware, [], renderAdmin);
+	routeHelpers.setupPageRoute(router, '/unsolved', middleware, [], renderUnsolved);
+	routeHelpers.setupPageRoute(router, '/solved', middleware, [], renderSolved);
 
 	handleSocketIO();
 
