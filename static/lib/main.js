@@ -32,9 +32,18 @@ $('document').ready(function () {
 
 	function addQnADropdown(actionBar, isQuestion) {
 		translate('[[qanda:thread.tool.as_question]]', function (translated) {
-			var item = $('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right" role="menu"><li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-' + (isQuestion ? 'check-' : '') + 'circle-o"></i> ' + translated + '</a></li></ul>');
+			var $container = actionBar.find('.dropdown-menu');
 
-			item.on('click', 'li [data-switch-action="post"]', function () {
+			// Append a dropdown container if necessary (up to v1.18.4)
+			if (!$container.length) {
+				actionBar.append('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>');
+				$container = $('<ul class="dropdown-menu pull-right" role="menu"></ul>');
+				actionBar.append($container);
+			}
+
+			var item = $('<li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-' + (isQuestion ? 'check-' : '') + 'circle-o"></i> ' + translated + '</a></li>');
+
+			item.on('click', () => {
 				var icon = item.find('.fa');
 				icon.toggleClass('fa-circle-o').toggleClass('fa-check-circle-o');
 				// Don't close dropdown on toggle (for better UX)
@@ -48,7 +57,7 @@ $('document').ready(function () {
 				}
 			});
 
-			actionBar.append(item);
+			$container.append(item);
 		});
 	}
 
