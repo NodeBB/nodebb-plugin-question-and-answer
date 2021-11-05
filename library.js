@@ -149,6 +149,17 @@ plugin.getTopics = async function (hookData) {
 	return hookData;
 };
 
+plugin.filterPostGetPostSummaryByPids = async function (hookData) {
+	const tids = hookData.posts.map(p => p && p.tid);
+	const topicData = await topics.getTopicsFields(tids, ['isQuestion', 'isSolved']);
+	hookData.posts.forEach((p, index) => {
+		if (p && p.topic && topicData[index]) {
+			p.topic.isQuestion = parseInt(topicData[index].isQuestion, 10);
+			p.topic.isSolved = parseInt(topicData[index].isSolved, 10);
+		}
+	});
+};
+
 plugin.addThreadTool = async function (hookData) {
 	const isSolved = parseInt(hookData.topic.isSolved, 10);
 

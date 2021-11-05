@@ -5,70 +5,23 @@
 	"url": "https://github.com/NodeBB/nodebb-plugin-question-and-answer",
 	"library": "./library.js",
 	"hooks": [
-		{
-			"hook": "static:app.load",
-			"method": "init"
-		},
-		{
-			"hook": "filter:config.get",
-			"method": "appendConfig"
-		},
-		{
-			"hook": "filter:admin.header.build",
-			"method": "addAdminNavigation"
-		},
-		{
-			"hook": "filter:topics.get",
-			"method": "getTopics"
-		},
-		{
-			"hook": "filter:topic.build",
-			"method": "addAnswerDataToTopic"
-		},
-		{
-			"hook": "filter:topic.thread_tools",
-			"method": "addThreadTool"
-		},
-		{
-			"hook": "filter:navigation.available",
-			"method": "addNavigation"
-		},
-		{
-			"hook": "filter:post.tools",
-			"method": "addPostTool"
-		},
-		{
-			"hook": "filter:rewards.conditions",
-			"method": "getConditions"
-		},
-		{
-			"hook": "filter:topic.create",
-			"method": "onTopicCreate"
-		},
-		{
-			"hook": "action:topic.save",
-			"method": "actionTopicSave"
-		},
-		{
-			"hook": "filter:topic.edit",
-			"method": "filterTopicEdit"
-		},
-		{
-			"hook": "action:topic.purge",
-			"method": "actionTopicPurge"
-		},
-		{
-			"hook": "filter:composer.push",
-			"method": "filterComposerPush"
-		},
-		{
-			"hook": "static:api.routes",
-			"method": "staticApiRoutes"
-		},
-		{
-			"hook": "filter:topicEvents.init",
-			"method": "registerTopicEvents"
-		}
+		{ "hook": "static:app.load", "method": "init" },
+		{ "hook": "filter:config.get", "method": "appendConfig" },
+		{ "hook": "filter:admin.header.build", "method": "addAdminNavigation" },
+		{ "hook": "filter:topics.get", "method": "getTopics" },
+		{ "hook": "filter:post.getPostSummaryByPids", "method": "filterPostGetPostSummaryByPids" },
+		{ "hook": "filter:topic.build", "method": "addAnswerDataToTopic" },
+		{ "hook": "filter:topic.thread_tools", "method": "addThreadTool" },
+		{ "hook": "filter:navigation.available", "method": "addNavigation" },
+		{ "hook": "filter:post.tools", "method": "addPostTool" },
+		{ "hook": "filter:rewards.conditions", "method": "getConditions" },
+		{ "hook": "filter:topic.create", "method": "onTopicCreate" },
+		{ "hook": "action:topic.save", "method": "actionTopicSave" },
+		{ "hook": "filter:topic.edit", "method": "filterTopicEdit" },
+		{ "hook": "action:topic.purge", "method": "actionTopicPurge" },
+		{ "hook": "filter:composer.push", "method": "filterComposerPush" },
+		{ "hook": "static:api.routes", "method": "staticApiRoutes" },
+		{ "hook": "filter:topicEvents.init", "method": "registerTopicEvents" }
 	],
 	"staticDirs": {
 		"static": "./static"
