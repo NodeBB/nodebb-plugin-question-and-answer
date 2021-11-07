@@ -158,6 +158,7 @@ plugin.filterPostGetPostSummaryByPids = async function (hookData) {
 			p.topic.isSolved = parseInt(topicData[index].isSolved, 10);
 		}
 	});
+	return hookData;
 };
 
 plugin.addThreadTool = async function (hookData) {
