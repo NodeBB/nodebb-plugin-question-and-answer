@@ -12,6 +12,7 @@ const db = require.main.require('./src/database');
 const plugins = require.main.require('./src/plugins');
 const SocketPlugins = require.main.require('./src/socket.io/plugins');
 const pagination = require.main.require('./src/pagination');
+const social = require.main.require('./src/social');
 
 const plugin = module.exports;
 
@@ -84,11 +85,15 @@ plugin.filterTopicGetPosts = async (hookData) => {
 		return hookData;
 	}
 	const answers = await posts.getPostsByPids([solvedPid], hookData.uid);
-	const postsData = await topics.addPostData(answers, hookData.uid);
+	const [postsData, postSharing] = await Promise.all([
+		topics.addPostData(answers, hookData.uid),
+		social.getActivePostSharing(),
+	]);
 	let post = postsData[0];
 	if (post) {
 		const bestAnswerTopicData = { ...hookData.topic };
 		bestAnswerTopicData.posts = postsData;
+		bestAnswerTopicData.postSharing = postSharing;
 
 		const topicPrivileges = await privileges.topics.get(hookData.topic.tid, hookData.uid);
 		await topics.modifyPostsByPrivilege(bestAnswerTopicData, topicPrivileges);
