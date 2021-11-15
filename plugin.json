@@ -11,6 +11,7 @@
 		{ "hook": "filter:topics.get", "method": "getTopics" },
 		{ "hook": "filter:post.getPostSummaryByPids", "method": "filterPostGetPostSummaryByPids" },
 		{ "hook": "filter:topic.build", "method": "addAnswerDataToTopic" },
+		{ "hook": "filter:topic.getPosts", "method": "filterTopicGetPosts" },
 		{ "hook": "filter:topic.thread_tools", "method": "addThreadTool" },
 		{ "hook": "filter:navigation.available", "method": "addNavigation" },
 		{ "hook": "filter:post.tools", "method": "addPostTool" },

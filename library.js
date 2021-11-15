@@ -74,36 +74,41 @@ plugin.addAnswerDataToTopic = async function (hookData) {
 			'<span class="answered"><i class="fa fa-check"></i>[[qanda:topic_solved]]</span>' :
 			'<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span>');
 
-	const solvedPid = parseInt(hookData.templateData.solvedPid, 10);
-	if (!solvedPid || hookData.templateData.pagination.currentPage > 1) {
-		return await addMetaData(hookData);
-	}
+	return await addMetaData(hookData);
+};
 
+plugin.filterTopicGetPosts = async (hookData) => {
+	const solvedPid = parseInt(hookData.topic.solvedPid, 10);
+	const showBestAnswer = hookData.posts.length && hookData.posts[0].index === 0;
+	if (!solvedPid || !showBestAnswer) {
+		return hookData;
+	}
 	const answers = await posts.getPostsByPids([solvedPid], hookData.uid);
 	const postsData = await topics.addPostData(answers, hookData.uid);
 	let post = postsData[0];
 	if (post) {
-		const bestAnswerTopicData = { ...hookData.templateData };
+		const bestAnswerTopicData = { ...hookData.topic };
 		bestAnswerTopicData.posts = postsData;
 
-		const topicPrivileges = await privileges.topics.get(hookData.templateData.tid, hookData.req.uid);
+		const topicPrivileges = await privileges.topics.get(hookData.topic.tid, hookData.uid);
 		await topics.modifyPostsByPrivilege(bestAnswerTopicData, topicPrivileges);
 
 		post = bestAnswerTopicData.posts[0];
 		post.index = -1;
 
-		const op = hookData.templateData.posts.shift();
-		hookData.templateData.posts.unshift(post);
-		hookData.templateData.posts.unshift(op);
+		const op = hookData.posts.shift();
+		hookData.posts.unshift(post);
+		hookData.posts.unshift(op);
 	}
 
-	// Also expose an `isAnswer` boolean in the post object itself
-	hookData.templateData.posts.forEach((post) => {
-		post.isAnswer = post.pid === solvedPid;
+	hookData.posts.forEach((post) => {
+		if (post) {
+			post.isAnswer = post.pid === solvedPid;
+		}
 	});
 
-	return await addMetaData(hookData);
-};
+	return hookData;
+}
 
 async function addMetaData(data) {
 	const { tid } = data.templateData;

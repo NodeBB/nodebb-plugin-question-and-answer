@@ -127,9 +127,7 @@ $('document').ready(function () {
 	}
 
 	function markPostAsSolved() {
-		if (ajaxify.data.pagination.currentPage === 1) {
-			$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
-			$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"] .post-footer').addClass('hidden');
-		}
+		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
+		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"] .post-footer').addClass('hidden');
 	}
 });
