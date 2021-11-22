@@ -3,6 +3,7 @@
     "topic_unsolved": "UNSOLVED",
     "menu.solved": "Solved",
     "menu.unsolved": "Unsolved",
+    "label.solution": "solution",
     "thread.alert.as_question": "Topic has been marked as a question",
     "thread.alert.make_normal": "Topic is now a regular thread",
     "thread.alert.solved": "Topic has been marked as solved",

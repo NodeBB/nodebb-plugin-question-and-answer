@@ -129,5 +129,11 @@ $('document').ready(function () {
 	function markPostAsSolved() {
 		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
 		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"] .post-footer').addClass('hidden');
+
+		require(['translator'], (translator) => {
+			translator.translate('[[qanda:label.solution]]', (translated) => {
+				$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"]').attr('data-label', translated);
+			});
+		});
 	}
 });

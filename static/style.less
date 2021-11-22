@@ -42,10 +42,25 @@ html .topic {
 }
 
 .posts [component="post"][data-index="-1"].isSolved {
+	&:before {
+		content: attr(data-label);
+		background: @brand-success;
+		border-radius: 0 4px 4px 0;
+		color: @label-color;
+		text-transform: uppercase;
+		font-size: 10px;
+		padding: 4px 8px;
+		font-weight: 600;
+		position: relative;
+		top: -1.25rem;
+	}
+
 	border-left: 8px solid @brand-success;
 	border-right: 1px solid @brand-success;
 	border-top: 1px solid @brand-success;
 	border-bottom: 1px solid @brand-success;
+
+	padding-top: 40px;	// to make room for label (in :before pseudo-element)
 
 	.necro-post {
 		display: none;
