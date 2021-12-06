@@ -6,6 +6,11 @@ $('document').ready(function () {
 			translator.translate(text, cb);
 		});
 	}
+	function alertType(type, message) {
+		require(['alerts'], function (alerts) {
+			alert[type](message);
+		});
+	}
 	$(window).on('action:ajaxify.end', function () {
 		if (ajaxify.data.template.topic) {
 			markPostAsSolved();
@@ -90,10 +95,10 @@ $('document').ready(function () {
 	function callToggleQuestion(tid, refresh) {
 		socket.emit('plugins.QandA.toggleQuestionStatus', { tid: tid }, function (err, data) {
 			if (err) {
-				return app.alertError(err);
+				return alertType('error', err);
 			}
 
-			app.alertSuccess(data.isQuestion ? '[[qanda:thread.alert.as_question]]' : '[[qanda:thread.alert.make_normal]]');
+			alertType('success', data.isQuestion ? '[[qanda:thread.alert.as_question]]' : '[[qanda:thread.alert.make_normal]]');
 			if (refresh) {
 				ajaxify.refresh();
 			}
@@ -104,10 +109,10 @@ $('document').ready(function () {
 		var tid = ajaxify.data.tid;
 		socket.emit('plugins.QandA.toggleSolved', { tid: tid }, function (err, data) {
 			if (err) {
-				return app.alertError(err);
+				return alertType('error', err);
 			}
 
-			app.alertSuccess(data.isSolved ? '[[qanda:thread.alert.solved]]' : '[[qanda:thread.alert.unsolved]]');
+			alertType('success', data.isSolved ? '[[qanda:thread.alert.solved]]' : '[[qanda:thread.alert.unsolved]]');
 			ajaxify.refresh();
 		});
 	}
@@ -118,10 +123,10 @@ $('document').ready(function () {
 
 		socket.emit('plugins.QandA.toggleSolved', { tid: tid, pid: pid }, function (err, data) {
 			if (err) {
-				return app.alertError(err);
+				return alertType('error', err);
 			}
 
-			app.alertSuccess(data.isSolved ? '[[qanda:post.alert.correct_answer]]' : '[[qanda:thread.alert.unsolved]]');
+			alertType('success', data.isSolved ? '[[qanda:post.alert.correct_answer]]' : '[[qanda:thread.alert.unsolved]]');
 			ajaxify.refresh();
 		});
 	}
@@ -130,10 +135,8 @@ $('document').ready(function () {
 		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
 		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"] .post-footer').addClass('hidden');
 
-		require(['translator'], (translator) => {
-			translator.translate('[[qanda:label.solution]]', (translated) => {
-				$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"]').attr('data-label', translated);
-			});
+		translate('[[qanda:label.solution]]', (translated) => {
+			$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"]').attr('data-label', translated);
 		});
 	}
 });
