@@ -1,13 +1,13 @@
 'use strict';
 
-define('admin/plugins/question-and-answer', ['settings', 'translator'], function (Settings, Translator) {
+define('admin/plugins/question-and-answer', ['settings', 'translator', 'alerts'], function (Settings, Translator, alerts) {
 	Settings.load('question-and-answer', $('.question-and-answer-settings'));
 
 	render(ajaxify.data.categories, $('.all-categories'));
 
 	$('#save').on('click', function () {
 		Settings.save('question-and-answer', $('.question-and-answer-settings'), function () {
-			app.alert({
+			alerts.alert({
 				type: 'success',
 				alert_id: 'question-and-answer-saved',
 				title: 'Settings Saved',
