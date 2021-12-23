@@ -72,8 +72,9 @@ plugin.addAnswerDataToTopic = async function (hookData) {
 
 	hookData.templateData.icons.push(
 		parseInt(hookData.templateData.isSolved, 10) ?
-			'<span class="answered"><i class="fa fa-check"></i>[[qanda:topic_solved]]</span>' :
-			'<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span>');
+			'<span class="answered"><i class="fa fa-check"></i> [[qanda:topic_solved]]</span>' :
+			'<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span>'
+	);
 
 	return await addMetaData(hookData);
 };
@@ -113,13 +114,14 @@ plugin.filterTopicGetPosts = async (hookData) => {
 	});
 
 	return hookData;
-}
+};
 
 async function addMetaData(data) {
 	const { tid } = data.templateData;
 	const { uid } = data.req;
 	const pidsToFetch = [data.templateData.mainPid, await posts.getPidsFromSet(`tid:${tid}:posts:votes`, 0, 0, true)];
-	let mainPost, suggestedAnswer, acceptedAnswer;
+	let mainPost; let suggestedAnswer; let
+		acceptedAnswer;
 
 	if (data.templateData.solvedPid) {
 		pidsToFetch.push(data.templateData.solvedPid);
@@ -136,10 +138,10 @@ async function addMetaData(data) {
 			.replace(/\t/g, '\\t');
 	});
 
-	data.templateData.mainPost = mainPost ? mainPost : {};
-	data.templateData.acceptedAnswer = acceptedAnswer ? acceptedAnswer : {};
+	data.templateData.mainPost = mainPost || {};
+	data.templateData.acceptedAnswer = acceptedAnswer || {};
 	if (suggestedAnswer && suggestedAnswer.pid !== data.templateData.mainPid) {
-		data.templateData.suggestedAnswer = suggestedAnswer ? suggestedAnswer : {};
+		data.templateData.suggestedAnswer = suggestedAnswer || {};
 	}
 
 	data.res.locals.postHeader = await data.req.app.renderAsync('partials/question-and-answer/topic-jsonld', data.templateData);
@@ -459,13 +461,11 @@ async function getTopics(type, page, cids, uid, settings) {
 	let tids = [];
 	if (cids.length) {
 		cids = await privileges.categories.filterCids('read', cids, uid);
-		const allTids = await Promise.all(cids.map(async (cid) => {
-			return await db.getSortedSetRevIntersect({
-				sets: [set, `cid:${cid}:tids:lastposttime`],
-				start: 0,
-				stop: 199,
-			});
-		}));
+		const allTids = await Promise.all(cids.map(async cid => await db.getSortedSetRevIntersect({
+			sets: [set, `cid:${cid}:tids:lastposttime`],
+			start: 0,
+			stop: 199,
+		})));
 		tids = allTids.flat().sort((tid1, tid2) => tid2 - tid1);
 	} else {
 		tids = await db.getSortedSetRevRange(set, 0, 199);
