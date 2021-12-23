@@ -1,6 +1,6 @@
 {
-    "topic_solved": "SOLVED",
-    "topic_unsolved": "UNSOLVED",
+    "topic_solved": "Solved",
+    "topic_unsolved": "Unsolved",
     "menu.solved": "Solved",
     "menu.unsolved": "Unsolved",
     "label.solution": "solution",

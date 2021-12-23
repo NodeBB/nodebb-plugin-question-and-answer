@@ -1,6 +1,6 @@
 {
-    "topic_solved": "ÇÖZÜLDÜ",
-    "topic_unsolved": "ÇÖZÜLMEDİ",
+    "topic_solved": "Çözüldü",
+    "topic_unsolved": "Çözülmedi",
     "menu.solved": "Çözüldü",
     "menu.unsolved": "Çözülmedi",
     "thread.alert.as_question": "Konu, soru olarak işaretlendi",

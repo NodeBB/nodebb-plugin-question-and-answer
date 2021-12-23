@@ -1,6 +1,6 @@
 {
-    "topic_solved": "RÉSOLU",
-    "topic_unsolved": "NON RÉSOLU",
+    "topic_solved": "Résolu",
+    "topic_unsolved": "Non résolu",
     "menu.solved": "Résolu",
     "menu.unsolved": "Non résolu",
     "thread.alert.as_question": "Ce sujet est désormais une question",

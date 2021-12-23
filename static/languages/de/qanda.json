@@ -1,6 +1,6 @@
 {
-    "topic_solved": "GELÖST",
-    "topic_unsolved": "UNGELÖST",
+    "topic_solved": "Gelöst",
+    "topic_unsolved": "Ungelöst",
     "menu.solved": "Gelöst",
     "menu.unsolved": "Ungelöst",
     "thread.alert.as_question": "Thema wurde als Frage markiert",

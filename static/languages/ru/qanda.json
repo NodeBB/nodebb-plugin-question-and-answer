@@ -1,6 +1,6 @@
 {
-  "topic_solved": "РЕШЕН",
-  "topic_unsolved": "НЕ РЕШЕН",
+  "topic_solved": "Решенные",
+  "topic_unsolved": "Не решенные",
   "menu.solved": "Решенные",
   "menu.unsolved": "Не решенные",
   "thread.alert.as_question": "Тема помечена как вопрос",

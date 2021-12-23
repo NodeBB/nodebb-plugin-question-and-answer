@@ -1,6 +1,6 @@
 {
-    "topic_solved": "RESOLVIDO",
-    "topic_unsolved": "POR RESOLVER",
+    "topic_solved": "Resolvido",
+    "topic_unsolved": "Por resolver",
     "menu.solved": "Resolvidos",
     "menu.unsolved": "Por resolver",
     "thread.alert.as_question": "Este tópico foi marcado como uma questão",
