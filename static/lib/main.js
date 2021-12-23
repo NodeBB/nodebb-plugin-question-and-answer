@@ -132,7 +132,7 @@ $('document').ready(function () {
 	}
 
 	function markPostAsSolved() {
-		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').addClass('isSolved');
+		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"]').addClass('isSolved');
 		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"] .post-footer').addClass('hidden');
 
 		translate('[[qanda:label.solution]]', (translated) => {
