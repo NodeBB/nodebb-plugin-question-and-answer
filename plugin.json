@@ -33,9 +33,9 @@
 	"scripts": [
 		"static/lib/main.js"
 	],
-	"acpScripts": [
-		"static/lib/admin.js"
-	],
+	"modules": {
+		"../admin/plugins/question-and-answer.js": "static/lib/admin.js"
+	},
 	"templates": "static/templates",
 	"languages": "static/languages"
 }
