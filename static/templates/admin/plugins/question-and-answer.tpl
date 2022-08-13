@@ -13,6 +13,13 @@
 
 			<div class="checkbox">
 				<label>
+					<input type="checkbox" name="onlyAdmins">
+					[[qanda:admin.form.label.only_allow_admins]]
+				</label>
+			</div>
+
+			<div class="checkbox">
+				<label>
 					<input type="checkbox" name="forceQuestions">
 					[[qanda:admin.form.label.only_allow_all]]
 				</label>

@@ -207,8 +207,8 @@ plugin.addPostTool = async function (hookData) {
 
 	data.isSolved = parseInt(data.isSolved, 10) === 1;
 	data.isQuestion = parseInt(data.isQuestion, 10) === 1;
-	const canEdit = await privileges.topics.canEdit(data.tid, hookData.uid);
-	if (canEdit && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(hookData.pid, 10)) {
+	const canSolve = await canSetAsSolved(data.tid, hookData.uid);
+	if (canSolve && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(hookData.pid, 10)) {
 		hookData.tools.push({
 			action: 'qanda/post-solved',
 			html: '[[qanda:post.tool.mark_correct]]',
@@ -321,8 +321,8 @@ function handleSocketIO() {
 	SocketPlugins.QandA = {};
 
 	SocketPlugins.QandA.toggleSolved = async function (socket, data) {
-		const canEdit = await privileges.topics.canEdit(data.tid, socket.uid);
-		if (!canEdit) {
+		const canSolve = await canSetAsSolved(data.tid, socket.uid);
+		if (!canSolve) {
 			throw new Error('[[error:no-privileges]]');
 		}
 
@@ -330,8 +330,8 @@ function handleSocketIO() {
 	};
 
 	SocketPlugins.QandA.toggleQuestionStatus = async function (socket, data) {
-		const canEdit = await privileges.topics.canEdit(data.tid, socket.uid);
-		if (!canEdit) {
+		const canSolve = await canSetAsSolved(data.tid, socket.uid);
+		if (!canSolve) {
 			throw new Error('[[error:no-privileges]]');
 		}
 
@@ -485,4 +485,11 @@ async function getTopics(type, page, cids, uid, settings) {
 		topicCount,
 		topics: topicsData,
 	};
+}
+
+async function canSetAsSolved(tid, uid) {
+	if (plugin._settings.onlyAdmins) {
+		return await privileges.topics.isAdminOrMod(tid, uid);
+	}
+	return await privileges.topics.canEdit(tid, uid);
 }
