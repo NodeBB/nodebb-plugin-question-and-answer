@@ -24,8 +24,8 @@
 		{ "hook": "static:api.routes", "method": "staticApiRoutes" },
 		{ "hook": "filter:topicEvents.init", "method": "registerTopicEvents" }
 	],
-	"less": [
-		"static/style.less"
+	"scss": [
+		"static/style.scss"
 	],
 	"scripts": [
 		"static/lib/main.js"

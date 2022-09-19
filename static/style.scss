@@ -1,11 +1,11 @@
 .answered {
-	border: 1px solid @brand-success;
-	color: @brand-success;
+	border: 1px solid $success;
+	color: $success;
 }
 
 .unanswered {
-	border: 1px solid @brand-warning;
-	color: @brand-warning;
+	border: 1px solid $warning;
+	color: $warning;
 }
 
 .unanswered, .answered {
@@ -23,20 +23,20 @@
 
 html .topic {
 	.answered {
-		color: @brand-success;
+		color: $success;
 	}
 
 	.unanswered {
-		color: @brand-warning;
+		color: $warning;
 	}
 }
 
 .posts [component="post"][data-index="-1"].isSolved {
 	&:before {
 		content: attr(data-label);
-		background: @brand-success;
+		background: $success;
 		border-radius: 0 4px 4px 0;
-		color: @label-color;
+		color: $form-label-color;
 		text-transform: uppercase;
 		font-size: 10px;
 		padding: 4px 8px;
@@ -45,10 +45,10 @@ html .topic {
 		top: -1.25rem;
 	}
 
-	border-left: 8px solid @brand-success;
-	border-right: 1px solid @brand-success;
-	border-top: 1px solid @brand-success;
-	border-bottom: 1px solid @brand-success;
+	border-left: 8px solid $success;
+	border-right: 1px solid $success;
+	border-top: 1px solid $success;
+	border-bottom: 1px solid $success;
 
 	padding-top: 40px;	// to make room for label (in :before pseudo-element)
 
@@ -56,7 +56,7 @@ html .topic {
 		display: none;
 	}
 
-	@media (max-width: @screen-xs-max) {
+	@include media-breakpoint-down(sm) {
 		margin-left: -15px;
 	}
 
@@ -65,7 +65,7 @@ html .topic {
 	}
 
 	.bookmarked:before {
-		color: @brand-success;
+		color: $success;
 		content: "\f00c";
 	}
 }
