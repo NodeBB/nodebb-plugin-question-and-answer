@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-question-and-answer",
-  "version": "0.12.25",
+  "version": "1.0.0",
   "description": "A nodebb-plugin-question-and-answer plugin for NodeBB which allows users to post topics as questions and select a post as the answer",
   "main": "library.js",
   "repository": {
