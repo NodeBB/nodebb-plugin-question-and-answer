@@ -17,12 +17,12 @@ const social = require.main.require('./src/social');
 const plugin = module.exports;
 
 plugin.init = async function (params) {
-	const { router, middleware } = params;
+	const { router } = params;
 	const routeHelpers = require.main.require('./src/routes/helpers');
 
-	routeHelpers.setupAdminPageRoute(router, '/admin/plugins/question-and-answer', middleware, [], renderAdmin);
-	routeHelpers.setupPageRoute(router, '/unsolved', middleware, [], renderUnsolved);
-	routeHelpers.setupPageRoute(router, '/solved', middleware, [], renderSolved);
+	routeHelpers.setupAdminPageRoute(router, '/admin/plugins/question-and-answer', [], renderAdmin);
+	routeHelpers.setupPageRoute(router, '/unsolved', [], renderUnsolved);
+	routeHelpers.setupPageRoute(router, '/solved', [], renderSolved);
 
 	handleSocketIO();
 
