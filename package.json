@@ -24,7 +24,7 @@
   },
   "readmeFilename": "README.md",
   "nbbpm": {
-    "compatibility": "^1.18.7 || ^2.0.0"
+    "compatibility": "^2.0.1"
   },
   "scripts": {
     "lint": "eslint ."
