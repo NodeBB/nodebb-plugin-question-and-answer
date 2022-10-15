@@ -41,12 +41,12 @@ $('document').ready(function () {
 
 			// Append a dropdown container if necessary (up to v1.18.4)
 			if (!$container.length) {
-				actionBar.append('<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>');
-				$container = $('<ul class="dropdown-menu pull-right" role="menu"></ul>');
+				actionBar.append('<button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
+				$container = $('<ul class="dropdown-menu float-end" role="menu"></ul>');
 				actionBar.append($container);
 			}
 
-			var item = $('<li><a href="#" data-switch-action="post"><i class="fa fa-fw fa-' + (isQuestion ? 'check-' : '') + 'circle-o"></i> ' + translated + '</a></li>');
+			var item = $('<li><a class="dropdown-item" href="#" data-switch-action="post"><i class="fa fa-fw fa-' + (isQuestion ? 'check-' : '') + 'circle-o"></i> ' + translated + '</a></li>');
 
 			item.on('click', () => {
 				var icon = item.find('.fa');
