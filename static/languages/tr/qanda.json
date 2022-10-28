@@ -3,6 +3,7 @@
     "topic_unsolved": "Çözülmedi",
     "menu.solved": "Çözüldü",
     "menu.unsolved": "Çözülmedi",
+    "label.solution": "Çözüm",
     "thread.alert.as_question": "Konu, soru olarak işaretlendi",
     "thread.alert.make_normal": "Konu artık sıradan bir alt konu",
     "thread.alert.solved": "Konu çözüldü olarak işaretlendi",
@@ -17,5 +18,7 @@
     "admin.form.general_settings": "Genel Ayarlar",
     "admin.form.label.only_allow_all": "Yalnızca tüm kategoriler için soru sorulmasına izin ver (normal konu davranışını devre dışı bırakır)",
     "admin.form.label.only_allow_following": "Yalnızca aşağıdaki kategoriler için soru sorulmasına izin verin (normal konu davranışını devre dışı bırakır)",
-    "admin.form.tips": "Bu seçenek aşağıdaki seçeneğin yerini alır"
+    "admin.form.tips": "Bu seçenek aşağıdaki seçeneğin yerini alır",
+    "admin.form.label.toggle_lock": "Çözülmüş konuları otomatik olarak kapat",
+    "admin.form.label.only_allow_admins": "Konuların sadece yöneticiler ve moderatörler tarafından çözülmüş olarak işaretlenmesine izin ver"
     }
