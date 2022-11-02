@@ -8,7 +8,7 @@ $('document').ready(function () {
 	}
 	function alertType(type, message) {
 		require(['alerts'], function (alerts) {
-			alert[type](message);
+			alerts[type](message);
 		});
 	}
 	$(window).on('action:ajaxify.end', function () {
