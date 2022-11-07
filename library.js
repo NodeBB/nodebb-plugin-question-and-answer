@@ -488,7 +488,7 @@ async function getTopics(type, page, cids, uid, settings) {
 }
 
 async function canSetAsSolved(tid, uid) {
-	if (plugin._settings.onlyAdmins) {
+	if (plugin._settings.onlyAdmins === 'on') {
 		return await privileges.topics.isAdminOrMod(tid, uid);
 	}
 	return await privileges.topics.canEdit(tid, uid);
