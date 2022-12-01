@@ -286,26 +286,22 @@ plugin.staticApiRoutes = async function ({ router, middleware, helpers }) {
 };
 
 plugin.registerTopicEvents = async function ({ types }) {
-	types = {
-		...types,
-		'qanda.as_question': {
-			icon: 'fa-question',
-			text: '[[qanda:thread.alert.as_question]]',
-		},
-		'qanda.make_normal': {
-			type: 'qanda.make_normal',
-			text: '[[qanda:thread.alert.make_normal]]',
-		},
-		'qanda.solved': {
-			icon: 'fa-check',
-			text: '[[qanda:thread.alert.solved]]',
-		},
-		'qanda.unsolved': {
-			icon: 'fa-question',
-			text: '[[qanda:thread.alert.unsolved]]',
-		},
+	types['qanda.as_question'] = {
+		icon: 'fa-question',
+		translation: async event => topics.events.translateSimple('qanda:thread.alert.as_question', event),
 	};
-
+	types['qanda.make_normal'] = {
+		icon: 'fa-question',
+		translation: async event => topics.events.translateSimple('qanda:thread.alert.make_normal', event),
+	};
+	types['qanda.solved'] = {
+		icon: 'fa-check',
+		translation: async event => topics.events.translateSimple('qanda:thread.alert.solved', event),
+	};
+	types['qanda.unsolved'] = {
+		icon: 'fa-question',
+		translation: async event => topics.events.translateSimple('qanda:thread.alert.unsolved', event),
+	};
 	return { types };
 };
 
