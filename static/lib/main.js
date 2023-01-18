@@ -41,7 +41,7 @@ $('document').ready(function () {
 
 			// Append a dropdown container if necessary (up to v1.18.4)
 			if (!$container.length) {
-				actionBar.append('<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
+				actionBar.append('<button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
 				$container = $('<ul class="dropdown-menu dropdown-menu-end" role="menu"></ul>');
 				actionBar.append($container);
 			}
