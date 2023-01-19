@@ -32,37 +32,32 @@ $('document').ready(function () {
 			return;
 		}
 		var actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
-		addQnADropdown(actionBar, data.composerData.isQuestion);
+		addQnADropdownHandler(actionBar);
 	});
 
-	function addQnADropdown(actionBar, isQuestion) {
-		translate('[[qanda:thread.tool.as_question]]', function (translated) {
-			var $container = actionBar.find('.dropdown-menu');
+	require(['hooks', 'translator'], function (hooks, translator) {
+		hooks.on('filter:composer.create', async (hookData) => {
+			const translated = await translator.translate('[[qanda:thread.tool.as_question]]');
+			hookData.createData.submitOptions.push({
+				action: 'ask-as-question',
+				text: `<i class="fa fa-fw fa-${hookData.createData.isQuestion ? 'check-' : ''}circle-o"></i> ${translated}`
+			});
+			return hookData;
+		});
+	});
 
-			// Append a dropdown container if necessary (up to v1.18.4)
-			if (!$container.length) {
-				actionBar.append('<button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
-				$container = $('<ul class="dropdown-menu dropdown-menu-end" role="menu"></ul>');
-				actionBar.append($container);
+	function addQnADropdownHandler(actionBar) {
+		const item = actionBar.find(`[data-action="ask-as-question"]`);
+		item.on('click', () => {
+			item.find('.fa').toggleClass('fa-circle-o').toggleClass('fa-check-circle-o');
+			// Don't close dropdown on toggle (for better UX)
+			return false;
+		});
+
+		$(window).one('action:composer.submit', function (ev, data) {
+			if (item.find('.fa').hasClass('fa-check-circle-o')) {
+				data.composerData.isQuestion = true;
 			}
-
-			var item = $('<li><a class="dropdown-item" href="#" data-switch-action="post"><i class="fa fa-fw fa-' + (isQuestion ? 'check-' : '') + 'circle-o"></i> ' + translated + '</a></li>');
-
-			item.on('click', () => {
-				var icon = item.find('.fa');
-				icon.toggleClass('fa-circle-o').toggleClass('fa-check-circle-o');
-				// Don't close dropdown on toggle (for better UX)
-				return false;
-			});
-
-			$(window).one('action:composer.submit', function (ev, data) {
-				var icon = item.find('.fa');
-				if (icon.hasClass('fa-check-circle-o')) {
-					data.composerData.isQuestion = true;
-				}
-			});
-
-			$container.append(item);
 		});
 	}
 
