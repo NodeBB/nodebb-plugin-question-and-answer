@@ -179,7 +179,7 @@ plugin.addThreadTool = async function (hookData) {
 	if (parseInt(hookData.topic.isQuestion, 10)) {
 		hookData.tools = hookData.tools.concat([
 			{
-				class: `toggleSolved ${isSolved ? 'alert-warning topic-solved' : 'alert-success topic-unsolved'}`,
+				class: `toggleSolved ${isSolved ? 'topic-solved' : 'topic-unsolved'}`,
 				title: isSolved ? '[[qanda:thread.tool.mark_unsolved]]' : '[[qanda:thread.tool.mark_solved]]',
 				icon: isSolved ? 'fa-question-circle' : 'fa-check-circle',
 			},
@@ -191,7 +191,7 @@ plugin.addThreadTool = async function (hookData) {
 		]);
 	} else {
 		hookData.tools.push({
-			class: 'toggleQuestionStatus alert-warning',
+			class: 'toggleQuestionStatus',
 			title: '[[qanda:thread.tool.as_question]]',
 			icon: 'fa-question-circle',
 		});
