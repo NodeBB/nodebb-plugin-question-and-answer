@@ -13,7 +13,7 @@
     "thread.tool.as_question": "Poser une question",
     "thread.button.as_question": "Poser une question",
     "post.alert.correct_answer": "Ce post a été marqué comme étant la bonne réponse",
-    "post.tool.mark_correct": "Marquer ce post comme la bonne réponse",
+    "post.tool.mark_correct": "Marquer comme correct",
     "admin.form.general_settings": "Réglages généraux",
     "admin.form.label.only_allow_all": "Autoriser uniquement les questions d'être posées dans toutes les catégories (désactive les discussions normales)",
     "admin.form.label.only_allow_following": "Autoriser uniquement les questions d'être posées dans les catégories suivantes (désactive les discussions normales)",

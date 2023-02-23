@@ -22,7 +22,7 @@
     "thread.tool.as_question": "Ask as question",
     "thread.button.as_question": "Ask as question",
     "post.alert.correct_answer": "This post has been marked as the correct answer",
-    "post.tool.mark_correct": "Mark this post as the correct answer",
+    "post.tool.mark_correct": "Mark as Correct",
     "admin.form.general_settings": "General Settings",
     "admin.form.label.only_allow_all": "Only allow questions to be asked for all categories (disables regular topic behaviour)",
     "admin.form.label.only_allow_following": "Only allow questions to be asked for the following categories (disables regular topic behaviour)",
