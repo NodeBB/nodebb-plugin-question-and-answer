@@ -1,36 +1,3 @@
-.answered {
-	border: 1px solid $success;
-	color: $success;
-}
-
-.unanswered {
-	border: 1px solid $warning;
-	color: $warning;
-}
-
-.unanswered, .answered {
-	font-size: 0.75rem;
-	padding: 3px 6px;
-	vertical-align: text-bottom;
-	font-weight: 700;
-}
-
-.breadcrumb {
-	.answered, .unanswered {
-		display: none;
-	}
-}
-
-html .topic {
-	.answered {
-		color: $success;
-	}
-
-	.unanswered {
-		color: $warning;
-	}
-}
-
 .posts [component="post"][data-index="-1"].isSolved {
 	&:before {
 		content: attr(data-label);

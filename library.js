@@ -70,12 +70,7 @@ plugin.addAnswerDataToTopic = async function (hookData) {
 		return hookData;
 	}
 
-	hookData.templateData.icons.push(
-		parseInt(hookData.templateData.isSolved, 10) ?
-			'<span class="answered"><i class="fa fa-check"></i> [[qanda:topic_solved]]</span>' :
-			'<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span>'
-	);
-
+	hookData.templateData.icons.push(getIconMarkup(hookData.templateData.isSolved));
 	return await addMetaData(hookData);
 };
 
@@ -151,15 +146,18 @@ async function addMetaData(data) {
 plugin.getTopics = async function (hookData) {
 	hookData.topics.forEach((topic) => {
 		if (topic && parseInt(topic.isQuestion, 10)) {
-			if (parseInt(topic.isSolved, 10)) {
-				topic.icons.push('<span class="answered"><i class="fa fa-check"></i> [[qanda:topic_solved]]</span>');
-			} else {
-				topic.icons.push('<span class="unanswered"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span>');
-			}
+			topic.icons.push(getIconMarkup(topic.isSolved));
 		}
 	});
 	return hookData;
 };
+
+function getIconMarkup(isSolved) {
+	if (parseInt(isSolved, 10)) {
+		return '<span class="answered badge border text-success border-success"><i class="fa fa-check"></i> [[qanda:topic_solved]]</span>';
+	}
+	return '<span class="unanswered badge border text-warning border-warning"><i class="fa fa-question-circle"></i> [[qanda:topic_unsolved]]</span>';
+}
 
 plugin.filterPostGetPostSummaryByPids = async function (hookData) {
 	const tids = hookData.posts.map(p => p && p.tid);
