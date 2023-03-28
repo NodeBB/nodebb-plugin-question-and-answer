@@ -40,7 +40,7 @@ $('document').ready(function () {
 			const translated = await translator.translate('[[qanda:thread.tool.as_question]]');
 			hookData.createData.submitOptions.push({
 				action: 'ask-as-question',
-				text: `<i class="fa fa-fw fa-${hookData.createData.isQuestion ? 'check-' : ''}circle-o"></i> ${translated}`
+				text: `<i class="fa fa-fw fa-${hookData.postData.isQuestion ? 'check-' : ''}circle-o"></i> ${translated}`
 			});
 			return hookData;
 		});
