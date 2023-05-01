@@ -3,10 +3,19 @@
     "topic_unsolved": "לא נפתר",
     "menu.solved": "נפתר",
     "menu.unsolved": "לא נפתר",
+    "label.solution": "פתרון",
     "thread.alert.as_question": "הנושא סומן כשאלה",
     "thread.alert.make_normal": "הנושא סומן כנושא רגיל",
     "thread.alert.solved": "הנושא סומן כנפתר",
     "thread.alert.unsolved": "הנושא סומן כלא נפתר",
+    "thread.alert.as_question-ago": "%1 סימן נושא זה כשאלה %2",
+    "thread.alert.as_question-on": "%1 סימן נושא זה כשאלה ב%2",
+    "thread.alert.make_normal-ago": "%1 סימן נושא זה כנושא רגיל %2",
+    "thread.alert.make_normal-on": "%1 סימן נושא זה כנושא רגיל ב%2",
+    "thread.alert.solved-ago": "%1 סימן נושא זה כנפתר %2",
+    "thread.alert.solved-on": "%1 סימן נושא זה כנפתר ב%2",
+    "thread.alert.unsolved-ago": "%1 סימן נושא זה כלא נפתר %2",
+    "thread.alert.unsolved-on": "%1 סימן נושא זה כלא נפתר ב%2",
     "thread.tool.mark_solved": "סמן כנושא שנפתר",
     "thread.tool.mark_unsolved": "סמן כנושא שלא נפתר",
     "thread.tool.make_normal": "שנה את הנושא לנושא רגיל",
@@ -17,5 +26,7 @@
     "admin.form.general_settings": "הגדרות כלליות",
     "admin.form.label.only_allow_all": "אפשר שאלות בלבד בכל הקטגוריות (בטל נושאים רגילים)",
     "admin.form.label.only_allow_following": "אפשר שאלות בלבד בקטגוריות המסומנות (בטל נושאים רגילים)",
-    "admin.form.tips": "הגדרה זו עוקפת את ההגדרה למטה."
+    "admin.form.tips": "הגדרה זו עוקפת את ההגדרה למטה.",
+    "admin.form.label.toggle_lock": "נעל אוטומטית נושאים שנפתרו",
+    "admin.form.label.only_allow_admins": "אפשר רק למנהלים ומודרטורים לסמן נושא כנפתר"
 }
