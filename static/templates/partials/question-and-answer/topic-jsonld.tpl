@@ -20,7 +20,7 @@
           "@type": "Answer",
           "text": "{{acceptedAnswer.content}}",
           "dateCreated": "{acceptedAnswer.timestampISO}",
-          "url": "{config.relative_path}/pid/{acceptedAnswer.pid}",
+          "url": "{config.relative_path}/post/{acceptedAnswer.pid}",
           "author": {
             "@type": "Person",
             "name": "{acceptedAnswer.user.username}"
@@ -35,7 +35,7 @@
           "@type": "Answer",
           "text": "{{suggestedAnswer.content}}",
           "dateCreated": "{suggestedAnswer.timestampISO}",
-          "url": "{config.relative_path}/pid/{suggestedAnswer.pid}",
+          "url": "{config.relative_path}/post/{suggestedAnswer.pid}",
           "author": {
           "@type": "Person",
             "name": "{suggestedAnswer.user.username}"
