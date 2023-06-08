@@ -20,7 +20,7 @@ plugin.init = async function (params) {
 	const { router } = params;
 	const routeHelpers = require.main.require('./src/routes/helpers');
 
-	routeHelpers.setupAdminPageRoute(router, '/admin/plugins/question-and-answer', [], renderAdmin);
+	routeHelpers.setupAdminPageRoute(router, '/admin/plugins/question-and-answer', renderAdmin);
 	routeHelpers.setupPageRoute(router, '/unsolved', [], renderUnsolved);
 	routeHelpers.setupPageRoute(router, '/solved', [], renderSolved);
 
@@ -308,6 +308,7 @@ async function renderAdmin(req, res) {
 	const data = await categories.getCategoriesFields(cids, ['cid', 'name', 'parentCid']);
 	res.render('admin/plugins/question-and-answer', {
 		categories: categories.getTree(data),
+		title: 'Q&A',
 	});
 }
 
