@@ -116,7 +116,7 @@ $('document').ready(function () {
 		var tid = ajaxify.data.tid;
 		var pid = $(this).parents('[data-pid]').attr('data-pid');
 
-		socket.emit('plugins.QandA.toggleSolved', { tid: tid, pid: pid }, function (err, data) {
+		socket.emit('plugins.QandA.markPostAsAnswer', { tid: tid, pid: pid }, function (err, data) {
 			if (err) {
 				return alertType('error', err);
 			}

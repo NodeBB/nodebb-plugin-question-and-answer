@@ -206,7 +206,9 @@ plugin.addPostTool = async function (hookData) {
 	data.isSolved = parseInt(data.isSolved, 10) === 1;
 	data.isQuestion = parseInt(data.isQuestion, 10) === 1;
 	const canSolve = await canSetAsSolved(data.tid, hookData.uid);
-	if (canSolve && !data.isSolved && data.isQuestion && parseInt(data.mainPid, 10) !== parseInt(hookData.pid, 10)) {
+	if (canSolve && data.isQuestion &&
+		parseInt(hookData.pid, 10) !== parseInt(data.solvedPid, 10) &&
+		parseInt(hookData.pid, 10) !== parseInt(data.mainPid, 10)) {
 		hookData.tools.push({
 			action: 'qanda/post-solved',
 			html: '[[qanda:post.tool.mark_correct]]',
@@ -321,7 +323,17 @@ function handleSocketIO() {
 			throw new Error('[[error:no-privileges]]');
 		}
 
-		return await toggleSolved(socket.uid, data.tid, data.pid);
+		return await toggleSolved(socket.uid, data.tid);
+	};
+
+
+	SocketPlugins.QandA.markPostAsAnswer = async function (socket, data) {
+		const canSolve = await canSetAsSolved(data.tid, socket.uid);
+		if (!canSolve) {
+			throw new Error('[[error:no-privileges]]');
+		}
+
+		return await markSolved(socket.uid, data.tid, data.pid, true);
 	};
 
 	SocketPlugins.QandA.toggleQuestionStatus = async function (socket, data) {
@@ -334,33 +346,29 @@ function handleSocketIO() {
 	};
 }
 
-async function toggleSolved(uid, tid, pid) {
+async function toggleSolved(uid, tid) {
 	let isSolved = await topics.getTopicField(tid, 'isSolved');
 	isSolved = parseInt(isSolved, 10) === 1;
+	return await markSolved(uid, tid, 0, !isSolved);
+}
 
+async function markSolved(uid, tid, pid, isSolved) {
 	const updatedTopicFields = isSolved ?
-		{ isSolved: 0, solvedPid: 0 } :
-		{ isSolved: 1, solvedPid: pid };
+		{ isSolved: 1, solvedPid: pid }	:
+		{ isSolved: 0, solvedPid: 0 };
 
 	if (plugin._settings.toggleLock === 'on') {
-		updatedTopicFields.locked = isSolved ? 0 : 1;
+		updatedTopicFields.locked = isSolved ? 1 : 0;
 	}
 
 	await topics.setTopicFields(tid, updatedTopicFields);
 
 	if (isSolved) {
 		await Promise.all([
-			db.sortedSetAdd('topics:unsolved', Date.now(), tid),
-			db.sortedSetRemove('topics:solved', tid),
-			topics.events.log(tid, { type: 'qanda.unsolved', uid }),
-		]);
-	} else {
-		await Promise.all([
 			db.sortedSetRemove('topics:unsolved', tid),
 			db.sortedSetAdd('topics:solved', Date.now(), tid),
 			topics.events.log(tid, { type: 'qanda.solved', uid }),
 		]);
-
 		if (pid) {
 			const data = await posts.getPostData(pid);
 			await rewards.checkConditionAndRewardUser({
@@ -371,10 +379,16 @@ async function toggleSolved(uid, tid, pid) {
 				},
 			});
 		}
+	} else {
+		await Promise.all([
+			db.sortedSetAdd('topics:unsolved', Date.now(), tid),
+			db.sortedSetRemove('topics:solved', tid),
+			topics.events.log(tid, { type: 'qanda.unsolved', uid }),
+		]);
 	}
 
-	plugins.hooks.fire('action:topic.toggleSolved', { uid: uid, tid: tid, pid: pid, isSolved: !isSolved });
-	return { isSolved: !isSolved };
+	plugins.hooks.fire('action:topic.toggleSolved', { uid: uid, tid: tid, pid: pid, isSolved: isSolved });
+	return { isSolved: isSolved };
 }
 
 async function toggleQuestionStatus(uid, tid) {
