@@ -76,30 +76,51 @@ plugin.addAnswerDataToTopic = async function (hookData) {
 
 plugin.filterTopicGetPosts = async (hookData) => {
 	const solvedPid = parseInt(hookData.topic.solvedPid, 10);
-	const showBestAnswer = hookData.posts.length && hookData.posts[0].index === 0;
-	if (!solvedPid || !showBestAnswer) {
+	if (!solvedPid) {
 		return hookData;
 	}
-	const answers = await posts.getPostsByPids([solvedPid], hookData.uid);
-	const [postsData, postSharing] = await Promise.all([
-		topics.addPostData(answers, hookData.uid),
-		social.getActivePostSharing(),
-	]);
-	let post = postsData[0];
-	if (post) {
-		const bestAnswerTopicData = { ...hookData.topic };
-		bestAnswerTopicData.posts = postsData;
-		bestAnswerTopicData.postSharing = postSharing;
+	const showBestAnswer = hookData.posts.length && hookData.posts[0].index === 0;
+	if (!showBestAnswer) {
+		hookData.posts.forEach((p) =>{
+			if (p && p.pid === solvedPid) {
+				p.allowDupe = true;
+			}
+		});
+		return hookData;
+	}
 
-		const topicPrivileges = await privileges.topics.get(hookData.topic.tid, hookData.uid);
-		await topics.modifyPostsByPrivilege(bestAnswerTopicData, topicPrivileges);
+	const topicPosts = hookData.posts;
+	const answerIsNotFirstReply = topicPosts.length > 1 && topicPosts[1].pid !== solvedPid;
+	const found = topicPosts.find(p => p.pid === solvedPid);
+	if (found && answerIsNotFirstReply) {
+		const copy = { ...found };
+		copy.allowDupe = true;
+		copy.navigatorIgnore = true;
+		copy.eventStart = 0;
+		copy.eventEnd = 0
+		topicPosts.splice(1, 0, copy);
+	} else if (answerIsNotFirstReply) {
+		const answers = await posts.getPostsByPids([solvedPid], hookData.uid);
+		const [postsData, postSharing] = await Promise.all([
+			topics.addPostData(answers, hookData.uid),
+			social.getActivePostSharing(),
+		]);
+		let post = postsData[0];
+		if (post) {
+			const bestAnswerTopicData = { ...hookData.topic };
+			bestAnswerTopicData.posts = postsData;
+			bestAnswerTopicData.postSharing = postSharing;
 
-		post = bestAnswerTopicData.posts[0];
-		post.index = -1;
+			const topicPrivileges = await privileges.topics.get(hookData.topic.tid, hookData.uid);
+			await topics.modifyPostsByPrivilege(bestAnswerTopicData, topicPrivileges);
 
-		const op = hookData.posts.shift();
-		hookData.posts.unshift(post);
-		hookData.posts.unshift(op);
+			post = bestAnswerTopicData.posts[0];
+			post.allowDupe = true;
+			post.navigatorIgnore = true;
+			const indices = await posts.getPostIndices([post], hookData.uid);
+			post.index = indices[0];
+			topicPosts.splice(1, 0, post);
+		}
 	}
 
 	hookData.posts.forEach((post) => {

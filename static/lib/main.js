@@ -12,9 +12,7 @@ $('document').ready(function () {
 		});
 	}
 	$(window).on('action:ajaxify.end', function () {
-		if (ajaxify.data.template.topic) {
-			markPostAsSolved();
-		} else if (ajaxify.data.template.compose && ajaxify.data.isMain && ajaxify.data.topic) {
+		if (ajaxify.data.template.compose && ajaxify.data.isMain && ajaxify.data.topic) {
 			// seperate composer page
 			var actionBar = $('.composer .action-bar');
 			addQnADropdown(actionBar, parseInt(ajaxify.data.topic.isQuestion, 10) === 1);
@@ -25,6 +23,7 @@ $('document').ready(function () {
 	$(window).on('action:post.tools.load', addPostHandlers);
 
 	$(window).on('action:posts.loaded', markPostAsSolved);
+	$(window).on('action:topic.loaded', markPostAsSolved);
 
 	$(window).on('action:composer.loaded', function (ev, data) {
 		// Return early if it is a reply and not a new topic
@@ -127,11 +126,22 @@ $('document').ready(function () {
 	}
 
 	function markPostAsSolved() {
-		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"]').addClass('isSolved');
-		$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"] .post-footer').addClass('hidden');
+		if (!ajaxify.data.solvedPid) {
+			return;
+		}
+		$('[component="topic"]').addClass('solved');
+		const solvedEl = $('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"]').first();
+		if (solvedEl.length) {
+			const prev = solvedEl.prevAll('[component="post"][data-index="0"]');
+			if (!prev.length) {
+				return;
+			}
 
-		translate('[[qanda:label.solution]]', (translated) => {
-			$('[component="post"][data-pid="' + ajaxify.data.solvedPid + '"][data-index="-1"]').attr('data-label', translated);
-		});
+			solvedEl.addClass('isSolved');
+			$(`[data-necro-post-index="${solvedEl.attr('data-index')}"]`).addClass('hidden');
+			translate('[[qanda:label.solution]]', (translated) => {
+				solvedEl.attr('data-label', translated);
+			});
+		}
 	}
 });

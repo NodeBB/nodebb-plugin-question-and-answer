@@ -1,4 +1,4 @@
-.posts [component="post"][data-index="-1"].isSolved {
+.posts [component="post"].isSolved {
 	&:before {
 		content: attr(data-label);
 		background: $success;
@@ -31,17 +31,14 @@
 	> hr {
 		display: none;
 	}
+}
 
-	.bookmarked:before {
-		color: $success;
-		content: "\f00c";
+[component="topic"].solved {
+	[data-necro-post-index="0"] {
+		display: none!important;
 	}
 }
 
 .posts.timeline > [component="post"].isSolved {
 	margin-left: calc(2.5rem - 3.5px);
-
-	> div:not(.content) {
-		margin-left: calc(-2.5rem - 3.5px);
-	}
 }
