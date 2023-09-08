@@ -15,7 +15,7 @@ $('document').ready(function () {
 		if (ajaxify.data.template.compose && ajaxify.data.isMain && ajaxify.data.topic) {
 			// seperate composer page
 			var actionBar = $('.composer .action-bar');
-			addQnADropdown(actionBar, parseInt(ajaxify.data.topic.isQuestion, 10) === 1);
+			addQnADropdownHandler(actionBar);
 		}
 	});
 
