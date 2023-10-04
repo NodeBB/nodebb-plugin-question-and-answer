@@ -175,9 +175,9 @@ plugin.getTopics = async function (hookData) {
 
 function getIconMarkup(isSolved) {
 	if (parseInt(isSolved, 10)) {
-		return '<span class="answered badge border text-success border-success"><i class="fa fa-check"></i><span class="d-none d-md-inline"> [[qanda:topic_solved]]</span></span>';
+		return '<span class="answered badge border text-success border-success"><i class="fa fa-check"></i><span> [[qanda:topic_solved]]</span></span>';
 	}
-	return '<span class="unanswered badge border text-warning border-warning"><i class="fa fa-question-circle"></i><span class="d-none d-md-inline"> [[qanda:topic_unsolved]]</span></span>';
+	return '<span class="unanswered badge border text-warning border-warning"><i class="fa fa-question-circle"></i><span> [[qanda:topic_unsolved]]</span></span>';
 }
 
 plugin.filterPostGetPostSummaryByPids = async function (hookData) {
