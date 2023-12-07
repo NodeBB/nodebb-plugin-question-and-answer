@@ -12,7 +12,8 @@
       "dateCreated": "{timestampISO}",
       "author": {
         "@type": "Person",
-        "name": "{mainPost.user.username}"
+        "name": "{mainPost.user.username}",
+        "url": "{config.relative_path}/user/{mainPost.user.userslug}"
       },
       "acceptedAnswer": [
         {{{ if acceptedAnswer.content }}}
@@ -23,7 +24,8 @@
           "url": "{config.relative_path}/post/{acceptedAnswer.pid}",
           "author": {
             "@type": "Person",
-            "name": "{acceptedAnswer.user.username}"
+            "name": "{acceptedAnswer.user.username}",
+            "url": "{config.relative_path}/user/{acceptedAnswer.user.userslug}"
           },
           "upvoteCount": {acceptedAnswer.votes}
         }
@@ -38,7 +40,8 @@
           "url": "{config.relative_path}/post/{suggestedAnswer.pid}",
           "author": {
           "@type": "Person",
-            "name": "{suggestedAnswer.user.username}"
+            "name": "{suggestedAnswer.user.username}",
+            "url": "{config.relative_path}/user/{suggestedAnswer.user.userslug}"
           },
           "upvoteCount": {suggestedAnswer.votes}
         }
