@@ -39,7 +39,7 @@
           "dateCreated": "{suggestedAnswer.timestampISO}",
           "url": "{config.relative_path}/post/{suggestedAnswer.pid}",
           "author": {
-          "@type": "Person",
+            "@type": "Person",
             "name": "{suggestedAnswer.user.username}",
             "url": "{config.relative_path}/user/{suggestedAnswer.user.userslug}"
           },
