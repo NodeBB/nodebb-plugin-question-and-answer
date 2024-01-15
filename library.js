@@ -159,6 +159,7 @@ async function addMetaData(data) {
 	if (suggestedAnswer && suggestedAnswer.pid !== data.templateData.mainPid) {
 		data.templateData.suggestedAnswer = suggestedAnswer || {};
 	}
+	data.templateData.answerCount = Math.max(0, data.templateData.postcount - 1);
 
 	data.res.locals.postHeader = await data.req.app.renderAsync('partials/question-and-answer/topic-jsonld', data.templateData);
 	return data;

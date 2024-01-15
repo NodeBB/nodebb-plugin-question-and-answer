@@ -7,7 +7,7 @@
       "name": "{title}",
       "text": "{{mainPost.content}}",
       "url": "{topicURL}",
-      "answerCount": {postcount},
+      "answerCount": {answerCount},
       "upvoteCount": {votes},
       "dateCreated": "{timestampISO}",
       "author": {
