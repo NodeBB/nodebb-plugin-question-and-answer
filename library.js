@@ -1,5 +1,7 @@
 'use strict';
 
+const validator = require.main.require('validator');
+
 const topics = require.main.require('./src/topics');
 const posts = require.main.require('./src/posts');
 const categories = require.main.require('./src/categories');
@@ -136,8 +138,9 @@ async function addMetaData(data) {
 	const { tid } = data.templateData;
 	const { uid } = data.req;
 	const pidsToFetch = [data.templateData.mainPid, await posts.getPidsFromSet(`tid:${tid}:posts:votes`, 0, 0, true)];
-	let mainPost; let suggestedAnswer; let
-		acceptedAnswer;
+	let mainPost;
+	let suggestedAnswer;
+	let acceptedAnswer;
 
 	if (data.templateData.solvedPid) {
 		pidsToFetch.push(data.templateData.solvedPid);
@@ -160,7 +163,7 @@ async function addMetaData(data) {
 		data.templateData.suggestedAnswer = suggestedAnswer || {};
 	}
 	data.templateData.answerCount = Math.max(0, data.templateData.postcount - 1);
-
+	data.templateData.mainPost.title = validator.escape(String(data.templateData.titleRaw));
 	data.res.locals.postHeader = await data.req.app.renderAsync('partials/question-and-answer/topic-jsonld', data.templateData);
 	return data;
 }

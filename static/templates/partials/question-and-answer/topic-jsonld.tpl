@@ -4,7 +4,7 @@
     "@type": "QAPage",
     "mainEntity": {
       "@type": "Question",
-      "name": "{title}",
+      "name": "{mainPost.title}",
       "text": "{{mainPost.content}}",
       "url": "{topicURL}",
       "answerCount": {answerCount},
