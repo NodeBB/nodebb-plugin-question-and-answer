@@ -197,6 +197,9 @@ plugin.filterPostGetPostSummaryByPids = async function (hookData) {
 };
 
 plugin.addThreadTool = async function (hookData) {
+	if (!await canSetAsSolved(hookData.topic.tid, hookData.uid)) {
+		return hookData;
+	}
 	const isSolved = parseInt(hookData.topic.isSolved, 10);
 
 	if (parseInt(hookData.topic.isQuestion, 10)) {
