@@ -19,7 +19,7 @@
 		{ "hook": "filter:topic.create", "method": "onTopicCreate" },
 		{ "hook": "action:topic.save", "method": "actionTopicSave" },
 		{ "hook": "filter:topic.edit", "method": "filterTopicEdit" },
-		{ "hook": "action:topic.purge", "method": "actionTopicPurge" },
+		{ "hook": "action:topics.purge", "method": "actionTopicsPurge" },
 		{ "hook": "filter:composer.push", "method": "filterComposerPush" },
 		{ "hook": "static:api.routes", "method": "staticApiRoutes" },
 		{ "hook": "filter:topicEvents.init", "method": "registerTopicEvents" }

@@ -290,9 +290,11 @@ plugin.filterTopicEdit = async function (hookData) {
 	return hookData;
 };
 
-plugin.actionTopicPurge = async function (hookData) {
-	if (hookData.topic) {
-		await db.sortedSetsRemove(['topics:solved', 'topics:unsolved'], hookData.topic.tid);
+plugin.actionTopicsPurge = async function (hookData) {
+	if (Array.isArray(hookData.topics) && hookData.topics.length) {
+		await db.sortedSetRemove([
+			'topics:solved', 'topics:unsolved'
+		], hookData.topics.map(topic => topic.tid));
 	}
 };
 
