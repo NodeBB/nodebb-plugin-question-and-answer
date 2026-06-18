@@ -24,14 +24,13 @@
   },
   "readmeFilename": "README.md",
   "nbbpm": {
-    "compatibility": "^4.9.0"
+    "compatibility": "^4.14.0"
   },
   "scripts": {
     "lint": "eslint ."
   },
   "devDependencies": {
-    "eslint": "^7.32.0",
-    "eslint-config-nodebb": "^0.0.2",
-    "eslint-plugin-import": "^2.24.2"
+    "eslint": "^10.5.0",
+    "eslint-config-nodebb": "^2.0.3"
   }
 }

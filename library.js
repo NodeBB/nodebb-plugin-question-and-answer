@@ -1,26 +1,26 @@
 'use strict';
 
-const validator = require.main.require('validator');
+const validator = nodebb.require('validator');
 
-const topics = require.main.require('./src/topics');
-const posts = require.main.require('./src/posts');
-const categories = require.main.require('./src/categories');
-const meta = require.main.require('./src/meta');
-const privileges = require.main.require('./src/privileges');
-const rewards = require.main.require('./src/rewards');
-const user = require.main.require('./src/user');
-const helpers = require.main.require('./src/controllers/helpers');
-const db = require.main.require('./src/database');
-const plugins = require.main.require('./src/plugins');
-const SocketPlugins = require.main.require('./src/socket.io/plugins');
-const pagination = require.main.require('./src/pagination');
-const social = require.main.require('./src/social');
+const topics = nodebb.require('./src/topics');
+const posts = nodebb.require('./src/posts');
+const categories = nodebb.require('./src/categories');
+const meta = nodebb.require('./src/meta');
+const privileges = nodebb.require('./src/privileges');
+const rewards = nodebb.require('./src/rewards');
+const user = nodebb.require('./src/user');
+const helpers = nodebb.require('./src/controllers/helpers');
+const db = nodebb.require('./src/database');
+const plugins = nodebb.require('./src/plugins');
+const SocketPlugins = nodebb.require('./src/socket.io/plugins');
+const pagination = nodebb.require('./src/pagination');
+const social = nodebb.require('./src/social');
 
 const plugin = module.exports;
 
 plugin.init = async function (params) {
 	const { router } = params;
-	const routeHelpers = require.main.require('./src/routes/helpers');
+	const routeHelpers = nodebb.require('./src/routes/helpers');
 
 	routeHelpers.setupAdminPageRoute(router, '/admin/plugins/question-and-answer', renderAdmin);
 	routeHelpers.setupPageRoute(router, '/unsolved', [], renderUnsolved);
@@ -72,7 +72,7 @@ plugin.addAnswerDataToTopic = async function (hookData) {
 		return hookData;
 	}
 
-	hookData.templateData.icons.push(getIconMarkup(hookData.templateData.isSolved));
+	hookData.templateData.icons.push(getIcons(hookData.templateData.isSolved));
 	return await addMetaData(hookData);
 };
 
@@ -99,7 +99,7 @@ plugin.filterTopicGetPosts = async (hookData) => {
 		copy.allowDupe = true;
 		copy.navigatorIgnore = true;
 		copy.eventStart = 0;
-		copy.eventEnd = 0
+		copy.eventEnd = 0;
 		topicPosts.splice(1, 0, copy);
 	} else if (answerIsNotFirstReply) {
 		const answers = await posts.getPostsByPids([solvedPid], hookData.uid);
@@ -171,17 +171,25 @@ async function addMetaData(data) {
 plugin.getTopics = async function (hookData) {
 	hookData.topics.forEach((topic) => {
 		if (topic && parseInt(topic.isQuestion, 10)) {
-			topic.icons.push(getIconMarkup(topic.isSolved));
+			topic.icons.push(getIcons(topic.isSolved));
 		}
 	});
 	return hookData;
 };
 
-function getIconMarkup(isSolved) {
+function getIcons(isSolved) {
 	if (parseInt(isSolved, 10)) {
-		return '<span class="answered badge border text-bg-success border-success"><i class="fa fa-check"></i><span> [[qanda:topic_solved]]</span></span>';
+		return {
+			icon: 'fa-check',
+			label: '[[qanda:topic_solved]]',
+			classes: 'answered text-bg-success border-success',
+		};
 	}
-	return '<span class="unanswered badge border text-bg-warning border-warning"><i class="fa fa-question-circle"></i><span> [[qanda:topic_unsolved]]</span></span>';
+	return {
+		icon: 'fa-question-circle',
+		label: '[[qanda:topic_unsolved]]',
+		classes: 'unanswered text-bg-warning border-warning',
+	};
 }
 
 plugin.filterPostGetPostSummaryByPids = async function (hookData) {
@@ -293,7 +301,7 @@ plugin.filterTopicEdit = async function (hookData) {
 plugin.actionTopicsPurge = async function (hookData) {
 	if (Array.isArray(hookData.topics) && hookData.topics.length) {
 		await db.sortedSetRemove([
-			'topics:solved', 'topics:unsolved'
+			'topics:solved', 'topics:unsolved',
 		], hookData.topics.map(topic => topic.tid));
 	}
 };
@@ -384,7 +392,7 @@ async function toggleSolved(uid, tid) {
 
 async function markSolved(uid, tid, pid, isSolved) {
 	const updatedTopicFields = isSolved ?
-		{ isSolved: 1, solvedPid: pid }	:
+		{ isSolved: 1, solvedPid: pid } :
 		{ isSolved: 0, solvedPid: 0 };
 
 	if (plugin._settings.toggleLock === 'on') {
@@ -497,7 +505,7 @@ async function getTopics(type, page, cids, uid, settings) {
 		cids = [cids];
 	}
 	const set = `topics:${type}`;
-	let tids = [];
+	let tids;
 	if (cids.length) {
 		cids = await privileges.categories.filterCids('read', cids, uid);
 		const allTids = await Promise.all(cids.map(async cid => await db.getSortedSetRevIntersect({

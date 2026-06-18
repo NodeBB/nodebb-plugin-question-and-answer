@@ -29,7 +29,7 @@ define('admin/plugins/question-and-answer', ['settings', 'translator', 'alerts']
 					return;
 				}
 
-				var count = 0;
+				let count = 0;
 				categories.forEach(function (category, idx, parent) {
 					Translator.translate(category.name, function (translated) {
 						if (category.name !== translated) {
@@ -55,7 +55,7 @@ define('admin/plugins/question-and-answer', ['settings', 'translator', 'alerts']
 						container.append(html);
 
 						// Handle and children categories in this level have
-						for (var x = 0, numCategories = categories.length; x < numCategories; x += 1) {
+						for (let x = 0, numCategories = categories.length; x < numCategories; x += 1) {
 							renderList(categories[x].children, $('li[data-cid="' + categories[x].cid + '"]'), categories[x].cid);
 						}
 
@@ -64,6 +64,6 @@ define('admin/plugins/question-and-answer', ['settings', 'translator', 'alerts']
 				}
 			}
 		}
-	}
+	};
 	return admin;
 });

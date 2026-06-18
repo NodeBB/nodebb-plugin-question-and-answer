@@ -1,11 +1,6 @@
 'use strict';
 
 $('document').ready(function () {
-	function translate(text, cb) {
-		require(['translator'], function (translator) {
-			translator.translate(text, cb);
-		});
-	}
 	function alertType(type, message) {
 		require(['alerts'], function (alerts) {
 			alerts[type](message);
@@ -14,7 +9,7 @@ $('document').ready(function () {
 	$(window).on('action:ajaxify.end', function () {
 		if (ajaxify.data.template.compose && ajaxify.data.isMain && ajaxify.data.topic) {
 			// seperate composer page
-			var actionBar = $('.composer .action-bar');
+			const actionBar = $('.composer .action-bar');
 			addQnADropdownHandler(actionBar);
 		}
 	});
@@ -30,16 +25,16 @@ $('document').ready(function () {
 		if (data.hasOwnProperty('composerData') && !data.composerData.isMain) {
 			return;
 		}
-		var actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
+		const actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar');
 		addQnADropdownHandler(actionBar);
 	});
 
 	require(['hooks', 'translator'], function (hooks, translator) {
 		hooks.on('filter:composer.create', async (hookData) => {
-			const translated = await translator.translate('[[qanda:thread.tool.as_question]]');
+			const translated = await translator.translateKey('[[qanda:thread.tool.as_question]]');
 			hookData.createData.submitOptions.push({
 				action: 'ask-as-question',
-				text: `<i class="fa fa-fw fa-${hookData.postData.isQuestion ? 'check-' : ''}circle-o"></i> ${translated}`
+				text: `<i class="fa fa-fw fa-${hookData.postData.isQuestion ? 'check-' : ''}circle-o"></i> ${translated}`,
 			});
 			return hookData;
 		});
@@ -82,8 +77,7 @@ $('document').ready(function () {
 	}
 
 	function toggleQuestionStatus() {
-		var tid = ajaxify.data.tid;
-		callToggleQuestion(tid, true);
+		callToggleQuestion(ajaxify.data.tid, true);
 	}
 
 	function callToggleQuestion(tid, refresh) {
@@ -100,7 +94,7 @@ $('document').ready(function () {
 	}
 
 	function toggleSolved() {
-		var tid = ajaxify.data.tid;
+		const tid = ajaxify.data.tid;
 		socket.emit('plugins.QandA.toggleSolved', { tid: tid }, function (err, data) {
 			if (err) {
 				return alertType('error', err);
@@ -112,8 +106,8 @@ $('document').ready(function () {
 	}
 
 	function markPostAsAnswer() {
-		var tid = ajaxify.data.tid;
-		var pid = $(this).parents('[data-pid]').attr('data-pid');
+		const tid = ajaxify.data.tid;
+		const pid = $(this).parents('[data-pid]').attr('data-pid');
 
 		socket.emit('plugins.QandA.markPostAsAnswer', { tid: tid, pid: pid }, function (err, data) {
 			if (err) {
@@ -139,9 +133,7 @@ $('document').ready(function () {
 
 			solvedEl.addClass('isSolved');
 			$(`[data-necro-post-index="${solvedEl.attr('data-index')}"]`).addClass('hidden');
-			translate('[[qanda:label.solution]]', (translated) => {
-				solvedEl.attr('data-label', translated);
-			});
+			solvedEl.translateAttr('data-label', '[[qanda:label.solution]]');
 		}
 	}
 });
