@@ -8,27 +8,27 @@
 					<div class="col-12">
 
 						<div class="form-check">
-							<label class="form-check-label">[[qanda:admin.form.label.toggle_lock]]</label>
+							<label class="form-check-label">{{tx("qanda:admin.form.label.toggle_lock")}}</label>
 							<input class="form-check-input" type="checkbox" name="toggleLock">
 						</div>
 
 						<div class="form-check">
-							<label class="form-check-label">[[qanda:admin.form.label.only_allow_admins]]</label>
+							<label class="form-check-label">{{tx("qanda:admin.form.label.only_allow_admins")}}</label>
 							<input class="form-check-input" type="checkbox" name="onlyAdmins">
 						</div>
 
 						<div class="form-check">
-							<label class="form-check-label">[[qanda:admin.form.label.only_allow_all]]</label>
+							<label class="form-check-label">{{tx("qanda:admin.form.label.only_allow_all")}}</label>
 							<input class="form-check-input" type="checkbox" name="forceQuestions">
 							<p class="form-text">
-								[[qanda:admin.form.tips]]
+								{{tx("qanda:admin.form.tips")}}
 							</p>
 						</div>
 
 						<hr />
 
 						<label>
-							[[qanda:admin.form.label.only_allow_following]]
+							{{tx("qanda:admin.form.label.only_allow_following")}}
 						</label>
 						<div class="all-categories">
 						</div>

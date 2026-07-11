@@ -30,7 +30,7 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "eslint": "^10.5.0",
+    "eslint": "^10.7.0",
     "eslint-config-nodebb": "^2.0.3"
   }
 }
