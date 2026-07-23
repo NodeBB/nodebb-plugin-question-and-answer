@@ -29,12 +29,14 @@ $('document').ready(function () {
 		addQnADropdownHandler(actionBar);
 	});
 
-	require(['hooks', 'translator'], function (hooks, translator) {
+	require(['hooks'], function (hooks) {
 		hooks.on('filter:composer.create', async (hookData) => {
-			const translated = await translator.translateKey('[[qanda:thread.tool.as_question]]');
 			hookData.createData.submitOptions.push({
 				action: 'ask-as-question',
-				text: `<i class="fa fa-fw fa-${hookData.postData.isQuestion ? 'check-' : ''}circle-o"></i> ${translated}`,
+				text: '[[qanda:thread.tool.as_question]]',
+				icon: hookData.postData.isQuestion ?
+					'fa-regular fa-circle-check' :
+					'fa-regular fa-circle',
 			});
 			return hookData;
 		});
@@ -43,13 +45,13 @@ $('document').ready(function () {
 	function addQnADropdownHandler(actionBar) {
 		const item = actionBar.find(`[data-action="ask-as-question"]`);
 		item.on('click', () => {
-			item.find('.fa').toggleClass('fa-circle-o').toggleClass('fa-check-circle-o');
+			item.find('.fa-regular').toggleClass('fa-circle').toggleClass('fa-circle-check');
 			// Don't close dropdown on toggle (for better UX)
 			return false;
 		});
 
 		$(window).one('action:composer.submit', function (ev, data) {
-			if (item.find('.fa').hasClass('fa-check-circle-o')) {
+			if (item.find('.fa-regular').hasClass('fa-circle-check')) {
 				data.composerData.isQuestion = true;
 			}
 		});
