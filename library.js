@@ -471,7 +471,7 @@ async function renderQnAPage(type, req, res) {
 	const { cid } = req.query;
 	const [settings, categoryData, canPost, isPrivileged] = await Promise.all([
 		user.getSettings(req.uid),
-		helpers.getSelectedCategory(cid),
+		helpers.getSelectedCategory(cid, req.uid),
 		canPostTopic(req.uid),
 		user.isPrivileged(req.uid),
 	]);
