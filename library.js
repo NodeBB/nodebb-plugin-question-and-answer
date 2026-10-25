@@ -1,7 +1,6 @@
 'use strict';
 
 const nconf = nodebb.require('nconf');
-const validator = nodebb.require('validator');
 
 const topics = nodebb.require('./src/topics');
 const posts = nodebb.require('./src/posts');
@@ -164,11 +163,8 @@ async function addMetaData(data) {
 		data.templateData.suggestedAnswer = suggestedAnswer || {};
 	}
 	data.templateData.answerCount = Math.max(0, data.templateData.postcount - 1);
-	// NodeBB 4 has no titleRaw any more, only the (escaped) title
-	const rawTitle = data.templateData.titleRaw !== undefined ?
-		data.templateData.titleRaw :
-		validator.unescape(String(data.templateData.title || ''));
-	data.templateData.mainPost.title = validator.escape(String(rawTitle));
+	// NodeBB 4 has no titleRaw any more; `title` is the raw title and the template escapes {mainPost.title}
+	data.templateData.mainPost.title = String(data.templateData.titleRaw !== undefined ? data.templateData.titleRaw : (data.templateData.title || ''));
 	data.templateData.topicURL = `${nconf.get('url')}/topic/${data.templateData.slug}`;
 	// app.renderAsync writes the whole translation dictionary (_i18n, ~250 KB) into the object it is
 	// given; render a copy so it does not end up in the topic's data and in the page HTML
